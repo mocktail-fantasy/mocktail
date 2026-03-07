@@ -2,7 +2,7 @@
 
 I am designing an app that will be used for creating Fantasy Football projections.  Users should be able to enter/edit stats for active NFL players. These stats will then be converted to fantasy points.  These points will then be used to create rankings for the players.  
 
-This app is intended to created in stages over several iterations. I will provide a rough outline below of the stages of development that give a loose description of how I plan to evolve the app.  This is provided only so that you have context for the long term vision. Your design decisions should consider both the immediate requirements and long term requirements.  
+This app is intended to be created in stages over several iterations. I will provide a rough outline below of the stages of development that give a loose description of how I plan to evolve the app.  This is provided only so that you have context for the long term vision. Your design decisions should consider both the immediate requirements and long term requirements.  
 
 ALL design decisions I have made ARE negotiable.  I am only providing my design as guidance on how I envision it to work.
 
@@ -10,7 +10,7 @@ Here are the requirements for this specific prompt:
 1. Read the below requirements and design. 
 2. Review and comment on the design and ask clarifying questions/make suggestions. 
 3. Finalize design for the initial build and for the long term future
-4. Once the design is finalized create a write up and place it in  a DESIGN.MD file. 
+4. Once the design is finalized create a write up and place it in a DESIGN.MD file. 
 
 The DESIGN.MD will be used to create the first dev iteration and should be referenced for future development as well. 
 
@@ -22,10 +22,10 @@ The DESIGN.MD will be used to create the first dev iteration and should be refer
 
 - I have several years of backend software development experience so I may at times write code to handle the backend.  There might times that I require you to create scaffolding but I will actually implement the service calls. I will still lean on you for bootstrapping services, giving design recommendations, and reviewing changes for the backend when I do want to write the code myself. Any time a backend change is needed be sure to ask before making the change.
 - Although initially out of scope when we start to work with cloud services, I will be highly bias toward AWS and AWS CDK for infra as code. I have a lot of experience in these areas and it will be a lot easier for me to understand the code and discuss design decisions if we use tools I am familiar with. I will be open to using other services from different providers but only if it has substantial cost savings or performance benefits.
-- I have almost no frontend experience.  Most of the front end will be designed and implemented by you. I have a general knowledge of frameworks so I can talk about high level decisions but implementation details I will be less helpful with. I have 0 UI/UX knowledge so do not take look and feel directions as rigid orders.  This should be collaborative please help me create a design that will be the most aesthetic to users and easy to use.
+- I have almost no frontend experience.  Most of the front end will be designed and implemented by you. I have a general knowledge of frameworks so I can talk about high level decisions but implementation details I will be less helpful with. I have 0 UI/UX knowledge so do not UI directions as rigid orders.  This should be collaborative please help me create a design that will be the most aesthetic and easy to use for users.
 - Cost is a huge constraint.  Some decisions I have outlined in this document are purely motivated by reducing costs.  Please keep this in mind when making recommendations.
 - I am relatively inexperienced with using GenAI tools to develop software so if you believe that my iterations outlined below can be spaced out more let me know. For example if you believe the calculation engine in the first iteration is more than what we should do in beginning that is fine.  There is no requirement to do everything all at once.  If you think requirements are too ambitious for the initial design let me know. If you think I am being too conservative and spacing it out too much let me know as well.
-- I will be providing you with the NFL data. At some point we may need to create an ingestion system but for the initial run I will be writing queries on a local db to generate the JSON files for you.  If the data I have provided you is formatted in a way that does not work for your optimal design DO NOT code around the bad data design.  DO tell me what is a better format for the data and I will provide you better data. DO NOT use tokens reformatting JSON or other files.
+- I will be providing you with the NFL data. At some point we may need to create an ingestion system that is automated but for the initial run I will be writing queries on a local db to generate the JSON files for you.  If the data I have provided you is formatted in a way that does not work for your optimal design DO NOT code around the bad data design.  DO tell me what is a better format for the data and I will provide you better data. DO NOT use tokens reformatting JSON or other files.
 
 —————————————————————————————————————————————————-
 
@@ -35,9 +35,9 @@ The DESIGN.MD will be used to create the first dev iteration and should be refer
 
 The initial dev design will be an MVP that can be ran locally and does not use any databases or cloud services.  This phase will be used for testing the UI and making sure the design feels right.  I want to nail down the very basic requirements of the project before making larger changes. Here are the basic MVP requirements:
 
-- Users should be able to explore NFL rosters and see all current players. (see: data model below)
+- Users should be able to explore NFL rosters and see all current players. (see: data model section)
 - Users should be able to click on a player and a page with player info should be opened up.
-- On the new page users should see metadata on the player. This includes their historical data that I will provide in the format of JSON (see: data model below).
+- On the new page users should see metadata on the player. This includes their historical data that I will provide in the format of JSON (see: data model section).
 - On the player page Users should be able to to enter in the following data based on position:
     - if position = “QB”:
         - Passing TDs
