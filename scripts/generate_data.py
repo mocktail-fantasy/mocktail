@@ -204,7 +204,14 @@ def load_depth_charts() -> pd.DataFrame:
         usecols=["dt", "team", "player_name", "gsis_id", "pos_abb", "pos_rank"],
         dtype=str,
     )
-    return df.dropna(subset=["gsis_id"]).reset_index(drop=True)
+    df = df.dropna(subset=["gsis_id"]).reset_index(drop=True)
+
+    # Frank Gore Sr. (00-0023500) is incorrectly mapped to Frank Gore Jr. (00-0039471)
+    # in the depth chart source due to name-matching that strips "Jr." suffixes.
+    # Both were RBs on the Bills, making this an undetectable collision in the source data.
+    df["gsis_id"] = df["gsis_id"].replace("00-0023500", "00-0039471")
+
+    return df
 
 
 def load_config() -> dict:
