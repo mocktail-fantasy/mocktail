@@ -515,7 +515,7 @@ export default function TeamsView({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex flex-col sm:min-h-0 sm:flex-1">
       {!fixedTeam && (
         <>
           <div className="shrink-0 mb-5 space-y-3">
@@ -572,7 +572,7 @@ export default function TeamsView({
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="sm:flex-1 sm:overflow-y-auto">
         <div className="flex flex-col gap-4">
           {POSITION_ORDER.map((pos) => {
             const curPlayers = byPosition.get(pos) ?? [];

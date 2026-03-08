@@ -62,7 +62,8 @@ export default function NavHeader({ activePage }: { activePage: 'rankings' | 'te
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              Free Agents
+              <span className="sm:hidden">FA</span>
+              <span className="hidden sm:inline">Free Agents</span>
             </Link>
           </nav>
         </div>

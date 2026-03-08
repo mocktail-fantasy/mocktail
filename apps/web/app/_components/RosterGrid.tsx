@@ -101,7 +101,7 @@ export default function RosterGrid({
   }, [filtered, projectedPoints, vorpScores, effectiveMode]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex flex-col sm:min-h-0 sm:flex-1">
       <div className="mb-6 shrink-0 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex flex-col gap-1">
           <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Filter</span>
@@ -152,15 +152,15 @@ export default function RosterGrid({
         {ranked.length} player{ranked.length !== 1 ? 's' : ''}
       </p>
 
-      <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-gray-200 shadow-sm">
-        <div className="flex-1 overflow-y-auto">
-          <div className="sticky top-0 z-10 grid grid-cols-[32px_minmax(0,1fr)_80px_16px] items-center gap-3 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2 sm:hidden">
+      <div className="rounded-xl border border-gray-200 shadow-sm sm:flex sm:min-h-0 sm:flex-1 sm:flex-col">
+        <div className="sm:flex-1 sm:overflow-y-auto">
+          <div className="z-10 sm:sticky sm:top-0 grid grid-cols-[32px_minmax(0,1fr)_80px_16px] items-center gap-3 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2 sm:hidden">
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">#</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Player</span>
             <span className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-400">Proj Pts</span>
             <span />
           </div>
-          <div className="sticky top-0 z-10 hidden grid-cols-[32px_minmax(0,1fr)_52px_80px_44px_minmax(0,2fr)_88px_16px] items-center gap-4 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2 sm:grid">
+          <div className="z-10 sm:sticky sm:top-0 hidden grid-cols-[32px_minmax(0,1fr)_52px_80px_44px_minmax(0,2fr)_88px_16px] items-center gap-4 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2 sm:grid">
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">#</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Player</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Team</span>
