@@ -74,7 +74,7 @@ type ProjConfig = {
 const PROJ_CONFIG: Record<string, ProjConfig> = {
   QB: {
     gridCols: 'grid-cols-[2fr_0.7fr_1fr_1fr_1fr_1fr_1fr_1fr]',
-    headers: ['Season', 'Pass Yds', 'Pass TDs', 'INTs', 'Rush Yds', 'Rush TDs', 'Pts'],
+    headers: ['Season', 'Pass Yds', 'Pass TDs', 'INTs', 'Rush Yds', 'Rush TDs', 'Proj Pts'],
     getValues: (p, pts) => [p.passing_yards, p.passing_tds, p.interceptions, p.rushing_yards, p.rushing_tds, pts],
   },
   RB: {
@@ -186,7 +186,7 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
       </div>
       {/* 2026 projection row */}
       {hasProj && (
-        <div className="flex items-stretch divide-x divide-gray-100 border-t border-gray-100">
+        <div className="hidden sm:flex sm:items-stretch sm:divide-x sm:divide-gray-100 border-t border-gray-100">
           <div className="flex w-28 shrink-0 items-center px-4 py-2.5">
             <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-gray-400">
               2026 Proj
@@ -225,7 +225,7 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
       )}
       {/* Historical stats row */}
       {hasHist && (
-        <div className="flex items-stretch divide-x divide-gray-100 border-t border-gray-100">
+        <div className="hidden sm:flex sm:items-stretch sm:divide-x sm:divide-gray-100 border-t border-gray-100">
           <div className="flex w-28 shrink-0 items-center px-4 py-2.5">
             <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-gray-400">
               {historySeason} Season
@@ -285,9 +285,31 @@ function ProjectionPlayerRow({ player, projection, projectedPoints, rank, positi
 
   return (
     <div>
+      {/* Mobile row */}
       <Link
         href={`/players/${player.player_id}?from=teams&team=${activeTeam}`}
-        className="group flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-gray-50"
+        className="group flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-gray-50 sm:hidden"
+      >
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="w-5 shrink-0 text-right text-xs text-gray-400">{rank}</span>
+          <span className="truncate text-sm font-medium text-gray-900 group-hover:text-gray-700">
+            {player.player_name}
+          </span>
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5 ml-2">
+          <span className="text-sm font-semibold tabular-nums text-orange-500">
+            {(projectedPoints ?? 0).toFixed(1)}
+          </span>
+          <span className="text-xs text-gray-400">proj pts</span>
+          <svg className="h-4 w-4 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </Link>
+      {/* Desktop row */}
+      <Link
+        href={`/players/${player.player_id}?from=teams&team=${activeTeam}`}
+        className="group hidden items-center gap-3 px-4 py-2.5 transition-colors hover:bg-gray-50 sm:flex"
       >
         <div className={`grid ${config.gridCols} flex-1 items-center gap-2`}>
           <div className="flex min-w-0 items-center gap-2">
@@ -306,7 +328,7 @@ function ProjectionPlayerRow({ player, projection, projectedPoints, rank, positi
             </span>
           ))}
         </div>
-        <svg className="h-4 w-4 shrink-0 text-gray-300 group-hover:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="h-4 w-4 shrink-0 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </Link>
@@ -314,22 +336,33 @@ function ProjectionPlayerRow({ player, projection, projectedPoints, rank, positi
         const histStatValues = (HIST_PROJ_MAP[position] ?? HIST_PROJ_MAP.WR)(stats);
         const histPts = calcHistPts(stats, position, scoringSettings);
         return (
-          <div key={season} className="flex items-center gap-3 bg-gray-50 px-4 py-2.5">
-            <div className={`grid ${config.gridCols} flex-1 items-center gap-2`}>
-              <div className="flex min-w-0 items-center gap-2">
+          <div key={season}>
+            {/* Mobile history row */}
+            <div className="flex items-center justify-between bg-gray-50 px-4 py-1.5 sm:hidden">
+              <div className="flex items-center gap-2">
                 <span className="w-5 shrink-0" />
+                <span className="text-xs tabular-nums text-gray-400">{season}</span>
               </div>
-              <span className="text-left text-xs tabular-nums text-gray-400">{season}</span>
-              {histStatValues.map((v, i) => (
-                <span key={i} className="text-right text-xs tabular-nums text-gray-400">
-                  {typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(1)) : v}
-                </span>
-              ))}
-              <span className="text-right text-xs tabular-nums text-gray-400">
-                {histPts.toFixed(1)}
-              </span>
+              <span className="text-xs tabular-nums text-gray-400">{histPts.toFixed(1)} pts</span>
             </div>
-            <div className="h-4 w-4 shrink-0" />
+            {/* Desktop history row */}
+            <div className="hidden items-center gap-3 bg-gray-50 px-4 py-2.5 sm:flex">
+              <div className={`grid ${config.gridCols} flex-1 items-center gap-2`}>
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="w-5 shrink-0" />
+                </div>
+                <span className="text-left text-xs tabular-nums text-gray-400">{season}</span>
+                {histStatValues.map((v, i) => (
+                  <span key={i} className="text-right text-xs tabular-nums text-gray-400">
+                    {typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(1)) : v}
+                  </span>
+                ))}
+                <span className="text-right text-xs tabular-nums text-gray-400">
+                  {histPts.toFixed(1)}
+                </span>
+              </div>
+              <div className="h-4 w-4 shrink-0" />
+            </div>
           </div>
         );
       })}
@@ -372,6 +405,7 @@ export default function TeamsView({
   fixedTeam?: string;
 }) {
   const { scoringSettings } = useScoringType();
+  const [collapsedPositions, setCollapsedPositions] = useState<Set<string>>(new Set());
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTeam = fixedTeam ?? searchParams.get('team') ?? teams[0] ?? '';
@@ -379,7 +413,17 @@ export default function TeamsView({
 
   function selectTeam(team: string) {
     setActiveTeam(team);
+    setCollapsedPositions(new Set());
     router.replace(`/teams?team=${team}`, { scroll: false });
+  }
+
+  function togglePosition(pos: string) {
+    setCollapsedPositions((prev) => {
+      const next = new Set(prev);
+      if (next.has(pos)) next.delete(pos);
+      else next.add(pos);
+      return next;
+    });
   }
   const [projectedPoints, setProjectedPoints] = useState<Record<string, number>>(defaultPoints);
   const [projections, setProjections] = useState<Record<string, PlayerProjection>>(defaultProjections);
@@ -533,41 +577,67 @@ export default function TeamsView({
           {POSITION_ORDER.map((pos) => {
             const curPlayers = byPosition.get(pos) ?? [];
             const config = PROJ_CONFIG[pos];
+            const isCollapsed = collapsedPositions.has(pos);
             return (
               <div key={`cur-${pos}`} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                <div className="flex items-center gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2">
+                <button
+                  onClick={() => togglePosition(pos)}
+                  className="flex w-full items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-2 sm:hidden"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium uppercase tracking-wide text-gray-500">Rnk</span>
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">{pos}</span>
+                    <span className="text-xs text-gray-400">({curPlayers.length})</span>
+                  </div>
+                  <svg
+                    className={`h-4 w-4 text-gray-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => togglePosition(pos)}
+                  className="hidden w-full items-center gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 sm:flex"
+                >
                   <div className={`grid ${config.gridCols} flex-1 items-center gap-2`}>
                     <div className="flex items-center gap-2">
                       <span className="shrink-0 text-right text-xs font-medium uppercase tracking-wide text-gray-500">Rnk</span>
                       <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">{pos}</span>
+                      <span className="text-xs text-gray-400">({curPlayers.length})</span>
                     </div>
-                    {config.headers.map((h, i) => (
+                    {!isCollapsed && config.headers.map((h, i) => (
                       <span key={h} className={`${i === 0 ? 'text-left' : 'text-right'} text-xs font-medium uppercase tracking-wide text-gray-500`}>{h}</span>
                     ))}
                   </div>
-                  <svg className="h-4 w-4 shrink-0 opacity-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  <svg
+                    className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
-                </div>
-                <div className="divide-y divide-gray-100">
-                  {curPlayers.map((player) => (
-                    <ProjectionPlayerRow
-                      key={player.player_id}
-                      player={player}
-                      projection={projections[player.player_id]}
-                      projectedPoints={projectedPoints[player.player_id]}
-                      rank={globalRanks[player.player_id]}
-                      position={POSITION_ORDER.find((p) => player.positions.includes(p)) ?? 'WR'}
-                      activeTeam={activeTeam}
-                      historicalStats={historyByPlayerId[player.player_id]}
-                      historySeason={historySeason}
-                      scoringSettings={scoringSettings}
-                    />
-                  ))}
-                  {curPlayers.length === 0 && (
-                    <p className="px-4 py-4 text-center text-sm text-gray-400">No players</p>
-                  )}
-                </div>
+                </button>
+                {!isCollapsed && (
+                  <div className="divide-y divide-gray-100">
+                    {curPlayers.map((player) => (
+                      <ProjectionPlayerRow
+                        key={player.player_id}
+                        player={player}
+                        projection={projections[player.player_id]}
+                        projectedPoints={projectedPoints[player.player_id]}
+                        rank={globalRanks[player.player_id]}
+                        position={POSITION_ORDER.find((p) => player.positions.includes(p)) ?? 'WR'}
+                        activeTeam={activeTeam}
+                        historicalStats={historyByPlayerId[player.player_id]}
+                        historySeason={historySeason}
+                        scoringSettings={scoringSettings}
+                      />
+                    ))}
+                    {curPlayers.length === 0 && (
+                      <p className="px-4 py-4 text-center text-sm text-gray-400">No players</p>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}

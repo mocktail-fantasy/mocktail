@@ -85,7 +85,7 @@ export default function PlayerCard({
         <div className="flex justify-end">
           <StatChip value={projectedPoints} unit={pointsUnit} />
         </div>
-        <svg className="h-4 w-4 text-gray-300 group-hover:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="h-4 w-4 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </Link>
@@ -95,16 +95,22 @@ export default function PlayerCard({
   return (
     <Link
       href={`/players/${player.player_id}`}
-      className="group grid grid-cols-[32px_minmax(0,1fr)_52px_80px_44px_minmax(0,2fr)_88px_16px] items-center gap-4 px-4 py-3 transition-colors hover:bg-gray-50"
+      className="group grid grid-cols-[32px_minmax(0,1fr)_80px_16px] items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50 sm:grid-cols-[32px_minmax(0,1fr)_52px_80px_44px_minmax(0,2fr)_88px_16px] sm:gap-4"
     >
       <span className="text-sm font-medium text-gray-400">{rank}</span>
-      <span className="truncate text-base font-bold text-gray-900 group-hover:text-gray-700">
-        {player.player_name}
-      </span>
 
-      <span className="text-sm text-gray-600">{player.team}</span>
+      <div className="flex min-w-0 items-center gap-2">
+        <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-bold sm:hidden ${POSITION_STYLES[primaryPosition]}`}>
+          {primaryPosition}
+        </span>
+        <span className="truncate text-base font-bold text-gray-900 group-hover:text-gray-700">
+          {player.player_name}
+        </span>
+      </div>
 
-      <div className="flex flex-wrap gap-1">
+      <span className="hidden text-sm text-gray-600 sm:block">{player.team}</span>
+
+      <div className="hidden flex-wrap gap-1 sm:flex">
         {fantasyPositions.map((pos) => (
           <span key={pos} className={`rounded px-1.5 py-0.5 text-xs font-medium ${POSITION_STYLES[pos]}`}>
             {pos}
@@ -112,9 +118,9 @@ export default function PlayerCard({
         ))}
       </div>
 
-      <span className="text-sm text-gray-500">{player.age ?? '—'}</span>
+      <span className="hidden text-sm text-gray-500 sm:block">{player.age ?? '—'}</span>
 
-      <span>
+      <span className="hidden sm:block">
         {projection && <ProjStats projection={projection} position={primaryPosition} />}
       </span>
 
@@ -122,7 +128,7 @@ export default function PlayerCard({
         <StatChip value={projectedPoints} unit={pointsUnit} />
       </div>
 
-      <svg className="h-4 w-4 text-gray-300 group-hover:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="h-4 w-4 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
       </svg>
     </Link>

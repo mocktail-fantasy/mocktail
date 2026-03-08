@@ -154,16 +154,20 @@ export default function RosterGrid({
 
       <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-gray-200 shadow-sm">
         <div className="flex-1 overflow-y-auto">
-          <div className="sticky top-0 z-10 grid grid-cols-[32px_minmax(0,1fr)_52px_80px_44px_minmax(0,2fr)_88px_16px] items-center gap-4 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2">
+          <div className="sticky top-0 z-10 grid grid-cols-[32px_minmax(0,1fr)_80px_16px] items-center gap-3 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2 sm:hidden">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">#</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Player</span>
+            <span className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-400">Proj Pts</span>
+            <span />
+          </div>
+          <div className="sticky top-0 z-10 hidden grid-cols-[32px_minmax(0,1fr)_52px_80px_44px_minmax(0,2fr)_88px_16px] items-center gap-4 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2 sm:grid">
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">#</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Player</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Team</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pos</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Age</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Proj Stats</span>
-            <span className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              {effectiveMode === 'vorp' ? 'VORP' : 'Proj Pts'}
-            </span>
+            <span className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-400">Proj Pts</span>
             <span />
           </div>
           <div className="divide-y divide-gray-100">
@@ -172,12 +176,8 @@ export default function RosterGrid({
                 key={player.player_id}
                 player={player}
                 rank={i + 1}
-                projectedPoints={
-                  effectiveMode === 'vorp'
-                    ? vorpScores[player.player_id]
-                    : projectedPoints[player.player_id]
-                }
-                pointsUnit={effectiveMode === 'vorp' ? 'vorp' : 'pts'}
+                projectedPoints={projectedPoints[player.player_id]}
+                pointsUnit="pts"
                 projection={projections[player.player_id] ?? EMPTY_PROJECTION}
               />
             ))}
