@@ -12,7 +12,7 @@ const SCORING_OPTIONS: { value: ScoringType; label: string }[] = [
 ];
 
 export default function NavHeader({ activePage }: { activePage: 'rankings' | 'teams' | 'free-agents' }) {
-  const { scoringType, setScoringType, tep, setTep, twoQB, setTwoQB } = useScoringType();
+  const { scoringType, setScoringType, tep, setTep, twoQB, setTwoQB, sixPtPass, setSixPtPass } = useScoringType();
 
   return (
     <header className="shrink-0 border-b border-gray-200 bg-white px-4 py-3 shadow-sm sm:px-8">
@@ -99,6 +99,16 @@ export default function NavHeader({ activePage }: { activePage: 'rankings' | 'te
             }`}
           >
             2QB
+          </button>
+          <button
+            onClick={() => setSixPtPass(!sixPtPass)}
+            className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+              sixPtPass
+                ? 'border-orange-300 bg-orange-50 text-orange-600'
+                : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            }`}
+          >
+            6pt Pass
           </button>
         </div>
       </div>

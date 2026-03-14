@@ -55,6 +55,7 @@ export default function PlayerCard({
   pointsUnit,
   projection,
   compact,
+  hasNews,
 }: {
   player: Player;
   rank?: number;
@@ -62,6 +63,7 @@ export default function PlayerCard({
   pointsUnit?: string;
   projection?: PlayerProjection;
   compact?: boolean;
+  hasNews?: boolean;
 }) {
   const fantasyPositions = getFantasyPositions(player.positions);
   const primaryPosition = fantasyPositions[0];
@@ -80,6 +82,7 @@ export default function PlayerCard({
           <span className="truncate text-base font-bold text-gray-900 group-hover:text-gray-700">
             {player.player_name}
           </span>
+          {hasNews && <span className="h-2 w-2 flex-shrink-0 rounded-full bg-orange-400" />}
         </div>
         <span className="text-sm text-gray-500">{player.age ?? '—'}</span>
         <div className="flex justify-end">
@@ -106,6 +109,7 @@ export default function PlayerCard({
         <span className="truncate text-base font-bold text-gray-900 group-hover:text-gray-700">
           {player.player_name}
         </span>
+        {hasNews && <span className="h-2 w-2 flex-shrink-0 rounded-full bg-orange-400" />}
       </div>
 
       <span className="hidden text-sm text-gray-600 sm:block">{player.team}</span>

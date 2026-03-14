@@ -106,6 +106,21 @@ export interface TeamHistoryPlayer {
   fumbles_lost: number;
 }
 
+export interface PlayerSummary {
+  player_name: string;
+  team: string;
+  summary: string;
+  sources: string[];
+  article_count: number;
+  generated_at: string;
+}
+
+export interface TeamSummary {
+  summary: string;
+  last_updated: string;
+  sources: string[];
+}
+
 export type ScoringType = 'standard' | 'half_ppr' | 'ppr';
 
 export interface ScoringSettings {

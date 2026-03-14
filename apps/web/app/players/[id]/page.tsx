@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getPlayer, getPlayerHistory } from '@/lib/data';
+import { getPlayer, getPlayerHistory, getPlayerSummaries } from '@/lib/data';
 import { getFantasyPositions, getDefaultProjection } from '@mocktail/core';
 import type { Position } from '@mocktail/core';
 import PositionTabs from './_components/PositionTabs';
 import PlayerAvatar from './_components/PlayerAvatar';
 import LastSeasonPts from './_components/LastSeasonPts';
+import NewsCard from './_components/NewsCard';
 
 const POSITION_STYLES: Record<Position, string> = {
   QB: 'bg-blue-50 text-blue-600',
@@ -28,6 +29,8 @@ export default async function PlayerPage({
 
   const history = getPlayerHistory(id);
   const seasons = history?.seasons ?? [];
+  const summaries = getPlayerSummaries();
+  const playerSummary = summaries[player.player_id] ?? null;
   const fantasyPositions = getFantasyPositions(player.positions);
   const primaryPosition = fantasyPositions[0];
   const defaultProj = getDefaultProjection(seasons);
@@ -98,6 +101,12 @@ export default async function PlayerPage({
             )}
           </div>
         </div>
+
+        {playerSummary && (
+          <div className="mb-6">
+            <NewsCard summary={playerSummary} />
+          </div>
+        )}
 
         <PositionTabs
           playerId={player.player_id}

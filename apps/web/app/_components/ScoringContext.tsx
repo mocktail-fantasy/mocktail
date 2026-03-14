@@ -10,6 +10,8 @@ interface ScoringContextValue {
   setTep: (v: boolean) => void;
   twoQB: boolean;
   setTwoQB: (v: boolean) => void;
+  sixPtPass: boolean;
+  setSixPtPass: (v: boolean) => void;
   scoringSettings: ScoringSettings;
 }
 
@@ -24,6 +26,7 @@ export function ScoringProvider({ children }: { children: React.ReactNode }) {
   const [scoringType, setScoringTypeState] = useState<ScoringType>('standard');
   const [tep, setTepState] = useState(false);
   const [twoQB, setTwoQBState] = useState(false);
+  const [sixPtPass, setSixPtPassState] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('scoring_type') as ScoringType | null;
@@ -34,6 +37,8 @@ export function ScoringProvider({ children }: { children: React.ReactNode }) {
     if (savedTep !== null) setTepState(savedTep);
     const savedTwoQB = readBool('scoring_two_qb');
     if (savedTwoQB !== null) setTwoQBState(savedTwoQB);
+    const savedSixPtPass = readBool('scoring_six_pt_pass');
+    if (savedSixPtPass !== null) setSixPtPassState(savedSixPtPass);
   }, []);
 
   function setScoringType(type: ScoringType) {
@@ -51,13 +56,18 @@ export function ScoringProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('scoring_two_qb', String(v));
   }
 
+  function setSixPtPass(v: boolean) {
+    setSixPtPassState(v);
+    localStorage.setItem('scoring_six_pt_pass', String(v));
+  }
+
   const scoringSettings = useMemo<ScoringSettings>(
-    () => ({ scoringType, tep, sixPointPassTDs: false }),
-    [scoringType, tep],
+    () => ({ scoringType, tep, sixPointPassTDs: sixPtPass }),
+    [scoringType, tep, sixPtPass],
   );
 
   return (
-    <ScoringContext.Provider value={{ scoringType, setScoringType, tep, setTep, twoQB, setTwoQB, scoringSettings }}>
+    <ScoringContext.Provider value={{ scoringType, setScoringType, tep, setTep, twoQB, setTwoQB, sixPtPass, setSixPtPass, scoringSettings }}>
       {children}
     </ScoringContext.Provider>
   );

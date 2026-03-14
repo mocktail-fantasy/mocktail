@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 import { FANTASY_POSITIONS, getDefaultFantasyPoints, getDefaultProjection } from '@mocktail/core';
-import type { Player, PlayerHistory, PlayerProjection, TeamHistoryPlayer, Position } from '@mocktail/core';
+import type { Player, PlayerHistory, PlayerProjection, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position } from '@mocktail/core';
 
 export function currentNFLSeason(): number {
   const today = new Date();
@@ -65,6 +65,18 @@ export function getTeamsData(): Record<string, TeamInfo> {
 
 export function getTeamHistory(): Record<string, TeamHistoryPlayer[]> {
   const filePath = path.join(process.cwd(), 'public', 'team_history.json');
+  if (!existsSync(filePath)) return {};
+  return JSON.parse(readFileSync(filePath, 'utf-8'));
+}
+
+export function getPlayerSummaries(): Record<string, PlayerSummary> {
+  const filePath = path.join(process.cwd(), 'public', 'player_summaries.json');
+  if (!existsSync(filePath)) return {};
+  return JSON.parse(readFileSync(filePath, 'utf-8'));
+}
+
+export function getTeamSummaries(): Record<string, TeamSummary> {
+  const filePath = path.join(process.cwd(), 'public', 'team_summaries.json');
   if (!existsSync(filePath)) return {};
   return JSON.parse(readFileSync(filePath, 'utf-8'));
 }

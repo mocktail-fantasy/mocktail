@@ -31,7 +31,7 @@ All business logic — TypeScript interfaces, the scoring calculation engine, an
 |---|---|
 | Web Framework | Next.js 15+ (App Router) |
 | Language | TypeScript |
-| Styling | Tailwind CSS |
+| Styling | Tailwind CSS v4 |
 | Monorepo | Turborepo |
 | Mobile (future) | React Native + Expo |
 | Auth (production) | NextAuth.js (OAuth: Google, Discord, GitHub) |
@@ -44,30 +44,31 @@ All business logic — TypeScript interfaces, the scoring calculation engine, an
 
 ### Source Files (MVP)
 
-Static JSON files served from `/public` in `apps/web`.
+Static JSON files served from `/public` in `apps/web`. All files are read server-side via `fs.readFileSync` in `apps/web/lib/data.ts` — not client-side fetch. This pattern is designed to swap to S3/CloudFront fetches in production without changing consumer code.
 
-**`/public/active_rosters.json`** — Flat array of active NFL players.
+**`/public/active_rosters.json`** — Flat array of active NFL players. Only QB/RB/WR/TE positions are used by the app.
 ```json
 [
   {
     "player_id": "00-0038389",
     "player_name": "Israel Abanikanda",
     "team": "DAL",
-    "position": "RB",
+    "positions": ["RB"],
     "age": 23.4,
     "headshot": "https://static.www.nfl.com/image/upload/..."
   }
 ]
 ```
 
-**`/public/historical_data.json`** — Seasonal stats keyed by `player_id`. Fumbles are aggregated into a single `total_fumbles_lost` per season (sum of sack, rushing, and receiving fumbles lost).
+**`/public/historical_data.json`** — Seasonal stats keyed by `player_id`. Fumbles are aggregated into a single `fumbles_lost` per season (sum of sack, rushing, and receiving fumbles lost). Includes pre-computed `fantasy_points` (standard) and `fantasy_points_ppr` (PPR) per season.
 ```json
 {
   "00-0039851": {
     "player_id": "00-0039851",
     "player_name": "Drake Maye",
-    "position": "QB",
+    "positions": ["QB"],
     "team": "NE",
+    "aggregate": { ... },
     "seasons": [
       {
         "season": 2025,
@@ -82,24 +83,57 @@ Static JSON files served from `/public` in `apps/web`.
           "completions": 354,
           "interceptions": 8
         },
-        "rushing": {
-          "tds": 4,
-          "yards": 450,
-          "attempts": 103
-        },
-        "receiving": {
-          "tds": 0,
-          "yards": 2,
-          "targets": 1,
-          "receptions": 1
-        }
+        "rushing": { "tds": 4, "yards": 450, "attempts": 103 },
+        "receiving": { "tds": 0, "yards": 2, "targets": 1, "receptions": 1 }
       }
     ]
   }
 }
 ```
 
-### TypeScript Interfaces (`packages/core/types`)
+**`/public/team_history.json`** — Previous-season per-team player stats keyed by team abbreviation. Used by the Teams page. Historical points for `TeamHistoryPlayer` entries are recalculated live via `calculateFantasyPoints` using raw stat fields (the pre-computed fields from `historical_data.json` are not available here).
+```json
+{
+  "BUF": [
+    {
+      "player_id": "00-0034857",
+      "player_name": "Josh Allen",
+      "positions": ["QB"],
+      "age": 29,
+      "headshot": "...",
+      "games_played": 16,
+      "fantasy_points": 380.0,
+      "passing_yards": 4500,
+      "passing_tds": 40,
+      "interceptions": 6,
+      "rushing_yards": 520,
+      "rushing_tds": 12,
+      "receptions": 0,
+      "receiving_yards": 0,
+      "receiving_tds": 0,
+      "fumbles_lost": 2
+    }
+  ]
+}
+```
+
+**`/public/teams.json`** — Team metadata keyed by team abbreviation. Includes colors, logo URLs, and conference/division info.
+
+**`/public/player_summaries.json`** — AI-generated news summaries for NFL skill-position players, keyed by `player_id`. Generated on a schedule by an external agent and dropped into this directory. Not every player has an entry.
+```json
+{
+  "00-0034857": {
+    "player_name": "Josh Allen",
+    "team": "BUF",
+    "summary": "Allen is dealing with a minor elbow concern heading into OTAs...",
+    "sources": ["https://reddit.com/r/DynastyFF/..."],
+    "article_count": 2,
+    "generated_at": "2026-03-10T17:14:56"
+  }
+}
+```
+
+### TypeScript Interfaces (`packages/core/src/types/index.ts`)
 
 ```typescript
 type Position = 'QB' | 'RB' | 'WR' | 'TE';
@@ -108,20 +142,61 @@ interface Player {
   player_id: string;
   player_name: string;
   team: string;
-  positions: string[];
+  positions: string[];  // array; filtered to fantasy positions via getFantasyPositions()
   age: number;
   headshot: string;
+}
+
+interface PassingStats {
+  tds: number;
+  yards: number;
+  attempts: number;
+  completions: number;
+  interceptions: number;
+}
+
+interface RushingStats {
+  tds: number;
+  yards: number;
+  attempts: number;
+}
+
+interface ReceivingStats {
+  tds: number;
+  yards: number;
+  targets: number;
+  receptions: number;
 }
 
 interface SeasonStats {
   season: number;
   games_played: number;
+  fantasy_points: number;       // standard scoring, pre-computed
+  fantasy_points_ppr: number;   // PPR scoring, pre-computed
+  fumbles_lost: number;
+  passing?: PassingStats;
+  rushing?: RushingStats;
+  receiving?: ReceivingStats;
+}
+
+interface PlayerAggregate {
+  games_played: number;
   fantasy_points: number;
   fantasy_points_ppr: number;
+  fumbles: number;
   fumbles_lost: number;
-  passing?: { tds: number; yards: number; attempts: number; completions: number; interceptions: number; };
-  rushing?: { tds: number; yards: number; attempts: number; };
-  receiving?: { tds: number; yards: number; targets: number; receptions: number; };
+  passing: { average_completion_percentage: number; yards: number; tds: number; interceptions: number; };
+  rushing: { attempts: number; yards: number; tds: number; };
+  receiving: { receptions: number; targets: number; yards: number; tds: number; };
+}
+
+interface PlayerHistory {
+  player_id: string;
+  player_name: string;
+  team: string;
+  positions: string[];
+  aggregate: PlayerAggregate;
+  seasons: SeasonStats[];
 }
 
 interface PlayerProjection {
@@ -141,25 +216,54 @@ interface UserProjection {
   projection: PlayerProjection;
   fantasy_points: number;
 }
+
+interface TeamHistoryPlayer {
+  player_id: string;
+  player_name: string;
+  positions: string[];
+  age: number | null;
+  headshot: string | null;
+  games_played: number;
+  fantasy_points: number;
+  passing_attempts: number;
+  passing_yards: number;
+  passing_tds: number;
+  interceptions: number;
+  rushing_yards: number;
+  rushing_tds: number;
+  receptions: number;
+  receiving_yards: number;
+  receiving_tds: number;
+  fumbles_lost: number;
+}
+
+interface PlayerSummary {
+  player_name: string;
+  team: string;
+  summary: string;
+  sources: string[];
+  article_count: number;
+  generated_at: string;  // ISO 8601
+}
 ```
 
 ---
 
 ## Scoring Engine (`packages/core/scoring`)
 
-The scoring engine is built with full multi-format support from day one. The MVP UI exposes only Standard scoring, but the engine supports all formats so Dev v0 only requires adding UI toggles.
+The scoring engine supports all major fantasy formats. The scoring type is globally configurable via `ScoringContext` and persisted to `localStorage`.
 
 ### Scoring Settings
 
 ```typescript
 interface ScoringSettings {
   scoringType: 'standard' | 'half_ppr' | 'ppr';
-  tep: boolean;          // Tight End Premium: +0.5 pts/reception for TEs
+  tep: boolean;             // Tight End Premium: +0.5 pts/reception for TEs
   sixPointPassTDs: boolean; // Passing TDs worth 6pts instead of 4pts
 }
 
 const DEFAULT_SCORING: ScoringSettings = {
-  scoringType: 'half_ppr',  // Applied from Dev v0 onwards; MVP uses 'standard'
+  scoringType: 'standard',
   tep: false,
   sixPointPassTDs: false,
 };
@@ -178,15 +282,61 @@ const DEFAULT_SCORING: ScoringSettings = {
 | Interception | -2 pts |
 | Fumble Lost | -2 pts |
 
+### Historical Half-PPR Calculation
+
+`SeasonStats` stores both `fantasy_points` (standard) and `fantasy_points_ppr` (PPR) pre-computed. Half-PPR historical points: `(fantasy_points + fantasy_points_ppr) / 2` — exact because the only difference is 0.5 pts × receptions.
+
+`TeamHistoryPlayer` only has `fantasy_points`; team view historical points are recalculated live via `calculateFantasyPoints` using raw stat fields.
+
+---
+
+## VORP Rankings (`packages/core/scoring/vorp.ts`)
+
+Players can be ranked by **Value Over Replacement Player (VORP)** in addition to raw projected points.
+
+**Replacement ranks (starters per 12-team league):**
+
+| Position | Replacement Rank | 2QB Rank |
+|---|---|---|
+| QB | 12 | 32 |
+| RB | 40 | 40 |
+| WR | 50 | 50 |
+| TE | 12 | 12 |
+
+`calculateVORPBaselines(players, projectedPoints, twoQB?)` — for each position, sorts players by projected points and takes the score at the replacement index as the baseline.
+
+`calculateVORP(playerPoints, position, baselines)` — player score minus position baseline. Negative VORP means the player is below replacement level.
+
+**2QB mode:** When enabled, the QB replacement index rises to 32 (two QBs per team × 16 teams). Affects VORP baselines only — not raw point totals.
+
+---
+
+## Global Scoring State (`apps/web/app/_components/ScoringContext.tsx`)
+
+`ScoringProvider` wraps the root layout. All pages access settings via the `useScoringType()` hook.
+
+Exposes: `scoringType`, `setScoringType`, `tep`, `setTep`, `twoQB`, `setTwoQB`, `sixPtPass`, `setSixPtPass`, `scoringSettings`
+
+`scoringSettings` is a derived `ScoringSettings` object passed directly to the scoring engine.
+
+**`localStorage` keys:**
+
+| Key | Values | Controls |
+|---|---|---|
+| `scoring_type` | `standard` \| `half_ppr` \| `ppr` | PPR format |
+| `scoring_tep` | `true` \| `false` | Tight End Premium |
+| `scoring_two_qb` | `true` \| `false` | 2QB VORP mode |
+| `scoring_six_pt_pass` | `true` \| `false` | 6-point passing TDs |
+
 ---
 
 ## Application Phases
 
-### Phase 1: MVP
+### Phase 1: MVP ✓
 
 **Goal:** Validate UI/UX locally. No backend, no auth, no deployment.
 
-**Persistence:** `localStorage`. User projections are keyed by `player_id` and stored as a single JSON blob.
+**Persistence:** `localStorage`. User projections are keyed by `player_id` (`projection_{player_id}`) and stored as a `PlayerProjection` JSON blob.
 
 **Default Behavior:** If no user projection exists for a player, the stat input fields are pre-filled with that player's most recent season stats from `historical_data.json`. Pre-filled values render in muted grey; once a user modifies a field, it renders in normal text weight/color.
 
@@ -203,7 +353,7 @@ const DEFAULT_SCORING: ScoringSettings = {
 - Simple grid of player cards (headshot, name, team, position) as a navigation surface
 - Position filter tabs: ALL / QB / RB / WR / TE
 - Clicking a card navigates to `/players/[id]`
-- No projected points or rankings — this page evolved into the full Rankings page in Dev v0
+- No projected points or rankings — evolved into the full Rankings page in Dev v0
 
 **Player Page (`/players/[id]`):**
 - Header: headshot, name, team, position, age
@@ -212,43 +362,57 @@ const DEFAULT_SCORING: ScoringSettings = {
   - QB: Pass Yds, Pass TDs, INT, Rush Yds, Rush TDs
   - RB/WR/TE: Rec, Rec Yds, Rec TDs, Rush Yds, Rush TDs
 - Projection input form below historical table
-  - Fields match position-specific stats above (excluding attempts/completions/targets — not relevant to fantasy scoring)
+  - Fields match position-specific stats above (excluding attempts/completions/targets)
   - Live fantasy point total updates as user types
 - Save button persists projection to `localStorage`
 
 ---
 
-### Phase 2: Dev v0
+### Phase 2: Dev v0 ✓
 
 **Goal:** Full feature set running locally. Validate all core flows before production migration.
 
 **New Features:**
 
+**Global Nav Header (`NavHeader`):**
+- Persistent header across all main routes (Rankings, Teams, Free Agents)
+- Scoring type selector: Standard / 0.5 PPR / PPR (dropdown)
+- Toggle buttons: TEP, 2QB, 6pt Pass
+- All settings persist to `localStorage` and update all rankings/points reactively
+
 **VORP Rankings:**
 - Players ranked by Value Over Replacement Player (VORP) in addition to raw projected points
+- Default ranking mode is VORP (Smart); falls back to total points when a position filter is active
 - Replacement ranks: QB=12, RB=40, WR=50, TE=12
 - 2QB toggle: raises QB replacement rank to 32
 
 **Scoring Type Selector (global, persisted in `localStorage`):**
 - Toggle: Standard / 0.5PPR / PPR
 - Toggle: TEP on/off
+- Toggle: 2QB on/off
 - Toggle: 6pt Pass TDs on/off
-- Default: 0.5PPR, TEP off, 6pt Pass TDs off
 - All rankings and player point totals update reactively
+
+**Player News:**
+- Orange dot indicator in the name cell of player rows on the Rankings page for players with news
+- NewsCard on the player detail page, rendered above the projection form
+  - Shows summary text and relative timestamp ("Xh ago" / "Xd ago")
+  - Collapsible sources list (hidden by default; "Show sources (N)" toggle)
+  - Not rendered if no summary exists for the player
+- Data sourced from `player_summaries.json`, loaded server-side
 
 **New Routes:**
 
 | Route | Description |
 |---|---|
-| `/` | Rankings — replaced the MVP player list; now the default landing page |
+| `/` | Rankings — replaced the MVP player list; the primary landing page |
 | `/teams` | Full team roster with inline stat entry |
 | `/free-agents` | Free agent players with inline stat entry |
 
 **Rankings Page (`/`):**
-- Replaced the MVP player list as the root route — rankings is the primary value proposition
-- All players sorted by projected fantasy points (descending)
-- Filterable by position
-- Players without a user projection ranked by their most recent season's `fantasy_points` value from `historical_data.json`
+- All players sorted by VORP (default) or projected fantasy points (descending)
+- Filterable by position; search by name or team
+- Players without a user projection ranked by their most recent season's stats from `historical_data.json`
 - Points displayed reflect active scoring settings
 - VORP displayed alongside raw projected points
 
@@ -287,7 +451,7 @@ const DEFAULT_SCORING: ScoringSettings = {
 
 | Service | Purpose |
 |---|---|
-| S3 | Stores `active_rosters.json` and `historical_data.json` |
+| S3 | Stores `active_rosters.json`, `historical_data.json`, `team_history.json`, `player_summaries.json` |
 | CloudFront | CDN in front of S3 for fast global delivery of static data |
 | DynamoDB | Stores per-user projection and ranking data |
 | Lambda | Nightly job: fetches updated roster/historical data and writes to S3 |
@@ -299,7 +463,7 @@ const DEFAULT_SCORING: ScoringSettings = {
 - Attributes: `projection` (map), `fantasy_points` (number), `rank_override` (number, optional), `updated_at` (string)
 
 **Data Flow (production):**
-1. `active_rosters.json` and `historical_data.json` served via CloudFront → S3
+1. Static JSON files served via CloudFront → S3
 2. User projections read/written via Next.js API routes → DynamoDB
 3. Nightly Lambda updates S3 files; CloudFront cache invalidated on update
 
@@ -319,24 +483,25 @@ These features are out of scope for active development but inform architectural 
 
 ## UI / UX Direction
 
-**Aesthetic:** Professional and modern — Underdog Fantasy as the reference point. Clean typography, dark or neutral palette, no heavy gradients or cartoon elements.
+**Aesthetic:** Professional and modern — Underdog Fantasy as the reference point. Clean typography, light neutral palette, no heavy gradients or cartoon elements.
 
-**Player Cards (Roster Page):** Headshots sourced directly from NFL CDN URLs (already in roster data — no additional asset management needed). Cards display name, team, position, and projected points if a projection exists.
+**Color palette:** White/gray-50 backgrounds, gray-200 borders, orange-500 accent (points highlight, active toggles, save button). Position badge colors: QB=blue, RB=emerald, WR=violet, TE=orange.
+
+**Player Cards (Rankings Page):** Each row displays rank, position badge, name (with orange dot if news exists), team, age, projected stats summary, and projected points. Clicking navigates to `/players/[id]`.
 
 **Player Page Layout:**
 ```
 [Headshot] [Name]  [Team] [Position] [Age]
+          [Last Season Pts] [Passing] [Rushing/Receiving]
 ─────────────────────────────────────────
-Historical Stats
-┌──────┬───┬──────────┬──────────┬─────┬──────────┬──────────┬──────────┐
-│Season│ G │ Pass Yds │ Pass TDs │ INT │ Rush Yds │ Rush TDs │ Fum Lost │
-└──────┴───┴──────────┴──────────┴─────┴──────────┴──────────┴──────────┘
+[News Card — summary, timestamp, collapsible sources]  ← if news exists
 
-2026 Projection
-[Pass TDs ___] [Pass Yds ___] [Rush Yds ___] [Rush TDs ___]
-[INT      ___] [Fum Lost ___]
-
-Projected Points: 312.4 pts          [Save Projection]
+Position Tabs → Historical Stats Table
+             → Projection Form
 ```
 
-Pre-filled default values (from most recent season) appear in muted grey. User-modified values appear in standard text.
+**Projection Form:**
+- Fields pre-filled from most recent season stats (default values shown in muted grey)
+- User-modified values shown in standard text
+- Live fantasy point total updates as user types
+- Save button persists to `localStorage`

@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getRosters, getAllDefaultPoints, getAllDefaultProjections, getTeamHistory, getTeamsData, currentNFLSeason } from '@/lib/data';
+import { getRosters, getAllDefaultPoints, getAllDefaultProjections, getTeamHistory, getTeamsData, getTeamSummaries, currentNFLSeason } from '@/lib/data';
 import NavHeader from '../_components/NavHeader';
 import TeamsView from '../teams/_components/TeamsView';
 
@@ -9,6 +9,7 @@ export default function FreeAgentsPage() {
   const defaultProjections = getAllDefaultProjections();
   const teamHistory = getTeamHistory();
   const teamsData = getTeamsData();
+  const teamSummaries = getTeamSummaries();
   const historySeason = currentNFLSeason();
 
   return (
@@ -24,6 +25,7 @@ export default function FreeAgentsPage() {
               teams={[]}
               teamHistory={teamHistory}
               teamsData={teamsData}
+              teamSummaries={teamSummaries}
               historySeason={historySeason}
               fixedTeam="FA"
             />

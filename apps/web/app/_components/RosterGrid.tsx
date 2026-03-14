@@ -21,10 +21,12 @@ export default function RosterGrid({
   players,
   defaultPoints,
   defaultProjections,
+  newsPlayerIds,
 }: {
   players: Player[];
   defaultPoints: Record<string, number>;
   defaultProjections: Record<string, PlayerProjection>;
+  newsPlayerIds?: Set<string>;
 }) {
   const { scoringSettings, twoQB } = useScoringType();
   const [activePosition, setActivePosition] = useState<FilterPosition>('ALL');
@@ -179,6 +181,7 @@ export default function RosterGrid({
                 projectedPoints={projectedPoints[player.player_id]}
                 pointsUnit="pts"
                 projection={projections[player.player_id] ?? EMPTY_PROJECTION}
+                hasNews={newsPlayerIds?.has(player.player_id)}
               />
             ))}
           </div>
