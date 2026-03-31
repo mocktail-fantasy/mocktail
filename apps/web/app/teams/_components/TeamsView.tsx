@@ -120,19 +120,20 @@ function sourceLabel(url: string): string {
 
 // ── TeamSummaryCard ───────────────────────────────────────────────────────────
 
-function StatGroup({ label, stats }: {
+function StatGroup({ label, stats, valueColor = 'var(--color-text-primary)' }: {
   label: string;
   stats: { value: string | number; unit: string }[];
+  valueColor?: string;
 }) {
   return (
     <div className="flex flex-1 items-center gap-2.5 px-4 py-3">
-      <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-gray-400">{label}</span>
+      <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-tertiary)]">{label}</span>
       <div className="flex items-baseline gap-1">
         {stats.map(({ value, unit }, i) => (
           <span key={unit} className="flex items-baseline gap-0.5">
-            {i > 0 && <span className="mx-1 text-xs text-gray-200">·</span>}
-            <span className="text-sm font-semibold tabular-nums text-gray-800">{value}</span>
-            <span className="text-[11px] text-gray-400">{unit}</span>
+            {i > 0 && <span className="mx-1 text-xs text-[var(--color-border-medium)]">·</span>}
+            <span className="text-sm font-semibold tabular-nums" style={{ color: valueColor }}>{value}</span>
+            <span className="text-[11px] text-[var(--color-text-tertiary)]">{unit}</span>
           </span>
         ))}
       </div>
@@ -187,7 +188,7 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
   const hasProj = activeTeam !== 'FA' && (proj.passYds > 0 || proj.rushYds > 0 || proj.recYds > 0);
 
   return (
-    <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div style={{ paddingBottom: '12px' }}>
       {/* Team header */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">
         {teamInfo?.team_logo_espn && (
@@ -200,7 +201,7 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
         )}
         <span
           className="text-2xl font-extrabold leading-tight tracking-tight"
-          style={teamColor ? { color: teamColor } : { color: '#6b7280' }}
+          style={teamColor ? { color: teamColor } : { color: 'var(--color-text-secondary)' }}
         >
           {teamInfo?.team_name ?? (activeTeam === 'FA' ? 'Free Agents' : activeTeam)}
         </span>
@@ -209,8 +210,8 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
           disabled={!teamSummary}
           className={`ml-auto rounded p-1 transition-colors ${
             teamSummary
-              ? 'cursor-pointer text-orange-400 hover:text-orange-500'
-              : 'cursor-default text-gray-200'
+              ? 'cursor-pointer text-[var(--color-brand)] hover:opacity-80'
+              : 'cursor-default text-[var(--color-border-medium)]'
           }`}
           aria-label="Team news"
         >
@@ -220,17 +221,17 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
         </button>
       </div>
       {newsOpen && teamSummary && (
-        <div className="border-t border-gray-100 px-4 py-3">
+        <div className="border-t border-[var(--color-border-light)] px-4 py-3">
           <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Team News</span>
-            <span className="text-xs text-gray-400">{relativeTime(teamSummary.last_updated)}</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-tertiary)]">Team News</span>
+            <span className="text-xs text-[var(--color-text-tertiary)]">{relativeTime(teamSummary.last_updated)}</span>
           </div>
-          <p className="text-sm leading-relaxed text-gray-700">{teamSummary.summary}</p>
+          <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">{teamSummary.summary}</p>
           {teamSummary.sources.length > 0 && (
             <div className="mt-2">
               <button
                 onClick={() => setShowSources((v) => !v)}
-                className="flex items-center gap-1 text-xs text-gray-400 transition-colors hover:text-gray-600"
+                className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-secondary)]"
               >
                 <svg
                   className={`h-3 w-3 transition-transform ${showSources ? 'rotate-90' : ''}`}
@@ -251,7 +252,7 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-gray-500 underline transition-colors hover:text-gray-700"
+                        className="text-xs text-[var(--color-text-tertiary)] underline transition-colors hover:text-[var(--color-text-secondary)]"
                       >
                         {sourceLabel(url)}
                       </a>
@@ -265,15 +266,17 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
       )}
       {/* 2026 projection row */}
       {hasProj && (
-        <div className="hidden sm:flex sm:items-stretch sm:divide-x sm:divide-gray-100 border-t border-gray-100">
+        <div className="hidden sm:flex sm:items-stretch sm:divide-x sm:divide-[var(--color-border-light)] border-t border-[var(--color-border-light)]">
           <div className="flex w-28 shrink-0 items-center px-4 py-2.5">
-            <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-tertiary)]" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-block', width: '2px', height: '1em', background: 'var(--color-brand)', borderRadius: '1px', flexShrink: 0 }} />
               2026 Proj
             </span>
           </div>
           {proj.passYds > 0 && (
             <StatGroup
               label="QB Passing"
+              valueColor="var(--color-brand)"
               stats={[
                 { value: proj.passYds.toLocaleString(), unit: 'yds' },
                 { value: proj.passTDs, unit: 'TD' },
@@ -284,6 +287,7 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
           {proj.recYds > 0 && (
             <StatGroup
               label="Receiving"
+              valueColor="var(--color-brand)"
               stats={[
                 { value: proj.rec, unit: 'rec' },
                 { value: proj.recYds.toLocaleString(), unit: 'yds' },
@@ -294,6 +298,7 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
           {proj.rushYds > 0 && (
             <StatGroup
               label="Rushing"
+              valueColor="var(--color-brand)"
               stats={[
                 { value: proj.rushYds.toLocaleString(), unit: 'yds' },
                 { value: proj.rushTDs, unit: 'TD' },
@@ -304,9 +309,10 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
       )}
       {/* Historical stats row */}
       {hasHist && (
-        <div className="hidden sm:flex sm:items-stretch sm:divide-x sm:divide-gray-100 border-t border-gray-100">
+        <div className="hidden sm:flex sm:items-stretch sm:divide-x sm:divide-[var(--color-border-light)] border-t border-[var(--color-border-light)]">
           <div className="flex w-28 shrink-0 items-center px-4 py-2.5">
-            <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-tertiary)]" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-block', width: '2px', height: '1em', background: 'var(--color-text-tertiary)', borderRadius: '1px', flexShrink: 0 }} />
               {historySeason} Season
             </span>
           </div>
@@ -359,7 +365,7 @@ function ProjectionPlayerRow({ player, projection, projectedPoints, rank, positi
   scoringSettings: ScoringSettings;
 }) {
   const config = PROJ_CONFIG[position] ?? PROJ_CONFIG.WR;
-  const values = config.getValues(projection ?? EMPTY_PROJ, projectedPoints ?? 0);
+  const values = config.getValues(projection ?? EMPTY_PROJ, Math.max(0, projectedPoints ?? 0));
   const histRows = historicalStats ? [{ season: historySeason, stats: historicalStats }] : [];
 
   return (
@@ -367,20 +373,23 @@ function ProjectionPlayerRow({ player, projection, projectedPoints, rank, positi
       {/* Mobile row */}
       <Link
         href={`/players/${player.player_id}?from=teams&team=${activeTeam}`}
-        className="group flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-gray-50 sm:hidden"
+        className="group flex items-center justify-between px-4 py-2.5 transition-colors sm:hidden"
+        style={{ transition: 'background 0.15s' }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = ''; }}
       >
         <div className="flex min-w-0 items-center gap-2">
-          <span className="w-5 shrink-0 text-right text-xs text-gray-400">{rank}</span>
-          <span className="truncate text-sm font-medium text-gray-900 group-hover:text-gray-700">
+          <span className="w-5 shrink-0 text-right text-xs text-[var(--color-text-tertiary)]">{rank}</span>
+          <span className="truncate text-sm font-medium text-[var(--color-text-primary)]">
             {player.player_name}
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-1.5 ml-2">
-          <span className="text-sm font-semibold tabular-nums text-orange-500">
-            {(projectedPoints ?? 0).toFixed(1)}
+          <span className={`text-sm font-semibold tabular-nums ${Math.max(0, projectedPoints ?? 0) > 0 ? 'text-[var(--color-brand)]' : 'text-[var(--color-text-tertiary)]'}`}>
+            {Math.max(0, projectedPoints ?? 0).toFixed(1)}
           </span>
-          <span className="text-xs text-gray-400">proj pts</span>
-          <svg className="h-4 w-4 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <span className="text-xs text-[var(--color-text-tertiary)]">proj pts</span>
+          <svg className="h-4 w-4 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </div>
@@ -388,26 +397,36 @@ function ProjectionPlayerRow({ player, projection, projectedPoints, rank, positi
       {/* Desktop row */}
       <Link
         href={`/players/${player.player_id}?from=teams&team=${activeTeam}`}
-        className="group hidden items-center gap-3 px-4 py-2.5 transition-colors hover:bg-gray-50 sm:flex"
+        className="hidden items-center gap-3 px-4 py-2.5 sm:flex"
+        style={{ transition: 'background 0.15s' }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = ''; }}
       >
         <div className={`grid ${config.gridCols} flex-1 items-center gap-2`}>
           <div className="flex min-w-0 items-center gap-2">
-            <span className="w-5 shrink-0 text-right text-xs text-gray-400">{rank}</span>
-            <span className="truncate text-sm font-medium text-gray-900 group-hover:text-gray-700">
+            <span className="w-5 shrink-0 text-right text-xs text-[var(--color-text-tertiary)]">{rank}</span>
+            <span className="truncate text-sm font-medium text-[var(--color-text-primary)]">
               {player.player_name}
             </span>
           </div>
-          <span className="text-left text-xs tabular-nums text-gray-500">2026</span>
-          {values.map((v, i) => (
-            <span
-              key={i}
-              className={`text-right text-xs tabular-nums ${i === values.length - 1 ? 'font-semibold text-orange-500' : 'text-gray-500'}`}
-            >
-              {typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(1)) : v}
-            </span>
-          ))}
+          <span className="text-left text-xs tabular-nums text-[var(--color-text-secondary)]">2026</span>
+          {values.map((v, i) => {
+            const isLast = i === values.length - 1;
+            const numVal = typeof v === 'number' ? v : null;
+            const colorClass = isLast
+              ? (numVal !== null && numVal > 0 ? 'text-[var(--color-brand)]' : 'text-[var(--color-text-tertiary)]')
+              : 'text-[var(--color-text-primary)]';
+            return (
+              <span
+                key={i}
+                className={`text-right text-xs tabular-nums ${isLast ? 'font-semibold' : ''} ${colorClass}`}
+              >
+                {typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(1)) : v}
+              </span>
+            );
+          })}
         </div>
-        <svg className="h-4 w-4 shrink-0 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="h-4 w-4 shrink-0 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </Link>
@@ -417,26 +436,26 @@ function ProjectionPlayerRow({ player, projection, projectedPoints, rank, positi
         return (
           <div key={season}>
             {/* Mobile history row */}
-            <div className="flex items-center justify-between bg-gray-50 px-4 py-1.5 sm:hidden">
+            <div className="flex items-center justify-between bg-[var(--color-bg-primary)] px-4 py-1 sm:hidden">
               <div className="flex items-center gap-2">
                 <span className="w-5 shrink-0" />
-                <span className="text-xs tabular-nums text-gray-400">{season}</span>
+                <span className="text-[11px] tabular-nums text-[var(--color-text-tertiary)]">{season}</span>
               </div>
-              <span className="text-xs tabular-nums text-gray-400">{histPts.toFixed(1)} pts</span>
+              <span className="text-[11px] tabular-nums text-[var(--color-text-tertiary)]">{histPts.toFixed(1)} pts</span>
             </div>
             {/* Desktop history row */}
-            <div className="hidden items-center gap-3 bg-gray-50 px-4 py-2.5 sm:flex">
+            <div className="hidden items-center gap-3 bg-[var(--color-bg-primary)] px-4 py-1 sm:flex">
               <div className={`grid ${config.gridCols} flex-1 items-center gap-2`}>
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="w-5 shrink-0" />
                 </div>
-                <span className="text-left text-xs tabular-nums text-gray-400">{season}</span>
+                <span className="text-left text-[11px] tabular-nums text-[var(--color-text-tertiary)]">{season}</span>
                 {histStatValues.map((v, i) => (
-                  <span key={i} className="text-right text-xs tabular-nums text-gray-400">
+                  <span key={i} className="text-right text-[11px] tabular-nums text-[var(--color-text-tertiary)]">
                     {typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(1)) : v}
                   </span>
                 ))}
-                <span className="text-right text-xs tabular-nums text-gray-400">
+                <span className="text-right text-[11px] tabular-nums text-[var(--color-text-tertiary)]">
                   {histPts.toFixed(1)}
                 </span>
               </div>
@@ -489,7 +508,7 @@ export default function TeamsView({
   const [collapsedPositions, setCollapsedPositions] = useState<Set<string>>(new Set());
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTeam = fixedTeam ?? searchParams.get('team') ?? teams[0] ?? '';
+  const initialTeam = fixedTeam ?? searchParams.get('team') ?? (teams.includes('BUF') ? 'BUF' : teams[0] ?? '');
   const [activeTeam, setActiveTeam] = useState(initialTeam);
 
   function selectTeam(team: string) {
@@ -588,8 +607,8 @@ export default function TeamsView({
         style={isActive && colors ? { backgroundColor: colors.primary, color: colors.onPrimary ?? '#ffffff' } : undefined}
         className={`rounded border px-2 py-0.5 text-[11px] font-bold tracking-wider transition-colors ${
           isActive
-            ? !colors ? 'border-transparent bg-gray-600 text-white' : 'border-transparent'
-            : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900'
+            ? !colors ? 'border-transparent bg-[var(--color-text-secondary)] text-[var(--color-bg-tertiary)]' : 'border-transparent'
+            : 'border-[var(--color-border-medium)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]'
         }`}
       >
         {team === 'FA' ? 'Free Agents' : team}
@@ -598,7 +617,7 @@ export default function TeamsView({
   }
 
   return (
-    <div className="flex flex-col sm:min-h-0 sm:flex-1">
+    <div className="flex flex-col">
       {!fixedTeam && (
         <>
           <div className="shrink-0 mb-5 space-y-3">
@@ -609,7 +628,7 @@ export default function TeamsView({
                 if (available.length === 0) return null;
                 return (
                   <div key={label}>
-                    <span className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-gray-600">{label}</span>
+                    <span className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-[var(--color-text-tertiary)]">{label}</span>
                     <div className="flex flex-wrap gap-0.5">
                       {available.map((t) => <TeamButton key={t} team={t} />)}
                     </div>
@@ -618,14 +637,14 @@ export default function TeamsView({
               })}
             </div>
             {/* NFC */}
-            <div className="border-t border-gray-200 pt-3">
+            <div className="border-t border-[var(--color-border-light)] pt-3">
               <div className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
                 {NFL_DIVISIONS.slice(4).map(({ label, teams: divTeams }) => {
                   const available = divTeams.filter((t) => teamsSet.has(t));
                   if (available.length === 0) return null;
                   return (
                     <div key={label}>
-                      <span className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-gray-600">{label}</span>
+                      <span className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-[var(--color-text-tertiary)]">{label}</span>
                       <div className="flex flex-wrap gap-0.5">
                         {available.map((t) => <TeamButton key={t} team={t} />)}
                       </div>
@@ -644,7 +663,7 @@ export default function TeamsView({
         </>
       )}
 
-      <div className="shrink-0">
+      <div className="card">
         <TeamSummaryCard
           key={activeTeam}
           players={teamHistory[activeTeam] ?? []}
@@ -655,27 +674,25 @@ export default function TeamsView({
           teamInfo={teamsData[activeTeam]}
           teamSummary={teamSummaries[activeTeam]}
         />
-      </div>
 
-      <div className="sm:flex-1 sm:overflow-y-auto">
-        <div className="flex flex-col gap-4">
+        <div>
           {POSITION_ORDER.map((pos) => {
             const curPlayers = byPosition.get(pos) ?? [];
             const config = PROJ_CONFIG[pos];
             const isCollapsed = collapsedPositions.has(pos);
             return (
-              <div key={`cur-${pos}`} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+              <div key={`cur-${pos}`} className="border-t border-[var(--color-border-light)]">
                 <button
                   onClick={() => togglePosition(pos)}
-                  className="flex w-full items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-2 sm:hidden"
+                  className="flex w-full items-center justify-between px-4 py-2 sm:hidden" style={{ background: 'rgba(255,255,255,0.06)', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium uppercase tracking-wide text-gray-500">Rnk</span>
-                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">{pos}</span>
-                    <span className="text-xs text-gray-400">({curPlayers.length})</span>
+                    <span className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-tertiary)]">Rnk</span>
+                    <span className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-primary)]">{pos}</span>
+                    <span className="text-xs text-[var(--color-text-tertiary)]">({curPlayers.length})</span>
                   </div>
                   <svg
-                    className={`h-4 w-4 text-gray-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+                    className={`h-4 w-4 text-[var(--color-text-tertiary)] transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
                     fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -683,27 +700,27 @@ export default function TeamsView({
                 </button>
                 <button
                   onClick={() => togglePosition(pos)}
-                  className="hidden w-full items-center gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 sm:flex"
+                  className="hidden w-full items-center gap-3 px-4 py-2 sm:flex" style={{ background: 'rgba(255,255,255,0.06)', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}
                 >
                   <div className={`grid ${config.gridCols} flex-1 items-center gap-2`}>
                     <div className="flex items-center gap-2">
-                      <span className="shrink-0 text-right text-xs font-medium uppercase tracking-wide text-gray-500">Rnk</span>
-                      <span className="text-xs font-semibold uppercase tracking-wide text-gray-700">{pos}</span>
-                      <span className="text-xs text-gray-400">({curPlayers.length})</span>
+                      <span className="shrink-0 text-right text-xs font-medium uppercase tracking-wide text-[var(--color-text-tertiary)]">Rnk</span>
+                      <span className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-primary)]">{pos}</span>
+                      <span className="text-xs text-[var(--color-text-tertiary)]">({curPlayers.length})</span>
                     </div>
                     {!isCollapsed && config.headers.map((h, i) => (
-                      <span key={h} className={`${i === 0 ? 'text-left' : 'text-right'} text-xs font-medium uppercase tracking-wide text-gray-500`}>{h}</span>
+                      <span key={h} className={`${i === 0 ? 'text-left' : 'text-right'} text-xs font-medium uppercase tracking-wide text-[var(--color-text-tertiary)]`}>{h}</span>
                     ))}
                   </div>
                   <svg
-                    className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+                    className={`h-4 w-4 shrink-0 text-[var(--color-text-tertiary)] transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
                     fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
                 {!isCollapsed && (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-[var(--color-border-light)]">
                     {curPlayers.map((player) => (
                       <ProjectionPlayerRow
                         key={player.player_id}
@@ -719,7 +736,7 @@ export default function TeamsView({
                       />
                     ))}
                     {curPlayers.length === 0 && (
-                      <p className="px-4 py-4 text-center text-sm text-gray-400">No players</p>
+                      <p className="px-4 py-4 text-center text-sm text-[var(--color-text-tertiary)]">No players</p>
                     )}
                   </div>
                 )}
@@ -731,3 +748,4 @@ export default function TeamsView({
     </div>
   );
 }
+

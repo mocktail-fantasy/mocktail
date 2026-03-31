@@ -1,19 +1,13 @@
 import Link from 'next/link';
 import { getFantasyPositions } from '@mocktail/core';
 import type { Player, PlayerProjection, Position } from '@mocktail/core';
-
-const POSITION_STYLES: Record<Position, string> = {
-  QB: 'bg-blue-50 text-blue-600',
-  RB: 'bg-emerald-50 text-emerald-600',
-  WR: 'bg-violet-50 text-violet-600',
-  TE: 'bg-orange-50 text-orange-600',
-};
+import PositionBadge from './PositionBadge';
 
 function ProjStats({ projection, position }: { projection: PlayerProjection; position: Position }) {
   const parts: string[] = [];
 
   if (position === 'QB') {
-    if (projection.passing_yards > 0) parts.push(`${projection.passing_yards.toLocaleString()} yds`);
+    if (projection.passing_yards > 0) parts.push(`${projection.passing_yards.toLocaleString()} pass yds`);
     if (projection.passing_tds > 0)   parts.push(`${projection.passing_tds} TD`);
     if (projection.interceptions > 0) parts.push(`${projection.interceptions} INT`);
   } else if (position === 'RB') {
@@ -29,21 +23,27 @@ function ProjStats({ projection, position }: { projection: PlayerProjection; pos
   if (parts.length === 0) return null;
 
   return (
-    <span className="text-xs tabular-nums text-gray-400">
+    <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontVariantNumeric: 'tabular-nums' }}>
       {parts.join(' · ')}
     </span>
   );
 }
 
 function StatChip({ value, unit = 'pts' }: { value?: number; unit?: string }) {
-  if (value == null) return <span className="text-sm font-bold tabular-nums text-orange-500">—</span>;
-  const isNegative = value < 0;
-  const valueClass = isNegative ? 'text-gray-400' : 'text-orange-500';
-  const prefix = unit === 'vorp' && !isNegative ? '+' : '';
+  const isPositive = value != null && value > 0;
+  const prefix = unit === 'vorp' && isPositive ? '+' : '';
+
   return (
-    <div className="flex items-baseline gap-0.5">
-      <span className={`text-sm font-bold tabular-nums ${valueClass}`}>{prefix}{value.toFixed(1)}</span>
-      <span className="text-[11px] text-gray-400">{unit}</span>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', justifyContent: 'flex-end' }}>
+      <span style={{
+        fontSize: '15px',
+        fontWeight: 500,
+        fontVariantNumeric: 'tabular-nums',
+        color: isPositive ? 'var(--color-brand)' : 'var(--color-text-tertiary)',
+      }}>
+        {value != null ? `${prefix}${value.toFixed(1)}` : '—'}
+      </span>
+      <span style={{ fontSize: '10px', color: 'var(--color-text-tertiary)' }}>{unit}</span>
     </div>
   );
 }
@@ -54,7 +54,6 @@ export default function PlayerCard({
   projectedPoints,
   pointsUnit,
   projection,
-  compact,
   hasNews,
 }: {
   player: Player;
@@ -62,77 +61,71 @@ export default function PlayerCard({
   projectedPoints?: number;
   pointsUnit?: string;
   projection?: PlayerProjection;
-  compact?: boolean;
   hasNews?: boolean;
 }) {
   const fantasyPositions = getFantasyPositions(player.positions);
   const primaryPosition = fantasyPositions[0];
 
-  if (compact) {
-    return (
-      <Link
-        href={`/players/${player.player_id}`}
-        className="group grid grid-cols-[32px_minmax(0,1fr)_44px_80px_16px] items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50"
-      >
-        <span className="text-sm font-medium text-gray-400">{rank}</span>
-        <div className="flex min-w-0 items-center gap-2">
-          <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-bold ${POSITION_STYLES[primaryPosition]}`}>
-            {primaryPosition}
-          </span>
-          <span className="truncate text-base font-bold text-gray-900 group-hover:text-gray-700">
-            {player.player_name}
-          </span>
-          {hasNews && <span className="h-2 w-2 flex-shrink-0 rounded-full bg-orange-400" />}
-        </div>
-        <span className="text-sm text-gray-500">{player.age ?? '—'}</span>
-        <div className="flex justify-end">
-          <StatChip value={projectedPoints} unit={pointsUnit} />
-        </div>
-        <svg className="h-4 w-4 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </Link>
-    );
-  }
-
   return (
     <Link
       href={`/players/${player.player_id}`}
-      className="group grid grid-cols-[32px_minmax(0,1fr)_80px_16px] items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50 sm:grid-cols-[32px_minmax(0,1fr)_52px_80px_44px_minmax(0,2fr)_88px_16px] sm:gap-4"
+      className="grid grid-cols-[40px_minmax(0,1fr)_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_16px] items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)]"
+      style={{ textDecoration: 'none' }}
     >
-      <span className="text-sm font-medium text-gray-400">{rank}</span>
+      {/* Rank */}
+      <span style={{
+        fontSize: rank != null && rank <= 3 ? '22px' : '16px',
+        fontWeight: rank != null && rank <= 3 ? 500 : 400,
+        color: rank != null && rank <= 3 ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+        fontVariantNumeric: 'tabular-nums',
+        textAlign: 'right',
+      }}>
+        {rank ?? '—'}
+      </span>
 
-      <div className="flex min-w-0 items-center gap-2">
-        <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-bold sm:hidden ${POSITION_STYLES[primaryPosition]}`}>
-          {primaryPosition}
-        </span>
-        <span className="truncate text-base font-bold text-gray-900 group-hover:text-gray-700">
-          {player.player_name}
-        </span>
-        {hasNews && <span className="h-2 w-2 flex-shrink-0 rounded-full bg-orange-400" />}
-      </div>
-
-      <span className="hidden text-sm text-gray-600 sm:block">{player.team}</span>
-
-      <div className="hidden flex-wrap gap-1 sm:flex">
-        {fantasyPositions.map((pos) => (
-          <span key={pos} className={`rounded px-1.5 py-0.5 text-xs font-medium ${POSITION_STYLES[pos]}`}>
-            {pos}
+      {/* Name + meta */}
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text-primary)' }}>
+            {player.player_name}
           </span>
-        ))}
+          {hasNews && (
+            <span style={{
+              display: 'inline-block',
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: 'var(--color-brand)',
+              flexShrink: 0,
+            }} />
+          )}
+        </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          marginTop: '2px',
+          fontSize: '11px',
+          color: 'var(--color-text-tertiary)',
+        }}>
+          <span>{player.team}</span>
+          <span style={{ color: 'var(--color-border-medium)' }}>·</span>
+          <PositionBadge position={primaryPosition} />
+          <span style={{ color: 'var(--color-border-medium)' }}>·</span>
+          <span>Age {player.age ?? '—'}</span>
+        </div>
       </div>
 
-      <span className="hidden text-sm text-gray-500 sm:block">{player.age ?? '—'}</span>
-
+      {/* Projected stats — hidden on mobile */}
       <span className="hidden sm:block">
         {projection && <ProjStats projection={projection} position={primaryPosition} />}
       </span>
 
-      <div className="flex justify-end">
-        <StatChip value={projectedPoints} unit={pointsUnit} />
-      </div>
+      {/* Projected points */}
+      <StatChip value={projectedPoints} unit={pointsUnit} />
 
-      <svg className="h-4 w-4 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      {/* Chevron */}
+      <svg className="h-4 w-4" style={{ color: 'var(--color-text-tertiary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
       </svg>
     </Link>

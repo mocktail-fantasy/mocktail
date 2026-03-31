@@ -1,3 +1,24 @@
+# Phase 1 — Design Tokens & Global Styles
+
+## Objective
+
+Create a single source of truth for all design values: colors, typography, spacing, and shared component primitives. No component UI is changed in this phase. The output is an updated `globals.css` and a shared `PositionBadge` component that every other phase builds on.
+
+---
+
+## Context
+
+This is a **Next.js 16 App Router + TypeScript + Tailwind CSS v4** project. Tailwind v4 is zero-config — there is no `tailwind.config.js`. Design tokens are registered via `@theme {}` in `globals.css`, and shared component classes via `@layer components {}` in the same file. All CSS is imported through `apps/web/app/globals.css`, which is already imported in `layout.tsx`.
+
+---
+
+## Step 1 — Update globals.css
+
+**File:** `apps/web/app/globals.css`
+
+Replace the entire file with:
+
+```css
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────
@@ -6,48 +27,48 @@
 ───────────────────────────────────────── */
 @theme {
   /* Brand */
-  --color-brand:        #C8F060;
-  --color-brand-hover:  #B4DC48;
-  --color-brand-subtle: rgba(200, 240, 96, 0.12);
-  --color-brand-border: rgba(200, 240, 96, 0.25);
+  --color-brand:        #E8593C;
+  --color-brand-hover:  #D14B30;
+  --color-brand-subtle: #FAECE7;
+  --color-brand-border: #F0C4B8;
 
   /* Backgrounds */
-  --color-bg-primary:   #1C1C18;
-  --color-bg-secondary: #242420;
-  --color-bg-tertiary:  #12120F;
+  --color-bg-primary:   #FFFFFF;
+  --color-bg-secondary: #F5F4F1;
+  --color-bg-tertiary:  #EEECE8;
 
   /* Text */
-  --color-text-primary:   #F0EFE8;
-  --color-text-secondary: #B4B3AC;
-  --color-text-tertiary:  #9A9992;
+  --color-text-primary:   #1A1A18;
+  --color-text-secondary: #5C5B57;
+  --color-text-tertiary:  #9C9A92;
 
   /* Borders */
-  --color-border-light:  rgba(255, 255, 255, 0.06);
-  --color-border-medium: rgba(255, 255, 255, 0.12);
-  --color-border-strong: rgba(255, 255, 255, 0.20);
+  --color-border-light:  rgba(0, 0, 0, 0.08);
+  --color-border-medium: rgba(0, 0, 0, 0.14);
+  --color-border-strong: rgba(0, 0, 0, 0.22);
 
   /* Position badge colors */
-  --color-pos-rb-bg:   rgba(200, 240, 96, 0.15);
-  --color-pos-rb-text: #C8F060;
-  --color-pos-wr-bg:   rgba(96, 168, 240, 0.15);
-  --color-pos-wr-text: #60A8F0;
-  --color-pos-qb-bg:   rgba(232, 89, 60, 0.15);
-  --color-pos-qb-text: #E8593C;
-  --color-pos-te-bg:   rgba(200, 150, 240, 0.15);
-  --color-pos-te-text: #C896F0;
+  --color-pos-rb-bg:   #EAF3DE;
+  --color-pos-rb-text: #3B6D11;
+  --color-pos-wr-bg:   #E6F1FB;
+  --color-pos-wr-text: #185FA5;
+  --color-pos-qb-bg:   #FAEEDA;
+  --color-pos-qb-text: #854F0B;
+  --color-pos-te-bg:   #FBEAF0;
+  --color-pos-te-text: #993556;
 
   /* Semantic delta colors */
-  --color-delta-up:      #C8F060;
-  --color-delta-down:    #E8593C;
-  --color-delta-up-bg:   rgba(200, 240, 96, 0.12);
-  --color-delta-down-bg: rgba(232, 89, 60, 0.12);
+  --color-delta-up:      #3B6D11;
+  --color-delta-down:    #A32D2D;
+  --color-delta-up-bg:   #EAF3DE;
+  --color-delta-down-bg: #FCEBEB;
 
   /* Projection form */
-  --color-baseline-bg:           rgba(200, 240, 96, 0.10);
-  --color-baseline-text:         #C8F060;
-  --color-baseline-border:       rgba(200, 240, 96, 0.25);
-  --color-input-modified-bg:     rgba(200, 240, 96, 0.08);
-  --color-input-modified-border: #C8F060;
+  --color-baseline-bg:           #FAEEDA;
+  --color-baseline-text:         #854F0B;
+  --color-baseline-border:       #FAC775;
+  --color-input-modified-bg:     #FAECE7;
+  --color-input-modified-border: #E8593C;
 
   /* Typography scale */
   --font-size-hero:    22px;
@@ -124,7 +145,7 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     background: var(--color-brand);
-    color: #1A1A18;
+    color: #fff;
     border: none;
     cursor: pointer;
     transition: opacity 0.15s;
@@ -201,3 +222,67 @@
   /* Tabular numbers */
   .tabular-nums { font-variant-numeric: tabular-nums; }
 }
+```
+
+No separate import step — `globals.css` is already imported in `layout.tsx`.
+
+---
+
+## Step 2 — Update layout.tsx body classes
+
+**File:** `apps/web/app/layout.tsx`
+
+Update the `<body>` to use token-based background and text colors instead of Tailwind's default gray classes:
+
+```tsx
+// Before
+className={`${geist.variable} font-[family-name:var(--font-geist)] antialiased bg-gray-50 text-gray-900 min-h-screen`}
+
+// After
+className={`${geist.variable} font-[family-name:var(--font-geist)] antialiased min-h-screen`}
+style={{ background: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)' }}
+```
+
+---
+
+## Step 3 — Create a shared PositionBadge component
+
+**File:** `apps/web/app/_components/PositionBadge.tsx`
+
+```tsx
+import type { Position } from '@mocktail/core';
+
+export default function PositionBadge({ position }: { position: Position }) {
+  return (
+    <span className={`badge-pos badge-pos-${position}`}>
+      {position}
+    </span>
+  );
+}
+```
+
+This consolidates the duplicate `POSITION_STYLES` objects currently in `PlayerCard.tsx` and the player detail page. Subsequent phases will replace those inline styles with this component.
+
+---
+
+## Verification
+
+After completing all steps:
+
+1. `pnpm turbo dev --filter=@mocktail/web` — app starts without errors
+2. App visually looks nearly identical — background shifts slightly warmer (#F5F4F1), no other visible changes
+3. `pnpm turbo type-check --filter=@mocktail/web` — no TypeScript errors
+4. DevTools → Elements: `:root` shows all `--color-*`, `--font-size-*`, etc. variables
+5. Smoke test: drop `<PositionBadge position="RB" />` into any page — renders a small green pill with "RB"
+
+---
+
+## Files Created or Modified in This Phase
+
+| File | Action |
+|---|---|
+| `apps/web/app/globals.css` | Modified — adds `@theme` block + `@layer components` |
+| `apps/web/app/layout.tsx` | Modified — updates body bg/text to token vars |
+| `apps/web/app/_components/PositionBadge.tsx` | Created |
+
+**Do not modify any page files, other layout files, or other components in this phase.**

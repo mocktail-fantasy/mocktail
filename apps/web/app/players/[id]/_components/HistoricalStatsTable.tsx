@@ -23,109 +23,98 @@ export default function HistoricalStatsTable({ seasons }: Props) {
   );
   const hasRushing = seasons.some((s) => s.rushing && (s.rushing.yards > 0 || s.rushing.tds > 0));
 
+  const thStyle: React.CSSProperties = {
+    padding: '10px 12px',
+    textAlign: 'right',
+    fontSize: '10px',
+    fontWeight: 500,
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+    color: 'var(--color-text-tertiary)',
+    whiteSpace: 'nowrap',
+  };
+  const tdStyle: React.CSSProperties = {
+    padding: '10px 12px',
+    textAlign: 'right',
+    fontSize: '13px',
+    color: 'var(--color-text-primary)',
+    fontVariantNumeric: 'tabular-nums',
+  };
+  const tdSecStyle: React.CSSProperties = { ...tdStyle, color: 'var(--color-text-secondary)' };
+
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-gray-200 bg-gray-50">
-            <th className="py-2.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Season
-            </th>
-            <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-              G
-            </th>
-            {hasPassing && (
-              <>
-                <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Pass Yds
-                </th>
-                <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Pass TDs
-                </th>
-                <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  INT
-                </th>
-              </>
-            )}
-            {hasReceiving && (
-              <>
-                <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Rec
-                </th>
-                <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Rec Yds
-                </th>
-                <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Rec TDs
-                </th>
-              </>
-            )}
-            {hasRushing && (
-              <>
-                <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Rush Yds
-                </th>
-                <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Rush TDs
-                </th>
-              </>
-            )}
-            <th className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Fum Lost
-            </th>
-            <th className="py-2.5 pl-3 pr-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Pts
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((s, i) => (
-            <tr
-              key={s.season}
-              className={`border-b border-gray-100 last:border-0 ${i % 2 !== 0 ? 'bg-gray-50/60' : ''}`}
-            >
-              <td className="py-2.5 pl-4 pr-3 font-medium text-gray-700">{s.season}</td>
-              <td className="px-3 py-2.5 text-right text-gray-500">{s.games_played}</td>
+    <div className="card" style={{ overflow: 'hidden' }}>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '0.5px solid var(--color-border-light)', background: 'var(--color-bg-secondary)' }}>
+              <th style={{ ...thStyle, textAlign: 'left', paddingLeft: '16px' }}>Season</th>
+              <th style={thStyle}>G</th>
               {hasPassing && (
                 <>
-                  <td className="px-3 py-2.5 text-right text-gray-700">
-                    {(s.passing?.yards ?? 0).toLocaleString()}
-                  </td>
-                  <td className="px-3 py-2.5 text-right text-gray-700">{s.passing?.tds ?? 0}</td>
-                  <td className="px-3 py-2.5 text-right text-gray-700">
-                    {s.passing?.interceptions ?? 0}
-                  </td>
+                  <th style={thStyle}>Pass Yds</th>
+                  <th style={thStyle}>Pass TDs</th>
+                  <th style={thStyle}>INT</th>
                 </>
               )}
               {hasReceiving && (
                 <>
-                  <td className="px-3 py-2.5 text-right text-gray-700">
-                    {s.receiving?.receptions ?? 0}
-                  </td>
-                  <td className="px-3 py-2.5 text-right text-gray-700">
-                    {(s.receiving?.yards ?? 0).toLocaleString()}
-                  </td>
-                  <td className="px-3 py-2.5 text-right text-gray-700">
-                    {s.receiving?.tds ?? 0}
-                  </td>
+                  <th style={thStyle}>Rec</th>
+                  <th style={thStyle}>Rec Yds</th>
+                  <th style={thStyle}>Rec TDs</th>
                 </>
               )}
               {hasRushing && (
                 <>
-                  <td className="px-3 py-2.5 text-right text-gray-700">
-                    {(s.rushing?.yards ?? 0).toLocaleString()}
-                  </td>
-                  <td className="px-3 py-2.5 text-right text-gray-700">{s.rushing?.tds ?? 0}</td>
+                  <th style={thStyle}>Rush Yds</th>
+                  <th style={thStyle}>Rush TDs</th>
                 </>
               )}
-              <td className="px-3 py-2.5 text-right text-gray-500">{s.fumbles_lost}</td>
-              <td className="py-2.5 pl-3 pr-4 text-right font-semibold text-orange-500">
-                {getSeasonPts(s, scoringType).toFixed(1)}
-              </td>
+              <th style={thStyle}>Fum Lost</th>
+              <th style={{ ...thStyle, paddingRight: '16px' }}>Pts</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sorted.map((s, i) => (
+              <tr
+                key={s.season}
+                className="hover:bg-[var(--color-bg-secondary)]"
+                style={{
+                  borderBottom: i < sorted.length - 1 ? '0.5px solid var(--color-border-light)' : 'none',
+                  transition: 'background 0.1s',
+                }}
+              >
+                <td style={{ ...tdStyle, textAlign: 'left', paddingLeft: '16px', fontWeight: 500 }}>{s.season}</td>
+                <td style={tdSecStyle}>{s.games_played}</td>
+                {hasPassing && (
+                  <>
+                    <td style={tdStyle}>{(s.passing?.yards ?? 0).toLocaleString()}</td>
+                    <td style={tdStyle}>{s.passing?.tds ?? 0}</td>
+                    <td style={tdStyle}>{s.passing?.interceptions ?? 0}</td>
+                  </>
+                )}
+                {hasReceiving && (
+                  <>
+                    <td style={tdStyle}>{s.receiving?.receptions ?? 0}</td>
+                    <td style={tdStyle}>{(s.receiving?.yards ?? 0).toLocaleString()}</td>
+                    <td style={tdStyle}>{s.receiving?.tds ?? 0}</td>
+                  </>
+                )}
+                {hasRushing && (
+                  <>
+                    <td style={tdStyle}>{(s.rushing?.yards ?? 0).toLocaleString()}</td>
+                    <td style={tdStyle}>{s.rushing?.tds ?? 0}</td>
+                  </>
+                )}
+                <td style={tdSecStyle}>{s.fumbles_lost}</td>
+                <td style={{ ...tdStyle, paddingRight: '16px', fontWeight: 500, color: 'var(--color-brand)' }}>
+                  {getSeasonPts(s, scoringType).toFixed(1)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

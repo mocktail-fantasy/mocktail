@@ -11253,6 +11253,274 @@
       }
     ]
   },
+  "00-0032951": {
+    "player_id": "00-0032951",
+    "player_name": "Laquon Treadwell",
+    "positions": [
+      "WR"
+    ],
+    "team": "IND",
+    "aggregate": {
+      "games_played": 7.8,
+      "fantasy_points": 17.1,
+      "fantasy_points_ppr": 29.5,
+      "fumbles": 0.1,
+      "fumbles_lost": 0.0,
+      "passing": {
+        "average_completion_percentage": 0.0,
+        "yards": 0.0,
+        "tds": 0.0,
+        "interceptions": 0.0
+      },
+      "rushing": {
+        "attempts": 0.0,
+        "yards": 0.0,
+        "tds": 0.0
+      },
+      "receiving": {
+        "receptions": 12.3,
+        "targets": 19.8,
+        "yards": 138.0,
+        "tds": 0.6
+      }
+    },
+    "seasons": [
+      {
+        "season": 2016,
+        "games_played": 4,
+        "fantasy_points": 1.5,
+        "fantasy_points_ppr": 2.5,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 1,
+          "targets": 3,
+          "yards": 15.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2017,
+        "games_played": 13,
+        "fantasy_points": 20.0,
+        "fantasy_points_ppr": 40.0,
+        "fumbles": 1,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 20,
+          "targets": 35,
+          "yards": 200.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2018,
+        "games_played": 15,
+        "fantasy_points": 36.2,
+        "fantasy_points_ppr": 71.2,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 35,
+          "targets": 53,
+          "yards": 302.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2019,
+        "games_played": 10,
+        "fantasy_points": 24.4,
+        "fantasy_points_ppr": 33.4,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 9,
+          "targets": 16,
+          "yards": 184.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2020,
+        "games_played": 4,
+        "fantasy_points": 16.9,
+        "fantasy_points_ppr": 22.9,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 6,
+          "targets": 7,
+          "yards": 49.0,
+          "tds": 2
+        }
+      },
+      {
+        "season": 2021,
+        "games_played": 12,
+        "fantasy_points": 49.4,
+        "fantasy_points_ppr": 82.4,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 33,
+          "targets": 51,
+          "yards": 434.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2022,
+        "games_played": 3,
+        "fantasy_points": 4.2,
+        "fantasy_points_ppr": 10.2,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 6,
+          "targets": 10,
+          "yards": 42.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2023,
+        "games_played": 3,
+        "fantasy_points": 1.6,
+        "fantasy_points_ppr": 2.6,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 1,
+          "targets": 3,
+          "yards": 16.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2025,
+        "games_played": 6,
+        "fantasy_points": 0.0,
+        "fantasy_points_ppr": 0.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 0,
+          "targets": 0,
+          "yards": 0.0,
+          "tds": 0
+        }
+      }
+    ]
+  },
   "00-0033009": {
     "player_id": "00-0033009",
     "player_name": "Tyler Boyd",
@@ -15355,7 +15623,7 @@
     "player_id": "00-0033357",
     "player_name": "Taysom Hill",
     "positions": [
-      "TE"
+      "QB"
     ],
     "team": "FA",
     "aggregate": {
@@ -21068,6 +21336,248 @@
           "receptions": 3,
           "targets": 5,
           "yards": 6.0,
+          "tds": 0
+        }
+      }
+    ]
+  },
+  "00-0034270": {
+    "player_id": "00-0034270",
+    "player_name": "Tyler Conklin",
+    "positions": [
+      "TE"
+    ],
+    "team": "DET",
+    "aggregate": {
+      "games_played": 11.9,
+      "fantasy_points": 41.6,
+      "fantasy_points_ppr": 75.4,
+      "fumbles": 0.6,
+      "fumbles_lost": 0.0,
+      "passing": {
+        "average_completion_percentage": 0.0,
+        "yards": 0.0,
+        "tds": 0.0,
+        "interceptions": 0.0
+      },
+      "rushing": {
+        "attempts": 0.6,
+        "yards": 0.6,
+        "tds": 0.0
+      },
+      "receiving": {
+        "receptions": 33.8,
+        "targets": 48.2,
+        "yards": 330.6,
+        "tds": 1.4
+      }
+    },
+    "seasons": [
+      {
+        "season": 2018,
+        "games_played": 4,
+        "fantasy_points": 7.7,
+        "fantasy_points_ppr": 12.7,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 5,
+          "targets": 7,
+          "yards": 77.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2019,
+        "games_played": 9,
+        "fantasy_points": 5.8,
+        "fantasy_points_ppr": 13.8,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 8,
+          "targets": 10,
+          "yards": 58.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2020,
+        "games_played": 9,
+        "fantasy_points": 25.4,
+        "fantasy_points_ppr": 44.4,
+        "fumbles": 1,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 19,
+          "targets": 26,
+          "yards": 194.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2021,
+        "games_played": 17,
+        "fantasy_points": 77.3,
+        "fantasy_points_ppr": 138.3,
+        "fumbles": 1,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 61,
+          "targets": 87,
+          "yards": 593.0,
+          "tds": 3
+        }
+      },
+      {
+        "season": 2022,
+        "games_played": 17,
+        "fantasy_points": 73.5,
+        "fantasy_points_ppr": 131.5,
+        "fumbles": 2,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 2,
+          "yards": 3.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 58,
+          "targets": 87,
+          "yards": 552.0,
+          "tds": 3
+        }
+      },
+      {
+        "season": 2023,
+        "games_played": 17,
+        "fantasy_points": 62.1,
+        "fantasy_points_ppr": 123.1,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 1,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 61,
+          "targets": 87,
+          "yards": 621.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2024,
+        "games_played": 16,
+        "fantasy_points": 70.9,
+        "fantasy_points_ppr": 121.9,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 1,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 51,
+          "targets": 72,
+          "yards": 449.0,
+          "tds": 4
+        }
+      },
+      {
+        "season": 2025,
+        "games_played": 6,
+        "fantasy_points": 10.3,
+        "fantasy_points_ppr": 17.3,
+        "fumbles": 1,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 1,
+          "yards": 2.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 7,
+          "targets": 10,
+          "yards": 101.0,
           "tds": 0
         }
       }
@@ -39307,6 +39817,196 @@
       }
     ]
   },
+  "00-0036415": {
+    "player_id": "00-0036415",
+    "player_name": "Van Jefferson",
+    "positions": [
+      "WR"
+    ],
+    "team": "WAS",
+    "aggregate": {
+      "games_played": 14.0,
+      "fantasy_points": 50.5,
+      "fantasy_points_ppr": 78.2,
+      "fumbles": 0.0,
+      "fumbles_lost": 0.0,
+      "passing": {
+        "average_completion_percentage": 0.0,
+        "yards": 0.0,
+        "tds": 0.0,
+        "interceptions": 0.0
+      },
+      "rushing": {
+        "attempts": 0.7,
+        "yards": 3.8,
+        "tds": 0.0
+      },
+      "receiving": {
+        "receptions": 27.7,
+        "targets": 49.8,
+        "yards": 371.0,
+        "tds": 2.2
+      }
+    },
+    "seasons": [
+      {
+        "season": 2020,
+        "games_played": 14,
+        "fantasy_points": 27.9,
+        "fantasy_points_ppr": 46.9,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 1,
+          "yards": -1.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 19,
+          "targets": 31,
+          "yards": 220.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2021,
+        "games_played": 17,
+        "fantasy_points": 118.2,
+        "fantasy_points_ppr": 168.2,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 2,
+          "yards": 20.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 50,
+          "targets": 89,
+          "yards": 802.0,
+          "tds": 6
+        }
+      },
+      {
+        "season": 2022,
+        "games_played": 10,
+        "fantasy_points": 54.9,
+        "fantasy_points_ppr": 78.9,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 24,
+          "targets": 44,
+          "yards": 369.0,
+          "tds": 3
+        }
+      },
+      {
+        "season": 2023,
+        "games_played": 14,
+        "fantasy_points": 21.3,
+        "fantasy_points_ppr": 41.3,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 1,
+          "yards": 4.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 20,
+          "targets": 43,
+          "yards": 209.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2024,
+        "games_played": 15,
+        "fantasy_points": 39.6,
+        "fantasy_points_ppr": 63.6,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 24,
+          "targets": 40,
+          "yards": 276.0,
+          "tds": 2
+        }
+      },
+      {
+        "season": 2025,
+        "games_played": 14,
+        "fantasy_points": 41.0,
+        "fantasy_points_ppr": 70.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 29,
+          "targets": 52,
+          "yards": 350.0,
+          "tds": 1
+        }
+      }
+    ]
+  },
   "00-0036422": {
     "player_id": "00-0036422",
     "player_name": "Adam Trautman",
@@ -41689,6 +42389,170 @@
       }
     ]
   },
+  "00-0036626": {
+    "player_id": "00-0036626",
+    "player_name": "Dyami Brown",
+    "positions": [
+      "WR"
+    ],
+    "team": "WAS",
+    "aggregate": {
+      "games_played": 12.2,
+      "fantasy_points": 26.8,
+      "fantasy_points_ppr": 42.6,
+      "fumbles": 0.4,
+      "fumbles_lost": 0.4,
+      "passing": {
+        "average_completion_percentage": 50.0,
+        "yards": 0.8,
+        "tds": 0.0,
+        "interceptions": 0.0
+      },
+      "rushing": {
+        "attempts": 2.4,
+        "yards": 13.4,
+        "tds": 0.0
+      },
+      "receiving": {
+        "receptions": 15.8,
+        "targets": 27.8,
+        "yards": 202.2,
+        "tds": 1.0
+      }
+    },
+    "seasons": [
+      {
+        "season": 2021,
+        "games_played": 10,
+        "fantasy_points": 16.1,
+        "fantasy_points_ppr": 28.1,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 1,
+          "yards": -4.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 12,
+          "targets": 25,
+          "yards": 165.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2022,
+        "games_played": 9,
+        "fantasy_points": 27.8,
+        "fantasy_points_ppr": 32.8,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 1,
+          "yards": 15.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 5,
+          "targets": 14,
+          "yards": 143.0,
+          "tds": 2
+        }
+      },
+      {
+        "season": 2023,
+        "games_played": 16,
+        "fantasy_points": 23.0,
+        "fantasy_points_ppr": 35.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 1,
+          "completions": 1,
+          "yards": 4.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 1,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 12,
+          "targets": 23,
+          "yards": 168.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2024,
+        "games_played": 15,
+        "fantasy_points": 37.4,
+        "fantasy_points_ppr": 67.4,
+        "fumbles": 1,
+        "fumbles_lost": 1,
+        "passing": {
+          "attempts": 1,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 3,
+          "yards": 26.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 30,
+          "targets": 40,
+          "yards": 308.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2025,
+        "games_played": 11,
+        "fantasy_points": 29.7,
+        "fantasy_points_ppr": 49.7,
+        "fumbles": 1,
+        "fumbles_lost": 1,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 6,
+          "yards": 30.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 20,
+          "targets": 37,
+          "yards": 227.0,
+          "tds": 1
+        }
+      }
+    ]
+  },
   "00-0036628": {
     "player_id": "00-0036628",
     "player_name": "John Bates",
@@ -42150,6 +43014,144 @@
           "receptions": 21,
           "targets": 37,
           "yards": 178.0,
+          "tds": 0
+        }
+      }
+    ]
+  },
+  "00-0036646": {
+    "player_id": "00-0036646",
+    "player_name": "Simi Fehoko",
+    "positions": [
+      "WR"
+    ],
+    "team": "ARI",
+    "aggregate": {
+      "games_played": 4.5,
+      "fantasy_points": 5.0,
+      "fantasy_points_ppr": 7.5,
+      "fumbles": 0.0,
+      "fumbles_lost": 0.0,
+      "passing": {
+        "average_completion_percentage": 0.0,
+        "yards": 0.0,
+        "tds": 0.0,
+        "interceptions": 0.0
+      },
+      "rushing": {
+        "attempts": 0.0,
+        "yards": 0.0,
+        "tds": 0.0
+      },
+      "receiving": {
+        "receptions": 2.5,
+        "targets": 5.5,
+        "yards": 34.8,
+        "tds": 0.2
+      }
+    },
+    "seasons": [
+      {
+        "season": 2022,
+        "games_played": 3,
+        "fantasy_points": 2.4,
+        "fantasy_points_ppr": 5.4,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 3,
+          "targets": 4,
+          "yards": 24.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2023,
+        "games_played": 2,
+        "fantasy_points": 6.9,
+        "fantasy_points_ppr": 7.9,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 1,
+          "targets": 2,
+          "yards": 9.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2024,
+        "games_played": 6,
+        "fantasy_points": 10.6,
+        "fantasy_points_ppr": 16.6,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 6,
+          "targets": 16,
+          "yards": 106.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2025,
+        "games_played": 7,
+        "fantasy_points": 0.0,
+        "fantasy_points_ppr": 0.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 0,
+          "targets": 0,
+          "yards": 0.0,
           "tds": 0
         }
       }
@@ -50409,6 +51411,256 @@
       }
     ]
   },
+  "00-0037292": {
+    "player_id": "00-0037292",
+    "player_name": "Andrew Ogletree",
+    "positions": [
+      "TE"
+    ],
+    "team": "IND",
+    "aggregate": {
+      "games_played": 11.3,
+      "fantasy_points": 17.4,
+      "fantasy_points_ppr": 24.8,
+      "fumbles": 0.0,
+      "fumbles_lost": 0.0,
+      "passing": {
+        "average_completion_percentage": 0.0,
+        "yards": 0.0,
+        "tds": 0.0,
+        "interceptions": 0.0
+      },
+      "rushing": {
+        "attempts": 0.0,
+        "yards": 0.0,
+        "tds": 0.0
+      },
+      "receiving": {
+        "receptions": 7.3,
+        "targets": 13.7,
+        "yards": 94.3,
+        "tds": 1.3
+      }
+    },
+    "seasons": [
+      {
+        "season": 2023,
+        "games_played": 11,
+        "fantasy_points": 26.7,
+        "fantasy_points_ppr": 35.7,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 9,
+          "targets": 21,
+          "yards": 147.0,
+          "tds": 2
+        }
+      },
+      {
+        "season": 2024,
+        "games_played": 12,
+        "fantasy_points": 16.9,
+        "fantasy_points_ppr": 25.9,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 9,
+          "targets": 14,
+          "yards": 109.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2025,
+        "games_played": 11,
+        "fantasy_points": 8.7,
+        "fantasy_points_ppr": 12.7,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 4,
+          "targets": 6,
+          "yards": 27.0,
+          "tds": 1
+        }
+      }
+    ]
+  },
+  "00-0037311": {
+    "player_id": "00-0037311",
+    "player_name": "Ko Kieft",
+    "positions": [
+      "TE"
+    ],
+    "team": "TB",
+    "aggregate": {
+      "games_played": 7.0,
+      "fantasy_points": 5.0,
+      "fantasy_points_ppr": 7.0,
+      "fumbles": 0.0,
+      "fumbles_lost": 0.0,
+      "passing": {
+        "average_completion_percentage": 0.0,
+        "yards": 0.0,
+        "tds": 0.0,
+        "interceptions": 0.0
+      },
+      "rushing": {
+        "attempts": 0.0,
+        "yards": 0.0,
+        "tds": 0.0
+      },
+      "receiving": {
+        "receptions": 2.0,
+        "targets": 3.8,
+        "yards": 20.5,
+        "tds": 0.5
+      }
+    },
+    "seasons": [
+      {
+        "season": 2022,
+        "games_played": 13,
+        "fantasy_points": 14.0,
+        "fantasy_points_ppr": 21.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 7,
+          "targets": 10,
+          "yards": 80.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2023,
+        "games_played": 10,
+        "fantasy_points": 6.2,
+        "fantasy_points_ppr": 7.2,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 1,
+          "targets": 5,
+          "yards": 2.0,
+          "tds": 1
+        }
+      },
+      {
+        "season": 2024,
+        "games_played": 3,
+        "fantasy_points": 0.0,
+        "fantasy_points_ppr": 0.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 0,
+          "targets": 0,
+          "yards": 0.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2025,
+        "games_played": 2,
+        "fantasy_points": 0.0,
+        "fantasy_points_ppr": 0.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 0,
+          "targets": 0,
+          "yards": 0.0,
+          "tds": 0
+        }
+      }
+    ]
+  },
   "00-0037324": {
     "player_id": "00-0037324",
     "player_name": "Chris Oladokun",
@@ -51853,7 +53105,7 @@
     "positions": [
       "WR"
     ],
-    "team": "FA",
+    "team": "MIA",
     "aggregate": {
       "games_played": 11.5,
       "fantasy_points": 42.8,
@@ -61279,6 +62531,92 @@
       }
     ]
   },
+  "00-0038735": {
+    "player_id": "00-0038735",
+    "player_name": "Princeton Fant",
+    "positions": [
+      "TE"
+    ],
+    "team": "DAL",
+    "aggregate": {
+      "games_played": 1.0,
+      "fantasy_points": 0.0,
+      "fantasy_points_ppr": 0.0,
+      "fumbles": 0.0,
+      "fumbles_lost": 0.0,
+      "passing": {
+        "average_completion_percentage": 0.0,
+        "yards": 0.0,
+        "tds": 0.0,
+        "interceptions": 0.0
+      },
+      "rushing": {
+        "attempts": 0.0,
+        "yards": 0.0,
+        "tds": 0.0
+      },
+      "receiving": {
+        "receptions": 0.0,
+        "targets": 0.0,
+        "yards": 0.0,
+        "tds": 0.0
+      }
+    },
+    "seasons": [
+      {
+        "season": 2024,
+        "games_played": 1,
+        "fantasy_points": 0.0,
+        "fantasy_points_ppr": 0.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 0,
+          "targets": 0,
+          "yards": 0.0,
+          "tds": 0
+        }
+      },
+      {
+        "season": 2025,
+        "games_played": 1,
+        "fantasy_points": 0.0,
+        "fantasy_points_ppr": 0.0,
+        "fumbles": 0,
+        "fumbles_lost": 0,
+        "passing": {
+          "attempts": 0,
+          "completions": 0,
+          "yards": 0.0,
+          "tds": 0,
+          "interceptions": 0
+        },
+        "rushing": {
+          "attempts": 0,
+          "yards": 0.0,
+          "tds": 0
+        },
+        "receiving": {
+          "receptions": 0,
+          "targets": 0,
+          "yards": 0.0,
+          "tds": 0
+        }
+      }
+    ]
+  },
   "00-0038752": {
     "player_id": "00-0038752",
     "player_name": "Jake Bobo",
@@ -61509,7 +62847,7 @@
     "positions": [
       "RB"
     ],
-    "team": "FA",
+    "team": "DEN",
     "aggregate": {
       "games_played": 13.7,
       "fantasy_points": 58.5,

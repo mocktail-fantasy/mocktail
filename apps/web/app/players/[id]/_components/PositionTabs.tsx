@@ -6,25 +6,29 @@ interface Props {
   playerId: string;
   fantasyPositions: Position[];
   seasons: SeasonStats[];
+  season: number;
 }
 
-export default function PositionTabs({ playerId, fantasyPositions, seasons }: Props) {
+const labelStyle: React.CSSProperties = {
+  fontSize: '10px',
+  fontWeight: 500,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  color: 'var(--color-text-tertiary)',
+  marginBottom: '8px',
+  display: 'block',
+};
+
+export default function PositionTabs({ playerId, fantasyPositions, seasons, season }: Props) {
   return (
-    <div>
-      <section className="mb-8">
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-          2026 Projection
-        </h2>
-        <ProjectionForm playerId={playerId} positions={fantasyPositions} seasons={seasons} />
-      </section>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <ProjectionForm playerId={playerId} positions={fantasyPositions} seasons={seasons} season={season} />
 
       {seasons.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-            Historical Stats
-          </h2>
+        <div>
+          <span style={labelStyle}>Historical Stats</span>
           <HistoricalStatsTable seasons={seasons} />
-        </section>
+        </div>
       )}
     </div>
   );

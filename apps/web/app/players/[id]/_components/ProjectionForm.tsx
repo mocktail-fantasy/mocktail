@@ -38,16 +38,34 @@ interface FieldProps {
 
 function StatInput({ label, fieldKey, value, isDefault, onChange }: FieldProps) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</label>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <label style={{
+        fontSize: '10px',
+        color: 'var(--color-text-tertiary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+        fontWeight: 500,
+      }}>
+        {label}
+      </label>
       <input
         type="number"
         min="0"
         value={value}
         onChange={(e) => onChange(fieldKey, e.target.value)}
-        className={`w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm transition-colors focus:border-orange-400 focus:outline-none ${
-          isDefault ? 'text-gray-400' : 'text-gray-900'
-        }`}
+        style={{
+          width: '100%',
+          borderRadius: '6px',
+          padding: '7px 10px',
+          fontSize: '13px',
+          fontFamily: 'inherit',
+          fontVariantNumeric: 'tabular-nums',
+          outline: 'none',
+          transition: 'border-color 0.15s, background 0.15s',
+          border: `0.5px solid ${isDefault ? 'var(--color-border-medium)' : 'var(--color-input-modified-border)'}`,
+          background: isDefault ? 'var(--color-bg-primary)' : 'var(--color-input-modified-bg)',
+          color: isDefault ? 'var(--color-text-secondary)' : 'var(--color-text-primary)',
+        }}
       />
     </div>
   );
@@ -63,7 +81,16 @@ function Section({ title, children, cols = 3 }: SectionProps) {
   const colClass = cols === 2 ? 'grid-cols-2' : cols === 1 ? 'grid-cols-1' : 'grid-cols-3';
   return (
     <div>
-      <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">{title}</p>
+      <p style={{
+        fontSize: '10px',
+        fontWeight: 500,
+        textTransform: 'uppercase',
+        letterSpacing: '0.07em',
+        color: 'var(--color-text-tertiary)',
+        marginBottom: '10px',
+      }}>
+        {title}
+      </p>
       <div className={`grid gap-3 ${colClass}`}>{children}</div>
     </div>
   );
@@ -75,6 +102,7 @@ interface Props {
   playerId: string;
   positions: Position[];
   seasons: SeasonStats[];
+  season: number;
 }
 
 const SCORING_LABELS: Record<string, string> = {
@@ -83,7 +111,7 @@ const SCORING_LABELS: Record<string, string> = {
   ppr: 'PPR',
 };
 
-export default function ProjectionForm({ playerId, positions, seasons }: Props) {
+export default function ProjectionForm({ playerId, positions, seasons, season }: Props) {
   const { scoringType, scoringSettings } = useScoringType();
   const hasQB = positions.includes('QB');
   const hasSkill = positions.some((p) => p === 'RB' || p === 'WR' || p === 'TE');
@@ -94,7 +122,6 @@ export default function ProjectionForm({ playerId, positions, seasons }: Props) 
   const [values, setValues] = useState<Record<string, string>>(defaultStrings);
   const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle');
 
-  // Load from localStorage after mount to avoid SSR mismatch
   useEffect(() => {
     const raw = localStorage.getItem(`projection_${playerId}`);
     if (raw) {
@@ -136,51 +163,92 @@ export default function ProjectionForm({ playerId, positions, seasons }: Props) 
   );
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="space-y-6">
-        {hasQB && (
-          <Section title="Passing" cols={3}>
-            {field('Pass TDs', 'passing_tds')}
-            {field('Pass Yards', 'passing_yards')}
-            {field('INT', 'interceptions')}
-          </Section>
-        )}
-
-        {hasSkill && (
-          <Section title="Receiving" cols={3}>
-            {field('Receptions', 'receptions')}
-            {field('Rec Yards', 'receiving_yards')}
-            {field('Rec TDs', 'receiving_tds')}
-          </Section>
-        )}
-
-        <Section title="Rushing" cols={2}>
-          {field('Rush TDs', 'rushing_tds')}
-          {field('Rush Yards', 'rushing_yards')}
-        </Section>
-
-        <Section title="Misc" cols={3}>
-          {field('Fumbles Lost', 'fumbles_lost')}
-        </Section>
+    <div className="card">
+      {/* Header */}
+      <div style={{
+        padding: '12px 16px',
+        borderBottom: '0.5px solid var(--color-border-light)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: 'var(--color-bg-secondary)',
+      }}>
+        <div>
+          <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-text-primary)' }}>
+            Your {season} projection
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: '2px' }}>
+            Edit any stat to update your ranking
+          </div>
+        </div>
+        <span style={{
+          fontSize: '11px',
+          fontWeight: 500,
+          padding: '3px 8px',
+          borderRadius: '4px',
+          background: 'var(--color-baseline-bg)',
+          color: 'var(--color-baseline-text)',
+          border: '0.5px solid var(--color-baseline-border)',
+          whiteSpace: 'nowrap',
+        }}>
+          Baseline: {season - 1} season
+        </span>
       </div>
 
-      <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-5">
-        <div>
-          <p className="text-xs text-gray-500">{SCORING_LABELS[scoringType] ?? 'Standard'} Scoring</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {fantasyPoints.toFixed(1)}{' '}
-            <span className="text-sm font-normal text-orange-500">pts</span>
-          </p>
+      {/* Body */}
+      <div style={{ padding: '16px' }}>
+        <div className="space-y-6">
+          {hasQB && (
+            <Section title="Passing" cols={3}>
+              {field('Pass TDs', 'passing_tds')}
+              {field('Pass Yards', 'passing_yards')}
+              {field('INT', 'interceptions')}
+            </Section>
+          )}
+
+          {hasSkill && (
+            <Section title="Receiving" cols={3}>
+              {field('Receptions', 'receptions')}
+              {field('Rec Yards', 'receiving_yards')}
+              {field('Rec TDs', 'receiving_tds')}
+            </Section>
+          )}
+
+          <Section title="Rushing" cols={2}>
+            {field('Rush TDs', 'rushing_tds')}
+            {field('Rush Yards', 'rushing_yards')}
+          </Section>
+
+          <Section title="Misc" cols={3}>
+            {field('Fumbles Lost', 'fumbles_lost')}
+          </Section>
         </div>
-        <button
-          onClick={handleSave}
-          className={`rounded-lg px-5 py-2 text-sm font-semibold transition-colors ${
-            saveState === 'saved'
-              ? 'border border-emerald-200 bg-emerald-50 text-emerald-600'
-              : 'bg-orange-500 text-white hover:bg-orange-600'
-          }`}
-        >
-          {saveState === 'saved' ? 'Saved ✓' : 'Save Projection'}
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        padding: '12px 16px',
+        borderTop: '0.5px solid var(--color-border-light)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: 'var(--color-bg-secondary)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+          <span style={{
+            fontSize: '22px',
+            fontWeight: 500,
+            color: 'var(--color-brand)',
+            fontVariantNumeric: 'tabular-nums',
+          }}>
+            {fantasyPoints.toFixed(1)}
+          </span>
+          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+            pts · {SCORING_LABELS[scoringType] ?? 'Standard'}
+          </span>
+        </div>
+        <button className="btn-brand" onClick={handleSave}>
+          {saveState === 'saved' ? 'Saved ✓' : 'Save projection'}
         </button>
       </div>
     </div>

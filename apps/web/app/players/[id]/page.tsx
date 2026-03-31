@@ -1,19 +1,31 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getPlayer, getPlayerHistory, getPlayerSummaries } from '@/lib/data';
+import { getPlayer, getPlayerHistory, getPlayerSummaries, currentNFLSeason } from '@/lib/data';
 import { getFantasyPositions, getDefaultProjection } from '@mocktail/core';
 import type { Position } from '@mocktail/core';
 import PositionTabs from './_components/PositionTabs';
 import PlayerAvatar from './_components/PlayerAvatar';
 import LastSeasonPts from './_components/LastSeasonPts';
 import NewsCard from './_components/NewsCard';
+import LogoBlock from '@/app/_components/LogoBlock';
+import PositionBadge from '@/app/_components/PositionBadge';
 
-const POSITION_STYLES: Record<Position, string> = {
-  QB: 'bg-blue-50 text-blue-600',
-  RB: 'bg-emerald-50 text-emerald-600',
-  WR: 'bg-violet-50 text-violet-600',
-  TE: 'bg-orange-50 text-orange-600',
-};
+function StatCell({ value, label }: { value: string; label: string }) {
+  return (
+    <div style={{ flex: 1, padding: '12px 8px', textAlign: 'center' }}>
+      <div style={{ fontSize: '17px', fontWeight: 500, color: 'var(--color-text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+        {value}
+      </div>
+      <div style={{ fontSize: '10px', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '2px' }}>
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function StatCellDivider() {
+  return <div style={{ width: '0.5px', background: 'var(--color-border-light)', alignSelf: 'stretch', margin: '8px 0' }} />;
+}
 
 export default async function PlayerPage({
   params,
@@ -34,84 +46,128 @@ export default async function PlayerPage({
   const fantasyPositions = getFantasyPositions(player.positions);
   const primaryPosition = fantasyPositions[0];
   const defaultProj = getDefaultProjection(seasons);
+  const season = currentNFLSeason();
 
   const back =
     sp.from === 'teams'
       ? { href: sp.team ? `/teams?team=${sp.team}` : '/teams', label: 'Back to Teams' }
       : { href: '/', label: 'Back to Roster' };
 
+  // Build stats bar cells based on position
+  type Cell = { value: string; label: string };
+  const statCells: Cell[] = [];
+  if (primaryPosition === 'QB') {
+    if (defaultProj.passing_yards > 0) statCells.push({ value: defaultProj.passing_yards.toLocaleString(), label: 'Pass Yds' });
+    if (defaultProj.passing_tds > 0)   statCells.push({ value: String(defaultProj.passing_tds), label: 'Pass TDs' });
+    if (defaultProj.interceptions > 0) statCells.push({ value: String(defaultProj.interceptions), label: 'INT' });
+    if (defaultProj.rushing_yards > 0) statCells.push({ value: defaultProj.rushing_yards.toLocaleString(), label: 'Rush Yds' });
+    if (defaultProj.rushing_tds > 0)   statCells.push({ value: String(defaultProj.rushing_tds), label: 'Rush TDs' });
+  } else if (primaryPosition === 'RB') {
+    if (defaultProj.rushing_yards > 0) statCells.push({ value: defaultProj.rushing_yards.toLocaleString(), label: 'Rush Yds' });
+    if (defaultProj.rushing_tds > 0)   statCells.push({ value: String(defaultProj.rushing_tds), label: 'Rush TDs' });
+    if (defaultProj.receptions > 0)    statCells.push({ value: String(defaultProj.receptions), label: 'Rec' });
+    if (defaultProj.receiving_yards > 0) statCells.push({ value: defaultProj.receiving_yards.toLocaleString(), label: 'Rec Yds' });
+    if (defaultProj.receiving_tds > 0) statCells.push({ value: String(defaultProj.receiving_tds), label: 'Rec TDs' });
+  } else {
+    if (defaultProj.receptions > 0)      statCells.push({ value: String(defaultProj.receptions), label: 'Rec' });
+    if (defaultProj.receiving_yards > 0) statCells.push({ value: defaultProj.receiving_yards.toLocaleString(), label: 'Rec Yds' });
+    if (defaultProj.receiving_tds > 0)   statCells.push({ value: String(defaultProj.receiving_tds), label: 'Rec TDs' });
+  }
+
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white px-8 py-6 shadow-sm">
-        <Link href={back.href} className="text-base text-gray-500 transition-colors hover:text-gray-900">
-          ← {back.label}
-        </Link>
+    <main style={{ minHeight: '100vh', background: 'var(--color-bg-secondary)' }}>
+      {/* Minimal branded header — logo + tagline only */}
+      <header style={{
+        background: 'var(--color-bg-primary)',
+        borderBottom: '0.5px solid var(--color-border-light)',
+        padding: '0 20px',
+        height: '52px',
+        display: 'flex',
+        alignItems: 'center',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+      }}>
+        <LogoBlock />
       </header>
 
-      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-        {/* Player header */}
-        <div className="mb-8 flex items-center gap-6">
-          <PlayerAvatar
-            name={player.player_name}
-            headshot={player.headshot}
-            primaryPosition={fantasyPositions[0]}
-          />
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{player.player_name}</h1>
-            <div className="mt-2 flex items-center gap-3">
-              <span className="text-base text-gray-500">{player.team}</span>
-              {fantasyPositions.map((pos) => (
-                <span
-                  key={pos}
-                  className={`rounded px-2.5 py-0.5 text-sm font-medium ${POSITION_STYLES[pos]}`}
-                >
-                  {pos}
-                </span>
-              ))}
-              <span className="text-base text-gray-400">Age {player.age}</span>
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {/* Back link */}
+        <div>
+          <Link
+            href={back.href}
+            style={{ fontSize: '13px', color: 'var(--color-text-secondary)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+          >
+            ← {back.label}
+          </Link>
+        </div>
+
+        {/* Hero card */}
+        <div className="card">
+          {/* Header zone */}
+          <div style={{
+            padding: '20px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '14px',
+            borderBottom: statCells.length > 0 ? '0.5px solid var(--color-border-light)' : 'none',
+          }}>
+            <PlayerAvatar
+              name={player.player_name}
+              headshot={player.headshot}
+              primaryPosition={primaryPosition}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '20px', fontWeight: 500, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
+                {player.player_name}
+              </div>
+              <div style={{
+                fontSize: '13px',
+                color: 'var(--color-text-secondary)',
+                marginTop: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                flexWrap: 'wrap',
+              }}>
+                <span>{player.team}</span>
+                <span style={{ color: 'var(--color-border-medium)' }}>·</span>
+                {fantasyPositions.map((pos: Position) => (
+                  <PositionBadge key={pos} position={pos} />
+                ))}
+                <span style={{ color: 'var(--color-border-medium)' }}>·</span>
+                <span>Age {player.age}</span>
+              </div>
             </div>
             {seasons.length > 0 && (
-              <div className="mt-3 flex items-stretch divide-x divide-gray-200">
+              <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
                 <LastSeasonPts seasons={seasons} />
-                {primaryPosition === 'QB' && defaultProj.passing_yards > 0 && (
-                  <div className="flex flex-col px-4">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Passing</span>
-                    <span className="text-sm font-bold tabular-nums text-gray-900">
-                      {defaultProj.passing_yards.toLocaleString()} yds · {defaultProj.passing_tds} TD
-                    </span>
-                  </div>
-                )}
-                {(primaryPosition === 'QB' || primaryPosition === 'RB') && defaultProj.rushing_yards > 0 && (
-                  <div className="flex flex-col px-4">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Rushing</span>
-                    <span className="text-sm font-bold tabular-nums text-gray-900">
-                      {defaultProj.rushing_yards.toLocaleString()} yds · {defaultProj.rushing_tds} TD
-                    </span>
-                  </div>
-                )}
-                {(primaryPosition === 'WR' || primaryPosition === 'TE' || primaryPosition === 'RB') && defaultProj.receiving_yards > 0 && (
-                  <div className="flex flex-col px-4">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Receiving</span>
-                    <span className="text-sm font-bold tabular-nums text-gray-900">
-                      {defaultProj.receptions} rec · {defaultProj.receiving_yards.toLocaleString()} yds · {defaultProj.receiving_tds} TD
-                    </span>
-                  </div>
-                )}
               </div>
             )}
           </div>
+
+          {/* Stats bar zone */}
+          {statCells.length > 0 && (
+            <div style={{ display: 'flex', overflowX: 'auto' }}>
+              {statCells.map((cell, i) => (
+                <div key={cell.label} style={{ display: 'flex', flex: 1 }}>
+                  {i > 0 && <StatCellDivider />}
+                  <StatCell value={cell.value} label={cell.label} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {playerSummary && (
-          <div className="mb-6">
-            <NewsCard summary={playerSummary} />
-          </div>
-        )}
+        {/* News card */}
+        {playerSummary && <NewsCard summary={playerSummary} />}
 
+        {/* Projection form + historical stats */}
         <PositionTabs
           playerId={player.player_id}
           fantasyPositions={fantasyPositions}
           seasons={seasons}
+          season={season}
         />
       </div>
     </main>

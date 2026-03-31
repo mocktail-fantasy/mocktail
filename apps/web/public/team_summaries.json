@@ -1,78 +1,90 @@
 {
   "ARI": {
-    "summary": "The Arizona Cardinals released QB Kyler Murray, who subsequently signed with the Vikings. RB James Conner agreed to a revised contract to remain with the Cardinals in 2026. According to reports, Jacoby Brissett will be the Cardinals' starting QB for 2026, with Gardner Minshew as his backup.",
-    "last_updated": "2026-03-13T15:08:52",
+    "summary": "Kyler Murray was released by the Cardinals and signed a one-year deal with the Vikings. Jacoby Brissett will serve as the starting QB for Arizona in 2026, with Gardner Minshew signed on a 1-year, $8.25M deal as his backup. James Connor agreed to a revised contract to remain with the Cardinals in 2026. Greg Dortch departed, signing a one-year deal with the Lions.",
+    "last_updated": "2026-03-31T12:16:14",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rk1b75/kyler_murray_to_officially_be_released_by_the/",
       "https://www.reddit.com/r/DynastyFF/comments/1ro9c30/pelissero_james_connor_agrees_to_revised_contract/",
       "https://www.reddit.com/r/DynastyFF/comments/1ronsjk/woelfel_it_appears_the_arizona_cardinals_have/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rpch8m/breaking_news_the_arizona_cardinals_have_signed/",
       "https://www.reddit.com/r/DynastyFF/comments/1rpctnp/john_gambadoro_jacoby_brissett_will_be_the/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rs586b/former_cardinals_qb_kyler_murray_is_signing_a/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rr5cdo/schefter_the_arizona_cardinals_officially_have/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rs586b/former_cardinals_qb_kyler_murray_is_signing_a/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rxgppp/pelissero_former_cardinals_wr_greg_dortch_is/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s1pmaa/nfl_draftkings_vegas_has_the_jets_and_cardinals/"
     ]
   },
   "ATL": {
-    "summary": "The Falcons are planning to release WR Darnell Mooney, freeing cap space despite his $18.4M cap hit. GM stated that newly acquired Tua Tagovailoa will compete with Michael Penix for the starting quarterback job.",
-    "last_updated": "2026-03-13T17:20:28",
+    "summary": "Tua Tagovailoa signed a one-year deal with the Falcons and will compete with Michael Penix for the starting quarterback job. Brian Robinson Jr. signed with Atlanta, forming a backfield duo with Bijan Robinson. Darnell Mooney was released and is expected to sign with the Giants on a one-year deal worth up to $10 million.",
+    "last_updated": "2026-03-31T12:16:18",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rlhs5k/the_falcons_are_planning_to_release_wr_darnell/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rstbap/falcons_gm_tagovailoa_to_compete_with_penix_for/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rpbxz8/espn_sources_former_dolphins_qb_tua_tagovailoa/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rstbap/falcons_gm_tagovailoa_to_compete_with_penix_for/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rtw03b/falcons_fa_wr_darnell_mooney_one_of_the_top/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s2kpyj/meirov_the_falcons_are_signing_veteran_rb_brian/"
     ]
   },
   "BAL": {
-    "summary": "TE Isaiah Likely departed Baltimore to sign a 3-year, $40M deal with the Giants. RB Keaton Mitchell left the Ravens to sign a two-year, $9.25M contract with the Chargers.",
-    "last_updated": "2026-03-13T15:08:57",
+    "summary": "Isaiah Likely departed in free agency, signing a 3-year, $40M deal with the Giants. Keaton Mitchell signed with the Chargers on a two-year, $9.25M deal. Free agent TE David Njoku visited with the Ravens.",
+    "last_updated": "2026-03-31T12:16:22",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rp5m16/breaking_the_giants_are_signing_former_ravens_te/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rroctk/former_ravens_rb_keaton_mitchell_is_signing_with/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rpb135/the_ravens_arent_tendering_rb_keaton_mitchell_he/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rroctk/former_ravens_rb_keaton_mitchell_is_signing_with/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rwni4b/schefter_free_agent_te_david_njoku_visited_today/"
     ]
   },
   "BUF": {
-    "summary": "The Bills acquired WR DJ Moore in a trade from the Bears, adding a new target for Josh Allen.",
-    "last_updated": "2026-03-13T15:08:59",
+    "summary": "The Bills acquired WR DJ Moore via trade from the Bears. TE Dawson Knox re-signed with Buffalo on a three-year deal.",
+    "last_updated": "2026-03-31T12:16:25",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rlmi6f/jordan_schultz_breaking_the_bears_are_trading/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rlmi6f/jordan_schultz_breaking_the_bears_are_trading/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rq06vo/pelissero_the_bills_have_agreed_to_terms_with_te/"
+    ]
+  },
+  "CAR": {
+    "summary": "AJ Dillon signed a 1-year deal with the Panthers. Andy Dalton was traded to the Philadelphia Eagles in exchange for a 2027 7th-round pick.",
+    "last_updated": "2026-03-31T12:16:29",
+    "sources": [
+      "https://www.reddit.com/r/DynastyFF/comments/1rxabni/schultz_aj_dillon_to_sign_a_1year_deal_with_the/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rxdmvp/news_the_panthers_are_trading_veteran_qb_andy/"
     ]
   },
   "CHI": {
-    "summary": "The Bears traded wide receiver DJ Moore to the Bills.",
-    "last_updated": "2026-03-13T15:09:01",
+    "summary": "DJ Moore has been traded from the Bears to the Bills.",
+    "last_updated": "2026-03-31T12:16:34",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rlmi6f/jordan_schultz_breaking_the_bears_are_trading/"
     ]
   },
-  "CLE": {
-    "summary": "RB Quinshon Judkins is out of his boot and expected to be ready for training camp, per GM Andrew Berry.",
-    "last_updated": "2026-03-13T15:09:03",
+  "CIN": {
+    "summary": "Joe Flacco signed a 1-year, $6M deal with the Bengals, with up to $3M in incentives.",
+    "last_updated": "2026-03-31T12:16:37",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rdqm4f/browns_rb_quinshon_judkins_is_out_of_his_boot_and/"
-    ]
-  },
-  "DAL": {
-    "summary": "The Cowboys signed RB Javonte Williams to a 3-year, $24M contract extension following his breakout season.",
-    "last_updated": "2026-03-13T15:09:05",
-    "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rb3903/the_cowboys_and_standout_rb_javonte_williams_have/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rgqllo/nfl_networks_ian_rapoport_reports_he_doesnt/"
+      "https://www.reddit.com/r/DynastyFF/comments/1s2s0hc/rapoport_the_bengals_are_signing_qb_joe_flacco_to/"
     ]
   },
   "DEN": {
-    "summary": "RB J.K. Dobbins signed a 2-year deal with the Broncos. RB Jaleel McLaughlin re-signed on a 1-year deal.",
-    "last_updated": "2026-03-13T17:20:30",
+    "summary": "JK Dobbins signed a 2-year deal with the Broncos, and Jaleel McLaughlin agreed to a 1-year deal to return. The Broncos acquired WR Jaylen Waddle and a 4th-round pick from Miami in exchange for a 1st-round pick and late 3rd and 4th-round picks.",
+    "last_updated": "2026-03-31T12:16:43",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rpa1sj/breaking_news_jk_dobbins_to_sign_a_2year_deal/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rsta39/the_broncos_have_agreed_to_terms_to_bring_back/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rsta39/the_broncos_have_agreed_to_terms_to_bring_back/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rw9bd3/broncos_are_trading_for_miami_wr_jaylen_waddle/"
     ]
   },
   "DET": {
-    "summary": "The Lions signed RB Isiah Pacheco.",
-    "last_updated": "2026-03-13T15:09:09",
+    "summary": "Isiah Pacheco signed with the Detroit Lions. Greg Dortch signed a one-year deal with the Lions, reuniting with new offensive coordinator Drew Petzing.",
+    "last_updated": "2026-03-31T12:16:47",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rq2qu1/the_lions_are_signing_rb_isiah_pacheco_tom/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rq2qu1/the_lions_are_signing_rb_isiah_pacheco_tom/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rxgppp/pelissero_former_cardinals_wr_greg_dortch_is/"
     ]
   },
   "GB": {
-    "summary": "QB Malik Willis signed with the Dolphins on a 3-year, $67.5M deal, leaving the Packers without their backup quarterback. WR Romeo Doubs signed with the Patriots. RB Emanuel Wilson signed with the Seahawks on a 1-year deal worth up to $2.1M.",
-    "last_updated": "2026-03-13T15:09:12",
+    "summary": "Malik Willis departed Green Bay by signing a 3-year, $67.5M deal with the Dolphins. Romeo Doubs left the Packers to sign with the Patriots. Emanuel Wilson signed a 1-year deal worth up to $2.1M with the Seahawks.",
+    "last_updated": "2026-03-31T12:16:51",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1ronsjk/woelfel_it_appears_the_arizona_cardinals_have/",
       "https://www.reddit.com/r/DynastyFF/comments/1rp5jxe/rapoport_the_dolphins_are_signing_packers_qb/",
@@ -81,26 +93,31 @@
     ]
   },
   "HOU": {
-    "summary": "The Texans released RB Joe Mixon and acquired RB David Montgomery via trade.",
-    "last_updated": "2026-03-13T15:09:15",
+    "summary": "The Texans acquired RB David Montgomery via trade and released RB Joe Mixon. TE Dalton Schultz signed a one-year extension worth $12.6M with the Texans.",
+    "last_updated": "2026-03-31T12:16:55",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rduy1n/its_amazing_nick_caserio_said_today_he_thinks_joe/",
       "https://www.reddit.com/r/DynastyFF/comments/1riwpsm/pelissero_david_montgomery_traded_to_the_texans/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rmpgea/source_texans_released_rb_joe_mixon/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rmpgea/source_texans_released_rb_joe_mixon/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rmt8ck/ian_rapoport_the_texans_and_te_dalton_schultz/",
+      "https://www.reddit.com/r/DynastyFF/comments/1ry4nvj/adam_schefter_eagles_reached_agreement_with/"
     ]
   },
   "IND": {
-    "summary": "The Colts have given quarterback Anthony Richardson permission to seek a trade. The Colts signed quarterback Daniel Jones to a 2-year, $88M deal (up to $100M with incentives, $60M guaranteed) after placing the transition tag on him.",
-    "last_updated": "2026-03-13T15:09:17",
+    "summary": "Alec Pierce re-signed with the Colts on a four-year, $116 million deal. Daniel Jones finalized a two-year, $88 million contract with the Colts, worth up to $100 million with incentives and including $60 million guaranteed. Laquon Treadwell was re-signed by the Colts.",
+    "last_updated": "2026-03-31T12:17:00",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rfgqnf/the_colts_have_given_anthony_richardson/",
+      "https://www.reddit.com/r/DynastyFF/comments/1ri28qs/colts_dont_plan_to_let_alec_pierce_reach_the_open/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rjuko1/colts_reaching_deal_with_alec_pierce_on_tuesday/",
       "https://www.reddit.com/r/DynastyFF/comments/1rjzz4h/news_the_colts_are_placing_the_transition_tag_on/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rqwrrn/compensation_update_the_colts_and_qb_daniel_jones/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rp4a2k/ndy_lands_its_top_target_freeagent_wr_alec_pierce/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rqabfv/boyd_the_colts_and_qb_daniel_jones_are_still/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rqwrrn/compensation_update_the_colts_and_qb_daniel_jones/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rt0b6x/colts_resign_wr_laquon_treadwell/"
     ]
   },
   "JAX": {
-    "summary": "Chris Rodriguez Jr. is reportedly set to sign with the Jacksonville Jaguars.",
-    "last_updated": "2026-03-13T15:09:19",
+    "summary": "The Jaguars will not be trading WR Brian Thomas Jr. RB Chris Rodriguez Jr. is set to sign with Jacksonville.",
+    "last_updated": "2026-03-31T12:17:04",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rof0ia/brian_thomas_jr_unlikely_to_be_traded_by_the/",
       "https://www.reddit.com/r/DynastyFF/comments/1rpb9w6/the_jaguars_are_entertaining_offers_for_wr_brian/",
@@ -109,142 +126,185 @@
     ]
   },
   "KC": {
-    "summary": "The Chiefs restructured Patrick Mahomes' contract, reducing his 2026 cap number from $78.2 million to $34.65 million and creating $43.56 million in cap space. The Chiefs are signing RB Kenneth Walker from the Seahawks.",
-    "last_updated": "2026-03-13T15:09:22",
+    "summary": "Travis Kelce signed a 3-year, $54.735M contract (up to $57.735M) with the Chiefs, locking him in through 2026 at an $18.245M average. Kenneth Walker, the Super Bowl MVP, signed with the Chiefs. Justin Fields is being traded from the Jets to the Chiefs, pending a physical. WR KC Concepcion underwent a knee scope last week and is expected to be fully healthy for rookie camp.",
+    "last_updated": "2026-03-31T12:17:10",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1r845yf/the_kansas_city_chiefs_restructured_patrick/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rggnlm/washington_rb_jonah_coleman_has_formally_met_with/",
       "https://www.reddit.com/r/DynastyFF/comments/1rmv3wp/chiefs_to_make_a_play_for_kenneth_walker_along/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rp4rwi/splash_the_chiefs_are_signing_super_bowl_mvp/"
+      "https://www.reddit.com/r/DynastyFF/comments/1ronwbm/russini_travis_kelce_is_expected_to_return_for_a/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rp3fdn/travis_kelce_expected_to_return_to_chiefs_for/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rp4rwi/splash_the_chiefs_are_signing_super_bowl_mvp/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rpd9av/breaking_news_pelissero_travis_kelce_chiefs_agree/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rvbqof/trade_the_new_york_jets_are_finalizing_a_deal/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rvhrzj/garafolo_wr_kc_concepcion_underwent_routine_and/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s1pf6i/chiefs_pro_bowl_te_travis_kelce_has_signed_his/"
+    ]
+  },
+  "LA": {
+    "summary": "Tyler Higbee re-signed with the Rams on a 2-year, $8M deal. Tutu Atwell departed, signing with the Miami Dolphins. The Rams are among the teams pursuing Eagles WR A.J. Brown, though no deal has been reached. Puka Nacua has been accused of biting a woman and making an antisemitic remark, allegations he denies.",
+    "last_updated": "2026-03-31T12:17:15",
+    "sources": [
+      "https://www.reddit.com/r/DynastyFF/comments/1rm0mfe/nfl_daily_news_insidenflnewsbskysocial_schultz/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rs2ic3/adam_schefter_dolphins_are_signing_former_rams/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rswuip/russini_the_same_two_teams_the_new_england/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s1pmaa/nfl_draftkings_vegas_has_the_jets_and_cardinals/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s2w22h/puka_nacua_accused_of_biting_woman_saying/"
     ]
   },
   "LAC": {
-    "summary": "The Chargers signed former Ravens RB Keaton Mitchell to a two-year, $9.25 million contract with $5 million fully guaranteed.",
-    "last_updated": "2026-03-13T15:09:24",
+    "summary": "Kimani Vidal received an exclusive rights tender and Jaret Patterson signed an extension with the Chargers. The Chargers signed TE Charlie Kolar to a three-year, $24.3 million contract with $17 million guaranteed. RB Keaton Mitchell signed a two-year, $9.25 million deal with $5 million fully guaranteed. QB Trey Lance is returning on a one-year deal worth up to $6.75 million.",
+    "last_updated": "2026-03-31T12:17:19",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rroctk/former_ravens_rb_keaton_mitchell_is_signing_with/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rmr2vm/chargers_weve_placed_an_exclusive_rights_tender/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rp9sjn/the_chargers_are_signing_te_charlie_kolar_to_a/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rroctk/former_ravens_rb_keaton_mitchell_is_signing_with/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rtup1o/schefter_freeagent_qb_trey_lance_is_returning_to/"
     ]
   },
   "LV": {
-    "summary": "HC Klint Kubiak confirmed a two-back approach with Ashton Jeanty sharing carries and targets with at least one other running back. The Raiders released QB Geno Smith.",
-    "last_updated": "2026-03-13T15:09:26",
+    "summary": "Geno Smith was traded to the New York Jets along with a 2026 7th-round pick in exchange for a 2026 6th-round pick. The Raiders are expected to pursue a veteran QB such as Kirk Cousins to help develop presumptive No. 1 pick Fernando Mendoza. Jalen Nailor signed a 3-year, $35M deal ($23M guaranteed) with the Raiders. The Raiders are also expected to pursue WR Rashid Shaheed in free agency.",
+    "last_updated": "2026-03-31T12:17:24",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rfd14v/raiders_hc_klint_kubiak_on_the_backfield/",
       "https://www.reddit.com/r/DynastyFF/comments/1rmi35b/geno_smith_released_by_the_raiders/",
       "https://www.reddit.com/r/DynastyFF/comments/1ronvco/fowler_espn_the_raiders_are_expected_to_make_a/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rp81k7/schefter_jalen_nailor_to_sign_a_3year_35m_deal/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rq4rl2/adam_schefter_trade_the_raiders_are_sending_qb/",
       "https://www.reddit.com/r/DynastyFF/comments/1rr5gdc/russini_the_las_vegas_raiders_are_expected_to/"
     ]
   },
   "MIA": {
-    "summary": "The Dolphins released WR Tyreek Hill and are releasing QB Tua Tagovailoa with a post-June 1 designation, creating an NFL-record $99 million in dead money spread over two years. Miami signed QB Malik Willis to a 3-year, $67.5M deal with $45M fully guaranteed as their new starter. The Dolphins signed WR Tutu Atwell to a one-year deal.",
-    "last_updated": "2026-03-13T17:20:37",
+    "summary": "The Dolphins released Tua Tagovailoa with a post-June 1 designation, incurring an NFL-record $99 million in dead money split over two years. Malik Willis signed with Miami on a 3-year, $67.5M deal with $45M fully guaranteed. Jaylen Waddle was traded to the Denver Broncos in exchange for a 1st-round pick (30th overall) and late 3rd and 4th-round picks. Tutu Atwell signed a one-year deal with the Dolphins. De'Von Achane is not available for trade, per the team.",
+    "last_updated": "2026-03-31T12:17:28",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1r6eetk/schefter_dolphins_release_tyreek_hill/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rdkaf2/dolphins_gm_joneric_sullivan_on_malik_willis_any/",
+      "https://www.reddit.com/r/DynastyFF/comments/1ri1sun/dolphins_expected_to_designate_tua_tagovailoa_as/",
       "https://www.reddit.com/r/DynastyFF/comments/1royprm/sources_the_dolphins_are_releasing_qb_tua/",
       "https://www.reddit.com/r/DynastyFF/comments/1rp5jxe/rapoport_the_dolphins_are_signing_packers_qb/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rs2ic3/adam_schefter_dolphins_are_signing_former_rams/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rpbxz8/espn_sources_former_dolphins_qb_tua_tagovailoa/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rs2ic3/adam_schefter_dolphins_are_signing_former_rams/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rw9bd3/broncos_are_trading_for_miami_wr_jaylen_waddle/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rx5vbh/schefter_teams_that_have_called_the_miami/"
     ]
   },
   "MIN": {
-    "summary": "RB Aaron Jones agreed to a revised contract to remain with the Vikings for the 2026 season. QB Kyler Murray signed a one-year deal with Minnesota, joining a QB room that includes J.J. McCarthy.",
-    "last_updated": "2026-03-13T15:09:31",
+    "summary": "Kyler Murray is signing a one-year deal with the Vikings, joining a QB room that includes J.J. McCarthy. T.J. Hockenson had his contract restructured, lowering his cap number and keeping him with the team through 2026. Aaron Jones agreed to a revised contract to remain with the Vikings for the 2026 season.",
+    "last_updated": "2026-03-31T12:17:32",
     "sources": [
+      "https://www.reddit.com/r/DynastyFF/comments/1rhxpex/kyler_murray_and_geno_smith_are_strong/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rnt11o/tom_pelissero_the_vikings_have_restructured_the/",
       "https://www.reddit.com/r/DynastyFF/comments/1rr2n9m/pelissero_the_vikings_and_rb_aaron_jones_have/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rr5cdo/schefter_the_arizona_cardinals_officially_have/",
       "https://www.reddit.com/r/DynastyFF/comments/1rs586b/former_cardinals_qb_kyler_murray_is_signing_a/"
     ]
   },
   "NE": {
-    "summary": "The Patriots released WR Stefon Diggs. New England signed former Packers WR Romeo Doubs. The Patriots are reportedly making a strong push to acquire Eagles WR A.J. Brown, though no deal has been confirmed.",
-    "last_updated": "2026-03-13T17:20:40",
+    "summary": "Stefon Diggs is set to be released by the Patriots. Romeo Doubs agreed to a four-year, $68 million deal (max $80 million) with the Patriots. The Patriots are among the teams pursuing Eagles WR A.J. Brown.",
+    "last_updated": "2026-03-31T12:17:36",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rkwld2/breaking_news_pelissero_stefon_diggs_to_be/",
       "https://www.reddit.com/r/DynastyFF/comments/1rq4rvf/breaking_the_patriots_are_signing_former_packers/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rq59ej/breer_compensation_update_the_patriots_have/",
       "https://www.reddit.com/r/DynastyFF/comments/1rswuip/russini_the_same_two_teams_the_new_england/"
     ]
   },
   "NO": {
-    "summary": "The Saints signed RB Travis Etienne.",
-    "last_updated": "2026-03-13T15:09:35",
+    "summary": "Travis Etienne has signed with the Saints at RB. Zach Wilson is signing with the Saints as a third quarterback with starting experience behind Tyler Shough.",
+    "last_updated": "2026-03-31T12:17:39",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rp7iv0/travis_etienne_signs_with_saints/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rp7iv0/travis_etienne_signs_with_saints/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s2ye5c/underhill_saints_are_signing_qb_zach_wilson/"
     ]
   },
   "NYG": {
-    "summary": "The Giants are reportedly high on Notre Dame RB Jeremiyah Love as a potential No. 5 overall pick and are also expected to make a strong push to acquire Kenneth Walker. The Giants signed former Ravens TE Isaiah Likely to a 3-year, $40M contract (up to $47.5M). WR Calvin Austin is signing a one-year deal worth up to $4.5M with the Giants.",
-    "last_updated": "2026-03-13T17:20:43",
+    "summary": "Devin Singletary restructured his contract with the Giants. The Giants signed TE Isaiah Likely to a 3-year, $40M deal (with upside to $47.5M) from the Ravens. WR Calvin Austin signed a one-year deal worth up to $4.5M with the Giants. WR Darnell Mooney is expected to sign a 1-year deal worth up to $10M with the Giants. RB Kenneth Walker has been targeted by the Giants in free agency or trade negotiations.",
+    "last_updated": "2026-03-31T12:17:44",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1remfjn/the_new_york_giants_are_reportedly_high_on_notre/",
       "https://www.reddit.com/r/DynastyFF/comments/1ri6nbl/notre_dame_rb_jeremiyah_love_on_his_connection/",
       "https://www.reddit.com/r/DynastyFF/comments/1riu0cw/giants_expected_to_make_strong_push_for_kenneth/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rmikdh/devin_singletary_agrees_to_a_restructured/",
       "https://www.reddit.com/r/DynastyFF/comments/1rp5m16/breaking_the_giants_are_signing_former_ravens_te/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rs4t7e/adam_schefter_wr_calvin_austin_is_signing_a/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rs4t7e/adam_schefter_wr_calvin_austin_is_signing_a/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rtw03b/falcons_fa_wr_darnell_mooney_one_of_the_top/"
     ]
   },
   "NYJ": {
-    "summary": "The Jets placed the franchise tag on RB Breece Hall at $14.293 million while continuing long-term contract negotiations.",
-    "last_updated": "2026-03-13T15:09:39",
+    "summary": "Geno Smith was acquired via trade from the Raiders (along with a 2026 7th-round pick) in exchange for a 2026 6th-round pick. Justin Fields was traded to the Kansas City Chiefs. Breece Hall has been placed on the franchise tag at $14.293 million while the two sides work toward a long-term deal.",
+    "last_updated": "2026-03-31T12:17:49",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rjtr0t/tagged_as_the_jets_and_rb_breece_hall_continue_to/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rjtr0t/tagged_as_the_jets_and_rb_breece_hall_continue_to/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rq3wbn/hughes_all_signs_point_toward_geno_smith/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rq4rl2/adam_schefter_trade_the_raiders_are_sending_qb/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rvbqof/trade_the_new_york_jets_are_finalizing_a_deal/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s1pmaa/nfl_draftkings_vegas_has_the_jets_and_cardinals/"
     ]
   },
   "PHI": {
-    "summary": "TE Dallas Goedert is expected to leave the Eagles. WR A.J. Brown is drawing strong trade interest from the Patriots and Rams, though no deal has been finalized.",
-    "last_updated": "2026-03-13T17:20:46",
+    "summary": "Dallas Goedert re-signed with the Eagles on a 1-year deal, keeping him in Philadelphia for a ninth season. Hollywood Brown is signing a 1-year deal with the Eagles. The Eagles acquired QB Andy Dalton from the Panthers in exchange for a 2027 seventh-round pick. RB Dameon Pierce agreed to a one-year deal with the Eagles after previously playing for the Texans.",
+    "last_updated": "2026-03-31T12:17:53",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rj22ff/dallas_goedert_will_definitely_be_moving_on_from/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rswuip/russini_the_same_two_teams_the_new_england/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rswuip/russini_the_same_two_teams_the_new_england/",
+      "https://www.reddit.com/r/DynastyFF/comments/1ruo53n/the_eagles_and_veteran_te_dallas_goedert_have/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rwbkf7/report_eagles_to_sign_hollywood_brown_to_a_1year/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rxdmvp/news_the_panthers_are_trading_veteran_qb_andy/",
+      "https://www.reddit.com/r/DynastyFF/comments/1ry4nvj/adam_schefter_eagles_reached_agreement_with/"
     ]
   },
   "PIT": {
-    "summary": "The Steelers acquired WR Michael Pittman via trade and signed RB Rico Dowdle.",
-    "last_updated": "2026-03-13T15:09:43",
+    "summary": "The Steelers are acquiring WR Michael Pittman via trade and RB Rico Dowdle is set to sign with the team.",
+    "last_updated": "2026-03-31T12:17:56",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rp5d1f/trade_michael_pittman_is_being_traded_to_the/",
       "https://www.reddit.com/r/DynastyFF/comments/1rpg94j/schultz_rico_dowdle_to_sign_with_the_steelers/"
     ]
   },
   "SEA": {
-    "summary": "RB Kenneth Walker departed in free agency, signing with the Chiefs. The Seahawks re-signed WR Rashid Shaheed to a three-year, $51 million deal with $34.7 million guaranteed. Seattle signed former Packers RB Emanuel Wilson to a one-year deal worth up to $2.1 million.",
-    "last_updated": "2026-03-13T15:09:46",
+    "summary": "Rashid Shaheed signed a three-year, $51 million deal with the Seahawks. Emanuel Wilson signed a one-year deal worth up to $2.1 million with Seattle. Jaxon Smith-Njigba agreed to a four-year, $168.6 million extension, making him the highest-paid wide receiver in NFL history. Jake Bobo remains with the Seahawks after the team matched Jacksonville's offer sheet on a two-year, $5.5 million deal.",
+    "last_updated": "2026-03-31T12:18:01",
     "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1r74z0d/its_unlikely_the_seahawks_will_use_their/",
       "https://www.reddit.com/r/DynastyFF/comments/1rp4rwi/splash_the_chiefs_are_signing_super_bowl_mvp/",
       "https://www.reddit.com/r/DynastyFF/comments/1rpeukv/seahawks_are_bringing_back_wr_rashid_shaheed_on_a/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rs36bx/the_seahawks_are_signing_former_packers_rb/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rs36bx/the_seahawks_are_signing_former_packers_rb/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s1h1d8/adam_schefter_espn_sources_offensive_player_of/",
+      "https://www.reddit.com/r/DynastyFF/comments/1s1p8fe/pelissero_the_seahawks_are_matching_jacksonvilles/"
     ]
   },
   "SF": {
-    "summary": "The 49ers are expected to sign WR Mike Evans to a three-year deal. The 49ers plan to release WR Brandon Aiyuk.",
-    "last_updated": "2026-03-13T15:09:48",
+    "summary": "Mike Evans is expected to sign a three-year deal with the 49ers. Brandon Aiyuk is expected to be released by the 49ers. Christian Kirk is signing a one-year, $6 million deal with the 49ers. TE Jake Tonges re-signed on a two-year, $8 million contract with $5.5 million guaranteed. The 49ers are drawing interest in Mac Jones but have set a high asking price. RB Brian Robinson is drawing interest from the 49ers as a potential free agent addition.",
+    "last_updated": "2026-03-31T12:18:06",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rp8g2s/espn_sources_former_buccaneers_sixtime_probowl_wr/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rpz77a/vic_tafur_the_49ers_have_interest_in_bringing/",
       "https://www.reddit.com/r/DynastyFF/comments/1rq5egn/russini_a_few_teams_have_called_the_san_francisco/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rqz1hs/49ers_plan_to_release_brandon_aiyuk_per_nick/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rqz1hs/49ers_plan_to_release_brandon_aiyuk_per_nick/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rr4e3u/tom_pelissero_the_49ers_and_te_jake_tonges_agreed/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rvknzm/schultz_christian_kirk_to_sign_a_1year_6m_deal/"
     ]
   },
   "TB": {
-    "summary": "Six-time Pro Bowl WR Mike Evans departed the Buccaneers, signing a three-year deal with the San Francisco 49ers.",
-    "last_updated": "2026-03-13T15:09:51",
+    "summary": "Mike Evans has departed Tampa Bay, signing a three-year deal with the San Francisco 49ers.",
+    "last_updated": "2026-03-31T12:18:08",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rp8g2s/espn_sources_former_buccaneers_sixtime_probowl_wr/"
     ]
   },
+  "TEN": {
+    "summary": "Wan'Dale Robinson signed with the Tennessee Titans, reuniting with head coach Brian Daboll. Calvin Ridley restructured his contract with the Titans, reducing his cost by $11 million to remain in Tennessee for the 2026 season.",
+    "last_updated": "2026-03-31T12:18:13",
+    "sources": [
+      "https://www.reddit.com/r/DynastyFF/comments/1rp7me4/the_titans_are_signing_wide_receiver_wandale/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rtptul/pelissero_the_titans_and_wr_calvin_ridley_have/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rvch1v/titans_cut_calvin_ridley_cost_by_11m_to_keep/"
+    ]
+  },
   "WAS": {
-    "summary": "The Commanders signed TE Chig Okonkwo and signed RB Rachaad White to a one-year deal.",
-    "last_updated": "2026-03-13T15:09:53",
+    "summary": "Deebo Samuel is not expected to return to Washington. The Commanders acquired TE Chig Okonkwo via trade or signing. RB Chris Rodriguez was not tendered and will become a free agent. RB Rachaad White signed a one-year deal with Washington. WRs Dyami Brown (up to $3M) and Van Jefferson each signed one-year deals with the Commanders. RB Jeremy McNichols also signed a one-year deal with Washington.",
+    "last_updated": "2026-03-31T12:18:18",
     "sources": [
       "https://www.reddit.com/r/DynastyFF/comments/1rj1xyp/deebo_samuel_not_expected_to_return_to_commanders/",
       "https://www.reddit.com/r/DynastyFF/comments/1rr3580/garafolo_chig_okonkwo_to_commanders/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rrzsvq/commanders_are_signing_former_bucs_rb_rachaad/"
-    ]
-  },
-  "LA": {
-    "summary": "Former Rams WR Tutu Atwell signed a one-year deal with the Dolphins. The Rams are reportedly making a strong push to acquire Eagles WR A.J. Brown, though no deal has been confirmed.",
-    "last_updated": "2026-03-13T17:20:34",
-    "sources": [
-      "https://www.reddit.com/r/DynastyFF/comments/1rs2ic3/adam_schefter_dolphins_are_signing_former_rams/",
-      "https://www.reddit.com/r/DynastyFF/comments/1rswuip/russini_the_same_two_teams_the_new_england/"
+      "https://www.reddit.com/r/DynastyFF/comments/1rr5d96/matt_zenitz_the_commanders_arent_tendering/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rrzsvq/commanders_are_signing_former_bucs_rb_rachaad/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rsybqr/pelissero_veteran_wr_dyami_brown_is_going_back_to/",
+      "https://www.reddit.com/r/DynastyFF/comments/1rvf43t/news_the_washington_commanders_are_signing_rb/"
     ]
   }
 }

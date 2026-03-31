@@ -14,7 +14,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body
-        className={`${geist.variable} font-[family-name:var(--font-geist)] antialiased bg-gray-50 text-gray-900 min-h-screen`}
+        className={`${geist.variable} font-[family-name:var(--font-geist)] antialiased min-h-screen`}
+        style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
       >
         <ScoringProvider>{children}</ScoringProvider>
       </body>

@@ -23,20 +23,49 @@ export default function NewsCard({ summary }: { summary: PlayerSummary }) {
   const [showSources, setShowSources] = useState(false);
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-sm font-bold uppercase tracking-widest text-gray-400">News</span>
-        <span className="text-xs text-gray-400">{relativeTime(summary.generated_at)}</span>
+    <div className="card" style={{ padding: '14px 16px' }}>
+      <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{
+          fontSize: '10px',
+          fontWeight: 500,
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          color: 'var(--color-brand)',
+        }}>
+          Latest news
+        </span>
+        <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+          {relativeTime(summary.generated_at)}
+        </span>
       </div>
-      <p className="text-base leading-relaxed text-gray-700">{summary.summary}</p>
+      <p style={{ fontSize: '13px', lineHeight: 1.55, color: 'var(--color-text-secondary)' }}>
+        {summary.summary}
+      </p>
       {summary.sources.length > 0 && (
-        <div className="mt-3">
+        <div style={{ marginTop: '10px' }}>
           <button
             onClick={() => setShowSources((v) => !v)}
-            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '11px',
+              color: 'var(--color-text-tertiary)',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
           >
             <svg
-              className={`h-3 w-3 transition-transform ${showSources ? 'rotate-90' : ''}`}
+              style={{
+                width: '10px',
+                height: '10px',
+                transition: 'transform 0.15s',
+                transform: showSources ? 'rotate(90deg)' : 'none',
+                flexShrink: 0,
+              }}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -47,14 +76,14 @@ export default function NewsCard({ summary }: { summary: PlayerSummary }) {
             {showSources ? 'Hide sources' : `Show sources (${summary.sources.length})`}
           </button>
           {showSources && (
-            <ul className="mt-2 space-y-1">
+            <ul style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px', listStyle: 'none', padding: 0 }}>
               {summary.sources.map((url, i) => (
                 <li key={i}>
                   <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-gray-500 underline hover:text-gray-700 transition-colors"
+                    style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textDecoration: 'underline' }}
                   >
                     {sourceLabel(url)}
                   </a>

@@ -13,7 +13,7 @@ export default function FreeAgentsPage() {
   const historySeason = currentNFLSeason();
 
   return (
-    <main className="flex h-screen flex-col bg-gray-50">
+    <main className="flex h-screen flex-col" style={{ background: 'var(--color-bg-secondary)' }}>
       <NavHeader activePage="free-agents" />
       <div className="flex-1 overflow-y-auto px-4 py-4 sm:overflow-visible sm:min-h-0 sm:flex sm:flex-col sm:px-6">
         <div className="mx-auto w-full max-w-7xl sm:flex sm:min-h-0 sm:flex-1 sm:flex-col">

@@ -17,6 +17,25 @@ const EMPTY_PROJECTION: PlayerProjection = {
   rushing_yards: 0, rushing_tds: 0, fumbles_lost: 0,
 };
 
+const labelStyle: React.CSSProperties = {
+  fontSize: '10px',
+  fontWeight: 500,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  color: 'var(--color-text-tertiary)',
+  whiteSpace: 'nowrap',
+};
+
+const chipBase: React.CSSProperties = {
+  padding: '5px 12px',
+  borderRadius: '6px',
+  fontSize: '12px',
+  fontWeight: 500,
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  transition: 'all 0.15s',
+};
+
 export default function RosterGrid({
   players,
   defaultPoints,
@@ -104,85 +123,127 @@ export default function RosterGrid({
 
   return (
     <div className="flex flex-col sm:min-h-0 sm:flex-1">
-      <div className="mb-6 shrink-0 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Filter</span>
-          <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
-            {POSITION_TABS.map((pos) => (
-              <button
-                key={pos}
-                onClick={() => setActivePosition(pos)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  activePosition === pos
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {pos}
-              </button>
-            ))}
+      {/* Filter bar */}
+      <div className="mb-4 shrink-0 flex flex-col gap-3 sm:flex-row sm:items-end sm:flex-wrap">
+        {/* Position filter */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <span style={labelStyle}>Filter</span>
+          <div style={{ display: 'flex', gap: '4px' }}>
+            {POSITION_TABS.map((pos) => {
+              const isActive = activePosition === pos;
+              return (
+                <button
+                  key={pos}
+                  onClick={() => setActivePosition(pos)}
+                  style={{
+                    ...chipBase,
+                    border: isActive ? '0.5px solid var(--color-text-primary)' : '0.5px solid var(--color-border-medium)',
+                    background: isActive ? 'var(--color-text-primary)' : 'transparent',
+                    color: isActive ? 'var(--color-bg-tertiary)' : 'var(--color-text-secondary)',
+                  }}
+                >
+                  {pos}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Ranking</span>
-          <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
-            {(['points', 'vorp'] as RankingMode[]).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => setRankingMode(mode)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  rankingMode === mode
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {mode === 'points' ? 'Total Points' : 'Smart (VORP)'}
-              </button>
-            ))}
+
+        {/* Ranking mode */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <span style={labelStyle}>Ranking</span>
+          <div style={{
+            display: 'flex',
+            border: '0.5px solid var(--color-border-medium)',
+            borderRadius: '6px',
+            overflow: 'hidden',
+          }}>
+            {(['points', 'vorp'] as RankingMode[]).map((mode, i) => {
+              const isActive = rankingMode === mode;
+              return (
+                <button
+                  key={mode}
+                  onClick={() => setRankingMode(mode)}
+                  style={{
+                    padding: '5px 10px',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    border: 'none',
+                    borderRight: i === 0 ? '0.5px solid var(--color-border-medium)' : 'none',
+                    cursor: 'pointer',
+                    background: isActive ? 'var(--color-text-primary)' : 'transparent',
+                    color: isActive ? 'var(--color-bg-tertiary)' : 'var(--color-text-secondary)',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {mode === 'points' ? 'Total Points' : 'Smart (VORP)'}
+                </button>
+              );
+            })}
           </div>
         </div>
+
+        {/* Search */}
         <input
           type="text"
           placeholder="Search player…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-400 focus:outline-none sm:w-56"
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-brand)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--color-border-medium)'; }}
+          className="w-full sm:w-auto sm:ml-auto"
+          style={{
+            padding: '5px 10px',
+            borderRadius: '6px',
+            fontSize: '12px',
+            border: '0.5px solid var(--color-border-medium)',
+            background: 'var(--color-bg-primary)',
+            color: 'var(--color-text-primary)',
+            fontFamily: 'inherit',
+            outline: 'none',
+            transition: 'border-color 0.15s',
+            minWidth: '180px',
+          }}
         />
       </div>
 
-      <p className="mb-4 shrink-0 text-xs text-gray-500">
+      {/* Result count */}
+      <p className="mb-3 shrink-0 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
         {ranked.length} player{ranked.length !== 1 ? 's' : ''}
       </p>
 
-      <div className="rounded-xl border border-gray-200 shadow-sm sm:flex sm:min-h-0 sm:flex-1 sm:flex-col">
+      {/* Table */}
+      <div className="card sm:flex sm:min-h-0 sm:flex-1 sm:flex-col">
         <div className="sm:flex-1 sm:overflow-y-auto">
-          <div className="z-10 sm:sticky sm:top-0 grid grid-cols-[32px_minmax(0,1fr)_80px_16px] items-center gap-3 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2 sm:hidden">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">#</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Player</span>
-            <span className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-400">Proj Pts</span>
+          {/* Column headers */}
+          <div className="grid grid-cols-[40px_minmax(0,1fr)_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_16px] items-center gap-3 sm:gap-4 px-4 py-2 sticky top-0 z-10"
+            style={{
+              borderBottom: '0.5px solid var(--color-border-light)',
+              background: 'var(--color-bg-secondary)',
+              borderRadius: '10px 10px 0 0',
+            }}
+          >
+            <span style={{ ...labelStyle, textAlign: 'right' }}>#</span>
+            <span style={labelStyle}>Player</span>
+            <span className="hidden sm:block" style={labelStyle}>Projected stats</span>
+            <span style={{ ...labelStyle, textAlign: 'right' }}>Proj pts</span>
             <span />
           </div>
-          <div className="z-10 sm:sticky sm:top-0 hidden grid-cols-[32px_minmax(0,1fr)_52px_80px_44px_minmax(0,2fr)_88px_16px] items-center gap-4 rounded-t-xl border-b border-gray-200 bg-gray-50 px-4 py-2 sm:grid">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">#</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Player</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Team</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pos</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Age</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Proj Stats</span>
-            <span className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-400">Proj Pts</span>
-            <span />
-          </div>
-          <div className="divide-y divide-gray-100">
+
+          {/* Rows */}
+          <div style={{ borderTop: 'none' }}>
             {ranked.map((player, i) => (
-              <PlayerCard
-                key={player.player_id}
-                player={player}
-                rank={i + 1}
-                projectedPoints={projectedPoints[player.player_id]}
-                pointsUnit="pts"
-                projection={projections[player.player_id] ?? EMPTY_PROJECTION}
-                hasNews={newsPlayerIds?.has(player.player_id)}
-              />
+              <div key={player.player_id} style={{ borderTop: i > 0 ? '0.5px solid var(--color-border-light)' : 'none' }}>
+                <PlayerCard
+                  player={player}
+                  rank={i + 1}
+                  projectedPoints={projectedPoints[player.player_id]}
+                  pointsUnit="pts"
+                  projection={projections[player.player_id] ?? EMPTY_PROJECTION}
+                  hasNews={newsPlayerIds?.has(player.player_id)}
+                />
+              </div>
             ))}
           </div>
         </div>
