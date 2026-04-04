@@ -30,3 +30,10 @@ yarn-error.log*
 __pycache__/
 *.pyc
 *.pyo
+
+# CDK
+cdk.out/
+infra/dist/
+
+# Phase runbooks (local implementation notes, not for version control)
+PHASE*.md

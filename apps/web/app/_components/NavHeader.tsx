@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import LogoBlock from './LogoBlock';
+import UserMenu from './UserMenu';
 
 export default function NavHeader({ activePage }: { activePage: 'rankings' | 'teams' | 'free-agents' }) {
   const navItems: { href: string; label: string; shortLabel: string; key: 'rankings' | 'teams' | 'free-agents' }[] = [
@@ -62,6 +63,11 @@ export default function NavHeader({ activePage }: { activePage: 'rankings' | 'te
           );
         })}
       </nav>
+
+      {/* User menu — pushed to right */}
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+        <UserMenu />
+      </div>
     </header>
   );
 }
