@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import type { Position, PlayerProjection, SeasonStats } from '@mocktail/core';
 import { calculateFantasyPoints, getDefaultProjection } from '@mocktail/core';
@@ -125,7 +125,7 @@ export default function ProjectionForm({ playerId, positions, seasons, season }:
   const [values, setValues] = useState<Record<string, string>>(defaultStrings);
   const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle');
 
-  const loadFromStorage = () => {
+  const loadFromStorage = useCallback(() => {
     const raw = localStorage.getItem(`projection_${playerId}`);
     if (raw) {
       try {
@@ -134,16 +134,16 @@ export default function ProjectionForm({ playerId, positions, seasons, season }:
         // Corrupted entry — keep defaults
       }
     }
-  };
+  }, [playerId]);
 
   useEffect(() => {
     loadFromStorage();
-  }, [playerId]);
+  }, [loadFromStorage]);
 
   useEffect(() => {
     window.addEventListener('projectionssynced', loadFromStorage);
     return () => window.removeEventListener('projectionssynced', loadFromStorage);
-  }, [playerId]);
+  }, [loadFromStorage]);
 
   const handleChange = (key: string, val: string) => {
     setValues((prev) => ({ ...prev, [key]: val }));

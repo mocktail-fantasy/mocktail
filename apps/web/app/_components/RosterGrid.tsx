@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import type { Player, PlayerProjection, Position } from '@mocktail/core';
-import { getFantasyPositions, calculateFantasyPoints, getDefaultProjection, calculateVORPBaselines, calculateVORP } from '@mocktail/core';
+import { getFantasyPositions, calculateFantasyPoints, calculateVORPBaselines, calculateVORP } from '@mocktail/core';
 import PlayerCard from './PlayerCard';
 import { useScoringType } from './ScoringContext';
 
