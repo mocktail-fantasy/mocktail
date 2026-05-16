@@ -10,6 +10,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1048.0",
+    "@aws-sdk/lib-dynamodb": "^3.1048.0",
     "@mocktail/core": "workspace:*",
     "next": "16.1.6",
     "next-auth": "5.0.0-beta.30",

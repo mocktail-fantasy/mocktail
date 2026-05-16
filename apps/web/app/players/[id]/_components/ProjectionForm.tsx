@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 import type { Position, PlayerProjection, SeasonStats } from '@mocktail/core';
 import { calculateFantasyPoints, getDefaultProjection } from '@mocktail/core';
 import { useScoringType } from '@/app/_components/ScoringContext';
+import { saveProjection } from '@/lib/actions';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -113,6 +115,7 @@ const SCORING_LABELS: Record<string, string> = {
 
 export default function ProjectionForm({ playerId, positions, seasons, season }: Props) {
   const { scoringType, scoringSettings } = useScoringType();
+  const { data: session } = useSession();
   const hasQB = positions.includes('QB');
   const hasSkill = positions.some((p) => p === 'RB' || p === 'WR' || p === 'TE');
 
@@ -145,8 +148,11 @@ export default function ProjectionForm({ playerId, positions, seasons, season }:
     [projection, positions, scoringSettings],
   );
 
-  const handleSave = () => {
+  const handleSave = async () => {
     localStorage.setItem(`projection_${playerId}`, JSON.stringify(projection));
+    if (session?.user) {
+      await saveProjection(playerId, projection);
+    }
     setSaveState('saved');
     setTimeout(() => setSaveState('idle'), 2000);
   };
@@ -247,9 +253,16 @@ export default function ProjectionForm({ playerId, positions, seasons, season }:
             pts · {SCORING_LABELS[scoringType] ?? 'Standard'}
           </span>
         </div>
-        <button className="btn-brand" onClick={handleSave}>
-          {saveState === 'saved' ? 'Saved ✓' : 'Save projection'}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {!session?.user && (
+            <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+              Sign in to save across devices
+            </span>
+          )}
+          <button className="btn-brand" onClick={handleSave}>
+            {saveState === 'saved' ? 'Saved ✓' : 'Save projection'}
+          </button>
+        </div>
       </div>
     </div>
   );

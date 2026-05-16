@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google';
 import { SessionProvider } from 'next-auth/react';
 import './globals.css';
 import { ScoringProvider } from './_components/ScoringContext';
+import SessionSync from './_components/SessionSync';
 import { auth } from '@/auth';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' });
@@ -22,7 +23,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
       >
         <SessionProvider session={session}>
-          <ScoringProvider>{children}</ScoringProvider>
+          <ScoringProvider>
+            <SessionSync />
+            {children}
+          </ScoringProvider>
         </SessionProvider>
       </body>
     </html>
