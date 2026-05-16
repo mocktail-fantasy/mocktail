@@ -7,6 +7,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: '/auth/signin',
   },
   callbacks: {
+    jwt({ token, account }) {
+      if (account?.providerAccountId) {
+        token.sub = account.providerAccountId;
+      }
+      return token;
+    },
     session({ session, token }) {
       if (token.sub) session.user.id = token.sub;
       return session;
