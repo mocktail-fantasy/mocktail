@@ -1,5 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Construct } from 'constructs';
 
 /**
@@ -25,8 +28,26 @@ export class MocktailStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
-    // Future resources added here can reference projectionsTable directly:
-    //   this.projectionsTable.grantReadWriteData(ingestionLambda);
+    // ── S3 ──────────────────────────────────────────────────────────────────
+    const dataBucket = new s3.Bucket(this, 'DataBucket', {
+      bucketName: 'mocktail-data-prod',
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // ── CloudFront ───────────────────────────────────────────────────────────
+    const distribution = new cloudfront.Distribution(this, 'DataDistribution', {
+      defaultBehavior: {
+        origin: origins.S3BucketOrigin.withOriginAccessControl(dataBucket),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      },
+    });
+
+    new cdk.CfnOutput(this, 'DataDistributionUrl', {
+      value: `https://${distribution.distributionDomainName}`,
+      description: 'Set as DATA_BASE_URL in Vercel environment variables',
+    });
 
     new cdk.CfnOutput(this, 'ProjectionsTableName', {
       value: this.projectionsTable.tableName,

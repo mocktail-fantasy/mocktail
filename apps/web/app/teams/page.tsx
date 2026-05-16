@@ -3,13 +3,15 @@ import { getRosters, getAllDefaultPoints, getAllDefaultProjections, getTeamHisto
 import NavHeader from '../_components/NavHeader';
 import TeamsView from './_components/TeamsView';
 
-export default function TeamsPage() {
-  const players = getRosters();
-  const defaultPoints = getAllDefaultPoints();
-  const defaultProjections = getAllDefaultProjections();
-  const teamHistory = getTeamHistory();
-  const teamsData = getTeamsData();
-  const teamSummaries = getTeamSummaries();
+export default async function TeamsPage() {
+  const [players, defaultPoints, defaultProjections, teamHistory, teamsData, teamSummaries] = await Promise.all([
+    getRosters(),
+    getAllDefaultPoints(),
+    getAllDefaultProjections(),
+    getTeamHistory(),
+    getTeamsData(),
+    getTeamSummaries(),
+  ]);
   const historySeason = currentNFLSeason();
 
   const teams = [...new Set(players.map((p) => p.team))]

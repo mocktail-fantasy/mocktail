@@ -36,12 +36,14 @@ export default async function PlayerPage({
 }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
 
-  const player = getPlayer(id);
+  const player = await getPlayer(id);
   if (!player) notFound();
 
-  const history = getPlayerHistory(id);
+  const [history, summaries] = await Promise.all([
+    getPlayerHistory(id),
+    getPlayerSummaries(),
+  ]);
   const seasons = history?.seasons ?? [];
-  const summaries = getPlayerSummaries();
   const playerSummary = summaries[player.player_id] ?? null;
   const fantasyPositions = getFantasyPositions(player.positions);
   const primaryPosition = fantasyPositions[0];

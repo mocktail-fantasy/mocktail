@@ -3,6 +3,15 @@ import path from 'path';
 import { FANTASY_POSITIONS, getDefaultFantasyPoints, getDefaultProjection } from '@mocktail/core';
 import type { Player, PlayerHistory, PlayerProjection, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position } from '@mocktail/core';
 
+async function loadJson<T>(filename: string): Promise<T> {
+  const base = process.env.DATA_BASE_URL;
+  if (base) {
+    const res = await fetch(`${base}/${filename}`, { next: { revalidate: 3600 } });
+    return res.json() as Promise<T>;
+  }
+  return JSON.parse(readFileSync(path.join(process.cwd(), 'public', filename), 'utf-8')) as T;
+}
+
 export function currentNFLSeason(): number {
   const today = new Date();
   const year = today.getFullYear();
@@ -12,25 +21,23 @@ export function currentNFLSeason(): number {
   return today >= firstSunday ? year : year - 1;
 }
 
-export function getRosters(): Player[] {
-  const filePath = path.join(process.cwd(), 'public', 'active_rosters.json');
-  const all: Player[] = JSON.parse(readFileSync(filePath, 'utf-8'));
+export async function getRosters(): Promise<Player[]> {
+  const all = await loadJson<Player[]>('active_rosters.json');
   return all.filter((p) => p.positions.some((pos) => FANTASY_POSITIONS.has(pos as Position)));
 }
 
-export function getPlayer(playerId: string): Player | null {
-  return getRosters().find((p) => p.player_id === playerId) ?? null;
+export async function getPlayer(playerId: string): Promise<Player | null> {
+  const rosters = await getRosters();
+  return rosters.find((p) => p.player_id === playerId) ?? null;
 }
 
-export function getPlayerHistory(playerId: string): PlayerHistory | null {
-  const filePath = path.join(process.cwd(), 'public', 'historical_data.json');
-  const data: Record<string, PlayerHistory> = JSON.parse(readFileSync(filePath, 'utf-8'));
+export async function getPlayerHistory(playerId: string): Promise<PlayerHistory | null> {
+  const data = await loadJson<Record<string, PlayerHistory>>('historical_data.json');
   return data[playerId] ?? null;
 }
 
-export function getAllDefaultProjections(): Record<string, PlayerProjection> {
-  const filePath = path.join(process.cwd(), 'public', 'historical_data.json');
-  const data: Record<string, PlayerHistory> = JSON.parse(readFileSync(filePath, 'utf-8'));
+export async function getAllDefaultProjections(): Promise<Record<string, PlayerProjection>> {
+  const data = await loadJson<Record<string, PlayerHistory>>('historical_data.json');
   const minSeason = currentNFLSeason();
   const result: Record<string, PlayerProjection> = {};
   for (const [playerId, history] of Object.entries(data)) {
@@ -57,33 +64,24 @@ export type TeamInfo = {
   team_logo_squared: string | null;
 };
 
-export function getTeamsData(): Record<string, TeamInfo> {
-  const filePath = path.join(process.cwd(), 'public', 'teams.json');
-  if (!existsSync(filePath)) return {};
-  return JSON.parse(readFileSync(filePath, 'utf-8'));
+export async function getTeamsData(): Promise<Record<string, TeamInfo>> {
+  return loadJson<Record<string, TeamInfo>>('teams.json').catch(() => ({}));
 }
 
-export function getTeamHistory(): Record<string, TeamHistoryPlayer[]> {
-  const filePath = path.join(process.cwd(), 'public', 'team_history.json');
-  if (!existsSync(filePath)) return {};
-  return JSON.parse(readFileSync(filePath, 'utf-8'));
+export async function getTeamHistory(): Promise<Record<string, TeamHistoryPlayer[]>> {
+  return loadJson<Record<string, TeamHistoryPlayer[]>>('team_history.json').catch(() => ({}));
 }
 
-export function getPlayerSummaries(): Record<string, PlayerSummary> {
-  const filePath = path.join(process.cwd(), 'public', 'player_summaries.json');
-  if (!existsSync(filePath)) return {};
-  return JSON.parse(readFileSync(filePath, 'utf-8'));
+export async function getPlayerSummaries(): Promise<Record<string, PlayerSummary>> {
+  return loadJson<Record<string, PlayerSummary>>('player_summaries.json').catch(() => ({}));
 }
 
-export function getTeamSummaries(): Record<string, TeamSummary> {
-  const filePath = path.join(process.cwd(), 'public', 'team_summaries.json');
-  if (!existsSync(filePath)) return {};
-  return JSON.parse(readFileSync(filePath, 'utf-8'));
+export async function getTeamSummaries(): Promise<Record<string, TeamSummary>> {
+  return loadJson<Record<string, TeamSummary>>('team_summaries.json').catch(() => ({}));
 }
 
-export function getAllDefaultPoints(): Record<string, number> {
-  const filePath = path.join(process.cwd(), 'public', 'historical_data.json');
-  const data: Record<string, PlayerHistory> = JSON.parse(readFileSync(filePath, 'utf-8'));
+export async function getAllDefaultPoints(): Promise<Record<string, number>> {
+  const data = await loadJson<Record<string, PlayerHistory>>('historical_data.json');
   const minSeason = currentNFLSeason();
   const result: Record<string, number> = {};
   for (const [playerId, history] of Object.entries(data)) {

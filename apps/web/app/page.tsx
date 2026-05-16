@@ -3,11 +3,13 @@ import NavHeader from './_components/NavHeader';
 import RosterGrid from './_components/RosterGrid';
 import ScoringPanel from './_components/ScoringPanel';
 
-export default function HomePage() {
-  const players = getRosters();
-  const defaultPoints = getAllDefaultPoints();
-  const defaultProjections = getAllDefaultProjections();
-  const summaries = getPlayerSummaries();
+export default async function HomePage() {
+  const [players, defaultPoints, defaultProjections, summaries] = await Promise.all([
+    getRosters(),
+    getAllDefaultPoints(),
+    getAllDefaultProjections(),
+    getPlayerSummaries(),
+  ]);
   const newsPlayerIds = new Set(Object.keys(summaries));
 
   return (
