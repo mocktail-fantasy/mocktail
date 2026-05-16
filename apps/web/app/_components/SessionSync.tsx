@@ -19,6 +19,7 @@ export default function SessionSync() {
         for (const [playerId, projection] of Object.entries(dbProjections)) {
           localStorage.setItem(`projection_${playerId}`, JSON.stringify(projection));
         }
+        window.dispatchEvent(new CustomEvent('projectionssynced'));
       } else {
         // DynamoDB empty — silently migrate any existing localStorage projections
         const local: Record<string, PlayerProjection> = {};

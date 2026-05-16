@@ -125,7 +125,7 @@ export default function ProjectionForm({ playerId, positions, seasons, season }:
   const [values, setValues] = useState<Record<string, string>>(defaultStrings);
   const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle');
 
-  useEffect(() => {
+  const loadFromStorage = () => {
     const raw = localStorage.getItem(`projection_${playerId}`);
     if (raw) {
       try {
@@ -134,6 +134,15 @@ export default function ProjectionForm({ playerId, positions, seasons, season }:
         // Corrupted entry — keep defaults
       }
     }
+  };
+
+  useEffect(() => {
+    loadFromStorage();
+  }, [playerId]);
+
+  useEffect(() => {
+    window.addEventListener('projectionssynced', loadFromStorage);
+    return () => window.removeEventListener('projectionssynced', loadFromStorage);
   }, [playerId]);
 
   const handleChange = (key: string, val: string) => {
