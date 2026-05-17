@@ -37,14 +37,13 @@ NFLVERSE_HOST = "github.com"
 NFLVERSE_BASE = "/nflverse/nflverse-data/releases/download"
 
 WEEKLY_START_YEAR = 1999
-DEPTH_CHARTS_YEAR = 2025
+DEPTH_CHARTS_YEAR = datetime.date.today().year
 FANTASY_POSITIONS = {"QB", "RB", "WR", "TE"}
 
 _HERE = Path(__file__).parent
 STAGE_DIR = _HERE / "stage"
 OUTPUT_DIR = _HERE / "exports"
 
-FA_MIN_POINTS = 75.0  # minimum fantasy points in a recent season to qualify as a free agent
 
 # ---------------------------------------------------------------------------
 # HTTP fetcher (mirrors file_repo.py)
@@ -323,25 +322,35 @@ def build_tier1_rosters(depth_charts: pd.DataFrame) -> pd.DataFrame:
     ].reset_index(drop=True)
 
 
+def load_ranked_names() -> set | None:
+    """Return set of lowercased player names from rankings.json, or None if unavailable."""
+    rankings_path = OUTPUT_DIR / "rankings.json"
+    if not rankings_path.exists():
+        print("  Warning: rankings.json not found — all skill position FAs will be included")
+        return None
+    data = json.loads(rankings_path.read_text())
+    return {p["player_name"].lower() for p in data.values() if "half_ppr" in p["rankings"]}
+
+
 def build_tier2_rosters(
-    annual: pd.DataFrame,
     tier1_ids: set,
     players: pd.DataFrame,
+    ranked_names: set | None = None,
 ) -> pd.DataFrame:
-    """Free agents: scored FA_MIN_POINTS+ in any of the three most recent seasons and not on a current roster."""
-    recent = annual[annual["season"].isin(_recent_seasons(n=3))]
-    top = (
-        recent.groupby("player_id")["fantasy_points"]
-        .max()
-        .reset_index()
-    )
-    top = top[(top["fantasy_points"] >= FA_MIN_POINTS) & (~top["player_id"].isin(tier1_ids))]
+    """Free agents: in FantasyPros rankings (or all skill FAs if unavailable) and not on a current roster."""
+    skill_players = players[
+        ~players["gsis_id"].isin(tier1_ids) &
+        players["position_group"].isin(FANTASY_POSITIONS)
+    ].copy()
 
-    merged = top.merge(
-        players[["gsis_id", "display_name", "position_group"]],
-        left_on="player_id", right_on="gsis_id", how="inner",
-    )
-    merged = merged[merged["position_group"].isin(FANTASY_POSITIONS)].reset_index(drop=True)
+    if ranked_names is not None:
+        # Primary path: filter by FantasyPros rankings (name match)
+        skill_players["name_lower"] = skill_players["display_name"].str.lower()
+        merged = skill_players[skill_players["name_lower"].isin(ranked_names)].copy()
+    else:
+        # Fallback: let all skill position FAs through
+        merged = skill_players.copy()
+
     merged["pos_abbs"]    = merged["position_group"].apply(lambda p: [p])
     merged["team"]        = "FA"
     merged["player_name"] = merged["display_name"]
@@ -634,8 +643,9 @@ def generate_exports(force_download: bool = False):
     )
     annual_by_team["season"] = annual_by_team["season"].astype(int)
 
+    ranked_names = load_ranked_names()
     tier1   = build_tier1_rosters(depth_charts)
-    tier2   = build_tier2_rosters(annual_stats, set(tier1["gsis_id"]), players)
+    tier2   = build_tier2_rosters(set(tier1["gsis_id"]), players, ranked_names)
     rosters = apply_config(
         pd.concat([tier1, tier2], ignore_index=True),
         config, depth_charts, players,

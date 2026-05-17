@@ -1,8 +1,13 @@
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 /**
@@ -36,14 +41,64 @@ export class MocktailStack extends cdk.Stack {
     });
 
     // ── CloudFront ───────────────────────────────────────────────────────────
+    // 1-year TTL — Lambda invalidation is the sole cache-busting mechanism.
+    const cachePolicy = new cloudfront.CachePolicy(this, 'DataCachePolicy', {
+      defaultTtl: cdk.Duration.days(365),
+      maxTtl: cdk.Duration.days(365),
+      minTtl: cdk.Duration.seconds(0),
+      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
+      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
+      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+    });
+
     const distribution = new cloudfront.Distribution(this, 'DataDistribution', {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(dataBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        cachePolicy,
       },
     });
 
+    // ── Lambda ───────────────────────────────────────────────────────────────
+    // Nightly ingestion: fetches FantasyPros rankings + NflVerse rosters,
+    // builds active_rosters.json + rankings.json, uploads to S3, invalidates CF.
+    const ingestionFn = new lambda.Function(this, 'IngestionFunction', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'ingest.lambda_handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../infra/lambda')),
+      layers: [
+        lambda.LayerVersion.fromLayerVersionArn(
+          this,
+          'PandasLayer',
+          `arn:aws:lambda:${this.region}:336392948345:layer:AWSSDKPandas-Python312:16`,
+        ),
+      ],
+      timeout: cdk.Duration.minutes(15),
+      memorySize: 2048,
+      ephemeralStorageSize: cdk.Size.gibibytes(2),
+      environment: {
+        BUCKET: dataBucket.bucketName,
+        DISTRIBUTION_ID: distribution.distributionId,
+      },
+    });
+
+    dataBucket.grantReadWrite(ingestionFn);
+
+    ingestionFn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['cloudfront:CreateInvalidation'],
+      resources: [
+        `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`,
+      ],
+    }));
+
+    // ── EventBridge ──────────────────────────────────────────────────────────
+    // Runs nightly at 3am ET (8am UTC).
+    new events.Rule(this, 'IngestionSchedule', {
+      schedule: events.Schedule.cron({ hour: '8', minute: '0' }),
+      targets: [new targets.LambdaFunction(ingestionFn)],
+    });
+
+    // ── Outputs ──────────────────────────────────────────────────────────────
     new cdk.CfnOutput(this, 'DataDistributionUrl', {
       value: `https://${distribution.distributionDomainName}`,
       description: 'Set as DATA_BASE_URL in Vercel environment variables',

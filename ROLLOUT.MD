@@ -182,7 +182,34 @@ Add `cdk deploy DataStack IngestionStack` to CI pipeline.
 
 ---
 
-## Phase 4 — DNS
+## Phase 4 — FantasyPros API Integration
+
+API key obtained. Currently using an HTML scrape of the embedded `ecrData` JS variable (all 6 ranking formats). This works but carries scrape-brittleness risk. Full API migration is deferred pending resolution of the open questions below.
+
+**What the current scrape provides:**
+- ECR consensus rankings across 6 formats (std, half_ppr, ppr, sf_std, sf_half_ppr, sf_ppr)
+- Full ranking object per player per format + derived ADP (`rank_ecr - player_ecr_delta`)
+- Used for: FA eligibility filter in `ingest.py` + `rankings.json` stored in S3 for future UI use
+
+**Open questions**
+
+| Question | Detail |
+|---|---|
+| **Superflex ADP gap** | Does the official API expose superflex ECR/ADP directly, or only standard formats? If not, the scrape may still be needed for sf formats regardless. |
+| **Replace scrape entirely?** | API is more reliable but adds a key/credential dependency. A hybrid (API for std/ppr, scrape for sf) is possible but messy — prefer one approach. |
+| **FantasyPros projections as defaults** | FP has weekly/seasonal projections per player. Could replace or supplement historical-stats defaults in `ProjectionForm` (`packages/core/utils/defaults.ts`). Makes the tool useful before a user enters any data. Major scope addition — needs design thought on how FP projections and user projections coexist. |
+| **Rankings page sorted by FP projections** | If FP projections land, the rankings page could default to FP-projected points rather than requiring user input first. Requires plumbing FP data through `getAllDefaultProjections()` in `lib/data.ts`. |
+| **Attribution / TOS** | Official API TOS may differ from scrape attribution requirements. Confirm before building UI that surfaces FP data prominently. |
+
+**Likely implementation shape (when ready):**
+- New `scripts/fetch_fp_projections.py` + `ingest.py` step → `projections.json` in S3
+- `packages/core/utils/defaults.ts` updated to prefer FP projections over historical when available
+- `lib/data.ts` adds `getProjections()` loader
+- Rankings page: FP projected points as default sort
+
+---
+
+## Phase 5 — DNS
 
 **Strategy: Route 53 + Vercel.**
 
