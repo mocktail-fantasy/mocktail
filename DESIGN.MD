@@ -42,9 +42,12 @@ All business logic — TypeScript interfaces, the scoring calculation engine, an
 
 ## Data Model
 
-### Source Files (MVP)
+### Source Files
 
-Static JSON files served from `/public` in `apps/web`. All files are read server-side via `fs.readFileSync` in `apps/web/lib/data.ts` — not client-side fetch. This pattern is designed to swap to S3/CloudFront fetches in production without changing consumer code.
+In production, all data files are served from S3 via CloudFront. Locally, they are read from `apps/web/public/` via `fs.readFileSync`. The switch is controlled by the `DATA_BASE_URL` environment variable in `apps/web/lib/data.ts` — consumer code is identical in both cases.
+
+Files updated nightly by Lambda: `active_rosters.json`, `rankings.json`.
+Files updated manually once per offseason: all others.
 
 **`/public/active_rosters.json`** — Flat array of active NFL players. Only QB/RB/WR/TE positions are used by the app.
 ```json
@@ -118,6 +121,21 @@ Static JSON files served from `/public` in `apps/web`. All files are read server
 ```
 
 **`/public/teams.json`** — Team metadata keyed by team abbreviation. Includes colors, logo URLs, and conference/division info.
+
+**`/public/rankings.json`** — FantasyPros ECR consensus rankings keyed by FantasyPros `player_id`. Each entry has top-level player metadata and a `rankings` dict keyed by format (std, half_ppr, ppr, sf_std, sf_half_ppr, sf_ppr). Each format stores the full ECR object plus a derived `adp` field (`rank_ecr - player_ecr_delta`). Updated nightly by Lambda.
+```json
+{
+  "16905": {
+    "player_id": 16905,
+    "player_name": "Ja'Marr Chase",
+    "player_team_id": "CIN",
+    "player_position_id": "WR",
+    "rankings": {
+      "half_ppr": { "rank_ecr": 2, "rank_min": 1, "rank_max": 3, "adp": 3, ... }
+    }
+  }
+}
+```
 
 **`/public/player_summaries.json`** — AI-generated news summaries for NFL skill-position players, keyed by `player_id`. Generated on a schedule by an external agent and dropped into this directory. Not every player has an entry.
 ```json
@@ -433,43 +451,42 @@ Exposes: `scoringType`, `setScoringType`, `tep`, `setTep`, `twoQB`, `setTwoQB`, 
 
 ---
 
-### Phase 3: Production p0
+### Phase 3: Production p0 ✓
 
 **Goal:** Public deployment with user accounts and persistent data.
 
 **Hosting:** Vercel (Next.js web app).
 
-**Auth:** NextAuth.js with OAuth providers: Google, Discord, GitHub.
+**Auth:** NextAuth.js with Google OAuth. User ID is the stable Google `providerAccountId` (captured via `jwt` callback).
 
-**New Features:**
-- User projections persist to DynamoDB (not `localStorage`)
-- Manual ranking overrides: users can drag-and-drop to reorder rankings independently of calculated scores
-- CSV export of rankings
-- Nightly automated ingestion of updated roster and historical data
+**Projection persistence:** Hybrid — `localStorage` for instant reads during a session, DynamoDB write-through on Save. On sign-in, DynamoDB projections are fetched and hydrated into `localStorage` via a `projectionssynced` custom DOM event.
 
-**AWS Infrastructure (managed via AWS CDK):**
+**AWS Infrastructure (managed via AWS CDK — `MocktailStack`):**
 
 | Service | Purpose |
 |---|---|
-| S3 | Stores `active_rosters.json`, `historical_data.json`, `team_history.json`, `player_summaries.json` |
-| CloudFront | CDN in front of S3 for fast global delivery of static data |
-| DynamoDB | Stores per-user projection and ranking data |
-| Lambda | Nightly job: fetches updated roster/historical data and writes to S3 |
-| NextAuth.js | Handles OAuth flows (runs within Next.js on Vercel) |
+| S3 (`mocktail-data-prod`) | Stores all data files; private, no public access |
+| CloudFront | CDN in front of S3 via OAC; 1-year TTL, invalidated by Lambda after each run |
+| DynamoDB (`mocktail-projections`) | Per-user projection data; on-demand billing, RETAIN policy |
+| Lambda (`IngestionFunction`) | Nightly roster + rankings refresh; Python 3.12 + pandas layer |
+| EventBridge | Triggers Lambda nightly at 3am ET (8am UTC) |
 
 **DynamoDB Data Model:**
-- Partition key: `user_id`
-- Sort key: `player_id`
-- Attributes: `projection` (map), `fantasy_points` (number), `rank_override` (number, optional), `updated_at` (string)
+- Partition key: `user_id` (Google `providerAccountId`)
+- Sort key: `player_id` (NflVerse `gsis_id`)
+- Attributes: `projection` (map), `fantasy_points` (number), `updated_at` (string)
 
-**Data Flow (production):**
-1. Static JSON files served via CloudFront → S3
-2. User projections read/written via Next.js API routes → DynamoDB
-3. Nightly Lambda updates S3 files; CloudFront cache invalidated on update
+**Lambda ingestion (`infra/lambda/ingest.py`):**
+1. Scrape FantasyPros ECR rankings (6 formats) → `rankings.json`
+2. Download `players.csv` + `depth_charts_{year}.csv` from NflVerse
+3. Build `active_rosters.json` (tier 1: depth chart, tier 2: `half_ppr`-ranked FAs)
+4. Upload both files to S3; invalidate CloudFront
+
+**Allow/deny config:** `s3://mocktail-data-prod/config/config.json` — force-include or exclude players by `gsis_id` without redeploying Lambda.
 
 ---
 
-### Phase 4: Future (Aspirational)
+### Phase 4+: Future (Aspirational)
 
 These features are out of scope for active development but inform architectural decisions made today.
 
