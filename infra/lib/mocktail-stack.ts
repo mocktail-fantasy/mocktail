@@ -79,6 +79,7 @@ export class MocktailStack extends cdk.Stack {
       environment: {
         BUCKET: dataBucket.bucketName,
         DISTRIBUTION_ID: distribution.distributionId,
+        FP_API_KEY: process.env.FP_API_KEY ?? '',
       },
     });
 

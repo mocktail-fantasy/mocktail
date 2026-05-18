@@ -322,31 +322,29 @@ def build_tier1_rosters(depth_charts: pd.DataFrame) -> pd.DataFrame:
     ].reset_index(drop=True)
 
 
-def load_ranked_names() -> set | None:
-    """Return set of lowercased player names from rankings.json, or None if unavailable."""
+def load_ranked_ids() -> set | None:
+    """Return set of gsis_ids from rankings.json with half_ppr ranking, or None if unavailable."""
     rankings_path = OUTPUT_DIR / "rankings.json"
     if not rankings_path.exists():
         print("  Warning: rankings.json not found — all skill position FAs will be included")
         return None
     data = json.loads(rankings_path.read_text())
-    return {p["player_name"].lower() for p in data.values() if "half_ppr" in p["rankings"]}
+    return {gsis_id for gsis_id, p in data.items() if "half_ppr" in p["rankings"]}
 
 
 def build_tier2_rosters(
     tier1_ids: set,
     players: pd.DataFrame,
-    ranked_names: set | None = None,
+    ranked_ids: set | None = None,
 ) -> pd.DataFrame:
-    """Free agents: in FantasyPros rankings (or all skill FAs if unavailable) and not on a current roster."""
+    """Free agents: in FantasyPros half_ppr rankings (or all skill FAs if unavailable) and not on a current roster."""
     skill_players = players[
         ~players["gsis_id"].isin(tier1_ids) &
         players["position_group"].isin(FANTASY_POSITIONS)
     ].copy()
 
-    if ranked_names is not None:
-        # Primary path: filter by FantasyPros rankings (name match)
-        skill_players["name_lower"] = skill_players["display_name"].str.lower()
-        merged = skill_players[skill_players["name_lower"].isin(ranked_names)].copy()
+    if ranked_ids is not None:
+        merged = skill_players[skill_players["gsis_id"].isin(ranked_ids)].copy()
     else:
         # Fallback: let all skill position FAs through
         merged = skill_players.copy()
@@ -643,9 +641,9 @@ def generate_exports(force_download: bool = False):
     )
     annual_by_team["season"] = annual_by_team["season"].astype(int)
 
-    ranked_names = load_ranked_names()
+    ranked_ids = load_ranked_ids()
     tier1   = build_tier1_rosters(depth_charts)
-    tier2   = build_tier2_rosters(set(tier1["gsis_id"]), players, ranked_names)
+    tier2   = build_tier2_rosters(set(tier1["gsis_id"]), players, ranked_ids)
     rosters = apply_config(
         pd.concat([tier1, tier2], ignore_index=True),
         config, depth_charts, players,

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getPlayer, getPlayerHistory, getPlayerSummaries, currentNFLSeason } from '@/lib/data';
+import { getPlayer, getPlayerHistory, getPlayerSummaries, getProjections, getRankings, currentNFLSeason } from '@/lib/data';
 import { getFantasyPositions, getDefaultProjection } from '@mocktail/core';
 import type { Position } from '@mocktail/core';
 import PositionTabs from './_components/PositionTabs';
@@ -39,16 +39,22 @@ export default async function PlayerPage({
   const player = await getPlayer(id);
   if (!player) notFound();
 
-  const [history, summaries] = await Promise.all([
+  const [history, summaries, fpProjections, rankings] = await Promise.all([
     getPlayerHistory(id),
     getPlayerSummaries(),
+    getProjections(),
+    getRankings(),
   ]);
   const seasons = history?.seasons ?? [];
   const playerSummary = summaries[player.player_id] ?? null;
   const fantasyPositions = getFantasyPositions(player.positions);
   const primaryPosition = fantasyPositions[0];
-  const defaultProj = getDefaultProjection(seasons);
+  const fpProjection = fpProjections[id] ?? undefined;
+  const defaultProj = getDefaultProjection(seasons, fpProjection);
   const season = currentNFLSeason();
+  const adp = rankings[id]?.adp ?? null;
+  const playerRanking = rankings[id];
+  const ecrData = playerRanking?.rankings?.half_ppr ?? null;
 
   const back =
     sp.from === 'teams'
@@ -139,6 +145,18 @@ export default async function PlayerPage({
                 ))}
                 <span style={{ color: 'var(--color-border-medium)' }}>·</span>
                 <span>Age {player.age}</span>
+                {ecrData && (
+                  <>
+                    <span style={{ color: 'var(--color-border-medium)' }}>·</span>
+                    <span>ECR #{ecrData.rank_ecr} ({ecrData.pos_rank})</span>
+                  </>
+                )}
+                {adp != null && (
+                  <>
+                    <span style={{ color: 'var(--color-border-medium)' }}>·</span>
+                    <span>ADP {adp}</span>
+                  </>
+                )}
               </div>
             </div>
             {seasons.length > 0 && (
@@ -170,6 +188,7 @@ export default async function PlayerPage({
           fantasyPositions={fantasyPositions}
           seasons={seasons}
           season={season}
+          fpProjection={fpProjection}
         />
       </div>
     </main>

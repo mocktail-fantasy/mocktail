@@ -121,6 +121,25 @@ export interface TeamSummary {
   sources: string[];
 }
 
+export interface RankingFormat {
+  rank_ecr: number;
+  rank_min: string;
+  rank_max: string;
+  rank_ave: string;
+  rank_std: string;
+  pos_rank: string;
+  tier: number;
+}
+
+export interface PlayerRanking {
+  fp_id: number;
+  player_name: string;
+  player_team_id: string;
+  player_position_id: string;
+  rankings: Partial<Record<'std' | 'half_ppr' | 'ppr' | 'sf_std' | 'sf_half_ppr' | 'sf_ppr', RankingFormat>>;
+  adp: number | null;
+}
+
 export type ScoringType = 'standard' | 'half_ppr' | 'ppr';
 
 export interface ScoringSettings {

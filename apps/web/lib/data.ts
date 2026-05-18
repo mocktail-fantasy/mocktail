@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 import { FANTASY_POSITIONS, getDefaultFantasyPoints, getDefaultProjection } from '@mocktail/core';
-import type { Player, PlayerHistory, PlayerProjection, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position } from '@mocktail/core';
+import type { Player, PlayerHistory, PlayerProjection, PlayerRanking, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position } from '@mocktail/core';
 
 async function loadJson<T>(filename: string): Promise<T> {
   const base = process.env.DATA_BASE_URL;
@@ -36,12 +36,23 @@ export async function getPlayerHistory(playerId: string): Promise<PlayerHistory 
   return data[playerId] ?? null;
 }
 
+export async function getProjections(): Promise<Record<string, PlayerProjection>> {
+  return loadJson<Record<string, PlayerProjection>>('projections.json').catch(() => ({}));
+}
+
+export async function getRankings(): Promise<Record<string, PlayerRanking>> {
+  return loadJson<Record<string, PlayerRanking>>('rankings.json').catch(() => ({}));
+}
+
 export async function getAllDefaultProjections(): Promise<Record<string, PlayerProjection>> {
-  const data = await loadJson<Record<string, PlayerHistory>>('historical_data.json');
+  const [data, fpProjections] = await Promise.all([
+    loadJson<Record<string, PlayerHistory>>('historical_data.json'),
+    getProjections(),
+  ]);
   const minSeason = currentNFLSeason();
   const result: Record<string, PlayerProjection> = {};
   for (const [playerId, history] of Object.entries(data)) {
-    result[playerId] = getDefaultProjection(history.seasons, minSeason);
+    result[playerId] = getDefaultProjection(history.seasons, fpProjections[playerId], minSeason);
   }
   return result;
 }

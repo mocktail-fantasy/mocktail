@@ -105,6 +105,7 @@ interface Props {
   positions: Position[];
   seasons: SeasonStats[];
   season: number;
+  fpProjection?: PlayerProjection;
 }
 
 const SCORING_LABELS: Record<string, string> = {
@@ -113,13 +114,13 @@ const SCORING_LABELS: Record<string, string> = {
   ppr: 'PPR',
 };
 
-export default function ProjectionForm({ playerId, positions, seasons, season }: Props) {
+export default function ProjectionForm({ playerId, positions, seasons, season, fpProjection }: Props) {
   const { scoringType, scoringSettings } = useScoringType();
   const { data: session } = useSession();
   const hasQB = positions.includes('QB');
   const hasSkill = positions.some((p) => p === 'RB' || p === 'WR' || p === 'TE');
 
-  const defaultProjection = useMemo(() => getDefaultProjection(seasons), [seasons]);
+  const defaultProjection = useMemo(() => getDefaultProjection(seasons, fpProjection), [seasons, fpProjection]);
   const defaultStrings = useMemo(() => toStrings(defaultProjection), [defaultProjection]);
 
   const [values, setValues] = useState<Record<string, string>>(defaultStrings);
@@ -206,7 +207,7 @@ export default function ProjectionForm({ playerId, positions, seasons, season }:
           border: '0.5px solid var(--color-baseline-border)',
           whiteSpace: 'nowrap',
         }}>
-          Baseline: {season - 1} season
+          Baseline: {fpProjection ? 'FantasyPros' : `${season - 1} season`}
         </span>
       </div>
 

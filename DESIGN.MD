@@ -449,6 +449,14 @@ Exposes: `scoringType`, `setScoringType`, `tep`, `setTep`, `twoQB`, `setTwoQB`, 
 - Phase 2 implementation: flags inconsistencies and displays them. Does not auto-correct.
 - Phase 3+ consideration: offer to auto-adjust up or down
 
+**Reconciliation and roster scope (open design question):**
+
+The consistency checker requires all skill players on a team to be in the system so that passing yards/TDs can be compared against the sum of their receivers' stats. Currently, rosters are sourced from NflVerse depth charts (~860 players including backups and depth), which makes this math possible.
+
+A future simplification would be to source rosters from FantasyPros rankings instead of NflVerse depth charts. This would reduce the player pool to ~400+ fantasy-relevant players and eliminate roster management complexity. The ID mapping constraint (ESPN ID bridge: FP player_id → espn_id → gsis_id) currently maps 364 of 370 ranked skill players. The 11 unmapped players are all ranked 365+ (fringe/depth). If unmapped players become important in the future, a name+team fuzzy match against NflVerse players.csv could serve as a backup mapping strategy.
+
+If rosters are reduced to FP-ranked players only, full consistency checking breaks — backup receivers and depth TEs absorb real passing volume that wouldn't be accounted for. The likely solution is a **remainder bucket**: for each team, track the gap between the QB's projected pass yards/TDs and the sum of all ranked receivers' stats. The consistency checker compares against (ranked receivers + remainder) rather than all receivers. This means users only have to stat out fantasy-relevant players, and the remainder handles the rest implicitly.
+
 ---
 
 ### Phase 3: Production p0 ✓

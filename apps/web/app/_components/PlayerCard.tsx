@@ -55,6 +55,9 @@ export default function PlayerCard({
   pointsUnit,
   projection,
   hasNews,
+  adp,
+  showAdp,
+  ecr,
 }: {
   player: Player;
   rank?: number;
@@ -62,6 +65,9 @@ export default function PlayerCard({
   pointsUnit?: string;
   projection?: PlayerProjection;
   hasNews?: boolean;
+  adp?: number;
+  showAdp?: boolean;
+  ecr?: { rank: number; posRank: string };
 }) {
   const fantasyPositions = getFantasyPositions(player.positions);
   const primaryPosition = fantasyPositions[0];
@@ -69,7 +75,7 @@ export default function PlayerCard({
   return (
     <Link
       href={`/players/${player.player_id}`}
-      className="grid grid-cols-[40px_minmax(0,1fr)_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_16px] items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)]"
+      className={`grid ${showAdp ? 'grid-cols-[40px_minmax(0,1fr)_88px_56px_56px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_56px_56px_16px]' : 'grid-cols-[40px_minmax(0,1fr)_88px_56px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_56px_16px]'} items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)]`}
       style={{ textDecoration: 'none' }}
     >
       {/* Rank */}
@@ -123,6 +129,28 @@ export default function PlayerCard({
 
       {/* Projected points */}
       <StatChip value={projectedPoints} unit={pointsUnit} />
+
+      {/* ECR */}
+      <span style={{
+        fontSize: '13px',
+        fontVariantNumeric: 'tabular-nums',
+        textAlign: 'right',
+        color: ecr ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
+      }}>
+        {ecr ? ecr.rank : '—'}
+      </span>
+
+      {/* ADP */}
+      {showAdp && (
+        <span style={{
+          fontSize: '13px',
+          fontVariantNumeric: 'tabular-nums',
+          textAlign: 'right',
+          color: adp != null ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
+        }}>
+          {adp != null ? adp : '—'}
+        </span>
+      )}
 
       {/* Chevron */}
       <svg className="h-4 w-4" style={{ color: 'var(--color-text-tertiary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

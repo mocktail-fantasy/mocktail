@@ -230,3 +230,5 @@ The reconciliation concept from DESIGN.MD has been expanded. Rather than simple 
 - Surfaces issues with AI-generated explanations rather than just flagging raw mismatches
 
 This feature is deprioritized — not in any active rollout phase — but should inform architectural decisions (e.g. having all projections accessible server-side when auth lands).
+
+**Roster scope consideration:** Full cross-player consistency checking requires all skill players to be in the system. If rosters are ever reduced to FP-ranked players only (~400 vs ~860 today), a **remainder bucket** per team would be needed — tracking unaccounted passing volume so the checker can still validate QB projections against the sum of ranked receivers plus the remainder. See DESIGN.MD for details.

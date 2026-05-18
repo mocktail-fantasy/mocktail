@@ -7,7 +7,8 @@ import PlayerCard from './PlayerCard';
 import { useScoringType } from './ScoringContext';
 
 type FilterPosition = Position | 'ALL';
-type RankingMode = 'points' | 'vorp';
+type RankingMode = 'points' | 'vorp' | 'adp' | 'ecr';
+type EcrEntry = { rank: number; posRank: string };
 
 const POSITION_TABS: FilterPosition[] = ['ALL', 'QB', 'RB', 'WR', 'TE'];
 
@@ -41,13 +42,26 @@ export default function RosterGrid({
   defaultPoints,
   defaultProjections,
   newsPlayerIds,
+  adpMap,
+  ecrMap,
 }: {
   players: Player[];
   defaultPoints: Record<string, number>;
   defaultProjections: Record<string, PlayerProjection>;
   newsPlayerIds?: Set<string>;
+  adpMap?: Record<string, number>;
+  ecrMap?: Record<string, Record<string, EcrEntry>>;
 }) {
-  const { scoringSettings, twoQB } = useScoringType();
+  const { scoringType, scoringSettings, twoQB, tep } = useScoringType();
+  const showAdp = !twoQB && !tep;
+
+  // Map scoring context to the correct ECR format key
+  const ecrFormat = useMemo(() => {
+    const base = scoringType === 'half_ppr' ? 'half_ppr' : scoringType === 'ppr' ? 'ppr' : 'std';
+    return twoQB ? `sf_${base}` : base;
+  }, [scoringType, twoQB]);
+
+  const getEcr = (playerId: string): EcrEntry | undefined => ecrMap?.[playerId]?.[ecrFormat];
   const [activePosition, setActivePosition] = useState<FilterPosition>('ALL');
   const [rankingMode, setRankingMode] = useState<RankingMode>('vorp');
   const [search, setSearch] = useState('');
@@ -108,18 +122,32 @@ export default function RosterGrid({
     return scores;
   }, [players, projectedPoints, vorpBaselines]);
 
+  // Fall back from ADP if hidden, from VORP if position-filtered
   const effectiveMode: RankingMode =
-    rankingMode === 'vorp' && activePosition === 'ALL' ? 'vorp' : 'points';
+    rankingMode === 'adp' && !showAdp ? 'vorp'
+    : rankingMode === 'vorp' && activePosition !== 'ALL' ? 'points'
+    : rankingMode;
 
   const ranked = useMemo(() => {
     return [...filtered].sort((a, b) => {
+      if (effectiveMode === 'adp') {
+        const aAdp = adpMap?.[a.player_id] ?? 9999;
+        const bAdp = adpMap?.[b.player_id] ?? 9999;
+        return aAdp - bAdp;
+      }
+      if (effectiveMode === 'ecr') {
+        const aEcr = getEcr(a.player_id)?.rank ?? 9999;
+        const bEcr = getEcr(b.player_id)?.rank ?? 9999;
+        return aEcr - bEcr;
+      }
       const val = (id: string) =>
         effectiveMode === 'vorp'
           ? (vorpScores[id] ?? -999)
           : (projectedPoints[id] ?? -1);
       return val(b.player_id) - val(a.player_id);
     });
-  }, [filtered, projectedPoints, vorpScores, effectiveMode]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtered, projectedPoints, vorpScores, adpMap, ecrFormat, effectiveMode]);
 
   return (
     <div className="flex flex-col sm:min-h-0 sm:flex-1">
@@ -158,8 +186,9 @@ export default function RosterGrid({
             borderRadius: '6px',
             overflow: 'hidden',
           }}>
-            {(['points', 'vorp'] as RankingMode[]).map((mode, i) => {
+            {(showAdp ? ['vorp', 'points', 'ecr', 'adp'] as RankingMode[] : ['vorp', 'points', 'ecr'] as RankingMode[]).map((mode, i, arr) => {
               const isActive = rankingMode === mode;
+              const label = mode === 'points' ? 'Pts' : mode === 'vorp' ? 'VORP' : mode === 'ecr' ? 'ECR' : 'ADP';
               return (
                 <button
                   key={mode}
@@ -169,7 +198,7 @@ export default function RosterGrid({
                     fontSize: '12px',
                     fontWeight: 500,
                     border: 'none',
-                    borderRight: i === 0 ? '0.5px solid var(--color-border-medium)' : 'none',
+                    borderRight: i < arr.length - 1 ? '0.5px solid var(--color-border-medium)' : 'none',
                     cursor: 'pointer',
                     background: isActive ? 'var(--color-text-primary)' : 'transparent',
                     color: isActive ? 'var(--color-bg-tertiary)' : 'var(--color-text-secondary)',
@@ -177,7 +206,7 @@ export default function RosterGrid({
                     transition: 'all 0.15s',
                   }}
                 >
-                  {mode === 'points' ? 'Total Points' : 'Smart (VORP)'}
+                  {label}
                 </button>
               );
             })}
@@ -217,7 +246,7 @@ export default function RosterGrid({
       <div className="card sm:flex sm:min-h-0 sm:flex-1 sm:flex-col">
         <div className="sm:flex-1 sm:overflow-y-auto">
           {/* Column headers */}
-          <div className="grid grid-cols-[40px_minmax(0,1fr)_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_16px] items-center gap-3 sm:gap-4 px-4 py-2 sticky top-0 z-10"
+          <div className={`grid ${showAdp ? 'grid-cols-[40px_minmax(0,1fr)_88px_56px_56px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_56px_56px_16px]' : 'grid-cols-[40px_minmax(0,1fr)_88px_56px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_56px_16px]'} items-center gap-3 sm:gap-4 px-4 py-2 sticky top-0 z-10`}
             style={{
               borderBottom: '0.5px solid var(--color-border-light)',
               background: 'var(--color-bg-secondary)',
@@ -228,6 +257,8 @@ export default function RosterGrid({
             <span style={labelStyle}>Player</span>
             <span className="hidden sm:block" style={labelStyle}>Projected stats</span>
             <span style={{ ...labelStyle, textAlign: 'right' }}>Proj pts</span>
+            <span style={{ ...labelStyle, textAlign: 'right' }}>ECR</span>
+            {showAdp && <span style={{ ...labelStyle, textAlign: 'right' }}>ADP</span>}
             <span />
           </div>
 
@@ -242,10 +273,24 @@ export default function RosterGrid({
                   pointsUnit="pts"
                   projection={projections[player.player_id] ?? EMPTY_PROJECTION}
                   hasNews={newsPlayerIds?.has(player.player_id)}
+                  adp={showAdp ? adpMap?.[player.player_id] : undefined}
+                  showAdp={showAdp}
+                  ecr={getEcr(player.player_id)}
                 />
               </div>
             ))}
           </div>
+        </div>
+        {/* Attribution */}
+        <div style={{
+          padding: '8px 16px',
+          borderTop: '0.5px solid var(--color-border-light)',
+          background: 'var(--color-bg-secondary)',
+          borderRadius: '0 0 10px 10px',
+        }}>
+          <span style={{ fontSize: '10px', color: 'var(--color-text-tertiary)' }}>
+            Rankings data via FantasyPros (fantasypros.com)
+          </span>
         </div>
       </div>
     </div>

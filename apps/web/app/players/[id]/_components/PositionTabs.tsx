@@ -1,4 +1,4 @@
-import type { Position, SeasonStats } from '@mocktail/core';
+import type { Position, SeasonStats, PlayerProjection } from '@mocktail/core';
 import HistoricalStatsTable from './HistoricalStatsTable';
 import ProjectionForm from './ProjectionForm';
 
@@ -7,6 +7,7 @@ interface Props {
   fantasyPositions: Position[];
   seasons: SeasonStats[];
   season: number;
+  fpProjection?: PlayerProjection;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -19,10 +20,10 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
 };
 
-export default function PositionTabs({ playerId, fantasyPositions, seasons, season }: Props) {
+export default function PositionTabs({ playerId, fantasyPositions, seasons, season, fpProjection }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <ProjectionForm playerId={playerId} positions={fantasyPositions} seasons={seasons} season={season} />
+      <ProjectionForm playerId={playerId} positions={fantasyPositions} seasons={seasons} season={season} fpProjection={fpProjection} />
 
       {seasons.length > 0 && (
         <div>

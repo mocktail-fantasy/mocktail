@@ -13,11 +13,12 @@ const EMPTY_PROJECTION: PlayerProjection = {
 };
 
 /**
- * Returns a projection pre-filled from a player's most recent season stats.
- * If minSeason is provided, returns empty projection if the player's most
- * recent season is older than minSeason.
+ * Returns a projection pre-filled from FantasyPros data (if available) or
+ * the player's most recent season stats. If minSeason is provided, returns
+ * empty projection if the player's most recent season is older than minSeason.
  */
-export function getDefaultProjection(seasons: SeasonStats[], minSeason?: number): PlayerProjection {
+export function getDefaultProjection(seasons: SeasonStats[], fpProjection?: PlayerProjection, minSeason?: number): PlayerProjection {
+  if (fpProjection) return fpProjection;
   const latest = [...seasons].sort((a, b) => b.season - a.season)[0];
   if (!latest) return { ...EMPTY_PROJECTION };
   if (minSeason !== undefined && latest.season < minSeason) return { ...EMPTY_PROJECTION };
