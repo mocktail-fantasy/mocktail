@@ -31,7 +31,7 @@ See `ROLLOUT.MD` for full phase specs.
 | Phase 2b — Auth | NextAuth.js + Google OAuth | **Complete** |
 | Phase 2c — Persistence | DynamoDB wiring + session sync | **Complete** |
 | Phase 3 — Data Pipeline | S3 + CloudFront + Lambda ingestion | **Complete** |
-| Phase 4 — FantasyPros API | Rankings + projections integration | Not started |
+| Phase 4 — FantasyPros API | Rankings, projections, ADP, ECR integration | **Complete** |
 | Phase 5 — DNS | Route 53 + custom domain on Vercel | Not started |
 
 ---
@@ -68,7 +68,7 @@ No env vars required. `DATA_BASE_URL` unset → app reads from `apps/web/public/
 | AWS | **Live** | `MocktailStack` deployed, least-privilege IAM user created for Vercel |
 | Google OAuth | **Live** | OAuth app created, credentials in Vercel |
 | Discord OAuth | **Live** | OAuth app created, credentials in Vercel |
-| FantasyPros | **API key obtained** | Not yet integrated — see Phase 4 in ROLLOUT.MD |
+| FantasyPros | **Live** | API key set in Lambda env; rankings, projections, ADP fetched nightly |
 | Route 53 / domain | Not set up | Phase 5 |
 
 ---
@@ -80,14 +80,18 @@ Data is served from S3 via CloudFront and refreshed nightly by Lambda.
 ### Lambda ingestion (`infra/lambda/ingest.py`)
 
 Runs nightly at 3am ET. Steps:
-1. Fetch FantasyPros ECR rankings (6 formats: std, half_ppr, ppr, sf_std, sf_half_ppr, sf_ppr) via HTML scrape of embedded `ecrData` JS variable
-2. Download `players.csv` + `depth_charts_{year}.csv` fresh from NflVerse
-3. Build `active_rosters.json`:
+1. Download `players.csv` + `depth_charts_{year}.csv` fresh from NflVerse
+2. Build FP → gsis_id mapping via ESPN ID bridge (FP players endpoint → espn_id → NflVerse gsis_id)
+3. Fetch FantasyPros data via official API (`x-api-key` header):
+   - ECR rankings (6 formats: std, half_ppr, ppr, sf_std, sf_half_ppr, sf_ppr)
+   - ADP (half PPR only)
+   - Stat projections (QB/RB/WR/TE, season-long)
+4. Build `active_rosters.json`:
    - **Tier 1** — players on current depth charts with fantasy positions (QB/RB/WR/TE)
    - **Tier 2** — free agents: skill position players absent from depth charts but present in `half_ppr` rankings (superflex formats excluded to avoid noise from marginal players like fullbacks)
    - Apply allow/deny config from `s3://mocktail-data-prod/config/config.json`
-4. Upload `active_rosters.json` + `rankings.json` to S3
-5. Invalidate CloudFront (`/*`)
+5. Upload `active_rosters.json` + `rankings.json` + `projections.json` to S3
+6. Invalidate CloudFront (`/*`)
 
 ### Static/historical data (manual, once per offseason)
 
@@ -96,7 +100,8 @@ Updated locally via `scripts/generate_data.py`, uploaded via `scripts/upload_dat
 | File | Source | Update frequency |
 |---|---|---|
 | `active_rosters.json` | NflVerse depth charts + FantasyPros rankings | **Nightly (Lambda)** |
-| `rankings.json` | FantasyPros ECR (6 formats) | **Nightly (Lambda)** |
+| `rankings.json` | FantasyPros ECR (6 formats) + ADP, keyed by gsis_id | **Nightly (Lambda)** |
+| `projections.json` | FantasyPros stat projections (QB/RB/WR/TE), keyed by gsis_id | **Nightly (Lambda)** |
 | `historical_data.json` | nflverse-data season stats | Once per offseason |
 | `team_history.json` | nflverse-data season stats | Once per offseason |
 | `team_summaries.json` | Derived from historical data | Once per offseason |

@@ -32,7 +32,7 @@ FP_API_KEY = os.environ.get("FP_API_KEY", "")
 NFLVERSE_HOST = "github.com"
 NFLVERSE_BASE = "/nflverse/nflverse-data/releases/download"
 FANTASY_POSITIONS = {"QB", "RB", "WR", "TE"}
-DEPTH_CHARTS_YEAR = datetime.date.today().year
+FP_TEAM_MAP = {"JAC": "JAX", "LAR": "LA"}
 
 FP_HOST = "api.fantasypros.com"
 FP_BASE = "/public/v2/json"
@@ -225,16 +225,6 @@ def load_players() -> pd.DataFrame:
     return df.dropna(subset=["gsis_id"]).reset_index(drop=True)
 
 
-def load_depth_charts() -> pd.DataFrame:
-    df = pd.read_csv(
-        STAGE_DIR / f"depth_charts_{DEPTH_CHARTS_YEAR}.csv",
-        usecols=["dt", "team", "player_name", "gsis_id", "pos_abb", "pos_rank"],
-        dtype=str,
-    )
-    df = df.dropna(subset=["gsis_id"]).reset_index(drop=True)
-    df["gsis_id"] = df["gsis_id"].replace("00-0023500", "00-0039471")
-    return df
-
 
 def load_config() -> dict:
     """Load allow/deny config from S3. Falls back to empty config if not found."""
@@ -249,51 +239,33 @@ def load_config() -> dict:
 # Roster builders
 # ---------------------------------------------------------------------------
 
-def build_tier1_rosters(depth_charts: pd.DataFrame) -> pd.DataFrame:
-    latest_dt = depth_charts["dt"].max()
-    dc = depth_charts[
-        (depth_charts["dt"] == latest_dt) & depth_charts["pos_abb"].isin(FANTASY_POSITIONS)
-    ].copy()
-
-    rosters = (
-        dc.groupby("gsis_id")
-        .agg(
-            team=("team", "first"),
-            player_name=("player_name", "first"),
-            pos_abbs=("pos_abb", lambda x: sorted(set(x.dropna()))),
-        )
-        .reset_index()
-    )
-    return rosters[
-        rosters["pos_abbs"].apply(lambda p: bool(FANTASY_POSITIONS & set(p)))
-    ].reset_index(drop=True)
-
-
-def build_tier2_rosters(
-    tier1_ids: set,
-    players: pd.DataFrame,
-    ranked_ids: set | None = None,
+def build_rosters_from_rankings(
+    rankings: dict,
+    players_df: pd.DataFrame,
 ) -> pd.DataFrame:
-    skill_players = players[
-        ~players["gsis_id"].isin(tier1_ids) &
-        players["position_group"].isin(FANTASY_POSITIONS)
-    ].copy()
-
-    if ranked_ids is not None:
-        merged = skill_players[skill_players["gsis_id"].isin(ranked_ids)].copy()
-    else:
-        merged = skill_players.copy()
-
-    merged["pos_abbs"]    = merged["position_group"].apply(lambda p: [p])
-    merged["team"]        = "FA"
-    merged["player_name"] = merged["display_name"]
-    return merged[["gsis_id", "team", "player_name", "pos_abbs"]].reset_index(drop=True)
+    """Build roster from FP-ranked players. Team from FP, metadata from NflVerse."""
+    players_index = players_df.set_index("gsis_id")
+    rows = []
+    for gsis_id, r in rankings.items():
+        team = FP_TEAM_MAP.get(r["player_team_id"], r["player_team_id"])
+        # Position from players.csv, fall back to FP position
+        if gsis_id in players_index.index:
+            pos_group = players_index.loc[gsis_id, "position_group"]
+            pos_abbs = [pos_group] if pd.notna(pos_group) and pos_group in FANTASY_POSITIONS else [r["player_position_id"]]
+        else:
+            pos_abbs = [r["player_position_id"]]
+        rows.append({
+            "gsis_id": gsis_id,
+            "team": team,
+            "player_name": r["player_name"],
+            "pos_abbs": pos_abbs,
+        })
+    return pd.DataFrame(rows)
 
 
 def apply_config(
     rosters: pd.DataFrame,
     config: dict,
-    depth_charts: pd.DataFrame,
     players: pd.DataFrame,
 ) -> pd.DataFrame:
     deny_ids = set(config.get("deny", []))
@@ -305,14 +277,6 @@ def apply_config(
     if not to_add:
         return rosters
 
-    latest_dt = depth_charts["dt"].max()
-    dc = depth_charts[depth_charts["dt"] == latest_dt]
-    dc_index = (
-        dc.groupby("gsis_id")
-        .agg(team=("team", "first"), pos_abbs=("pos_abb", lambda x: sorted(set(x.dropna()))))
-        .to_dict("index")
-    )
-
     rows = []
     for gsis_id in to_add:
         p = players[players["gsis_id"] == gsis_id]
@@ -320,17 +284,12 @@ def apply_config(
             print(f"  Warning: allow-listed {gsis_id} not found in players.csv — skipping")
             continue
         p = p.iloc[0]
-        if gsis_id in dc_index:
-            team     = dc_index[gsis_id]["team"]
-            pos_abbs = [pos for pos in dc_index[gsis_id]["pos_abbs"] if pos in FANTASY_POSITIONS]
-        else:
-            team     = "FA"
-            pos_group = p.get("position_group")
-            pos_abbs  = [pos_group] if pd.notna(pos_group) and pos_group in FANTASY_POSITIONS else []
+        pos_group = p.get("position_group")
+        pos_abbs = [pos_group] if pd.notna(pos_group) and pos_group in FANTASY_POSITIONS else []
         if not pos_abbs:
             print(f"  Warning: allow-listed {gsis_id} has no fantasy positions — skipping")
             continue
-        rows.append({"gsis_id": gsis_id, "team": team, "player_name": p["display_name"], "pos_abbs": pos_abbs})
+        rows.append({"gsis_id": gsis_id, "team": "FA", "player_name": p["display_name"], "pos_abbs": pos_abbs})
 
     if rows:
         rosters = pd.concat([rosters, pd.DataFrame(rows)], ignore_index=True)
@@ -368,20 +327,15 @@ def lambda_handler(event, context):
     STAGE_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 1. Download NflVerse CSVs (always fresh)
+    # 1. Download NflVerse players.csv (needed for ID mapping and metadata)
     print("=== Downloading NflVerse data ===")
     _stage_file(
         STAGE_DIR / "players.csv",
         NFLVERSE_HOST,
         f"{NFLVERSE_BASE}/players/players.csv",
     )
-    _stage_file(
-        STAGE_DIR / f"depth_charts_{DEPTH_CHARTS_YEAR}.csv",
-        NFLVERSE_HOST,
-        f"{NFLVERSE_BASE}/depth_charts/depth_charts_{DEPTH_CHARTS_YEAR}.csv",
-    )
 
-    # 2. Load NflVerse players (needed for ID mapping and roster building)
+    # 2. Load NflVerse players
     players = load_players()
 
     # 3. Fetch FantasyPros rankings (API)
@@ -389,7 +343,6 @@ def lambda_handler(event, context):
     fp_to_gsis = build_fp_to_gsis_map(players)
     print(f"  {len(fp_to_gsis)} FP players mapped to gsis_id")
     rankings = build_rankings(fp_to_gsis)
-    ranked_ids = {gsis_id for gsis_id, p in rankings.items() if "half_ppr" in p["rankings"]}
     print(f"  {len(rankings)} players ranked")
 
     # 3b. Fetch FantasyPros projections
@@ -397,18 +350,13 @@ def lambda_handler(event, context):
     projections = fetch_projections(fp_to_gsis)
     print(f"  {len(projections)} players with projections")
 
-    # 4. Build active_rosters.json
+    # 4. Build active_rosters.json (from FP-ranked players)
     print("=== Building active_rosters.json ===")
     config = load_config()
-    depth_charts = load_depth_charts()
-    tier1 = build_tier1_rosters(depth_charts)
-    tier2 = build_tier2_rosters(set(tier1["gsis_id"]), players, ranked_ids)
-    rosters = apply_config(
-        pd.concat([tier1, tier2], ignore_index=True),
-        config, depth_charts, players,
-    )
+    rosters = build_rosters_from_rankings(rankings, players)
+    rosters = apply_config(rosters, config, players)
     rosters_out = build_rosters_export(rosters, players)
-    print(f"  {len(tier1)} rostered + {len(tier2)} free agents = {len(rosters_out)} total")
+    print(f"  {len(rosters_out)} players in roster")
 
     # 5. Write outputs to /tmp
     (OUTPUT_DIR / "active_rosters.json").write_text(json.dumps(rosters_out))

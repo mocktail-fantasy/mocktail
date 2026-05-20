@@ -37,8 +37,8 @@ NFLVERSE_HOST = "github.com"
 NFLVERSE_BASE = "/nflverse/nflverse-data/releases/download"
 
 WEEKLY_START_YEAR = 1999
-DEPTH_CHARTS_YEAR = datetime.date.today().year
 FANTASY_POSITIONS = {"QB", "RB", "WR", "TE"}
+FP_TEAM_MAP = {"JAC": "JAX", "LAR": "LA"}
 
 _HERE = Path(__file__).parent
 STAGE_DIR = _HERE / "stage"
@@ -129,13 +129,6 @@ def stage_all(force: bool = False):
         force,
     )
 
-    _stage_file(
-        STAGE_DIR / f"depth_charts_{DEPTH_CHARTS_YEAR}.csv",
-        NFLVERSE_HOST,
-        f"{NFLVERSE_BASE}/depth_charts/depth_charts_{DEPTH_CHARTS_YEAR}.csv",
-        force,
-    )
-
     for year in range(WEEKLY_START_YEAR, current + 1):
         _stage_file(
             STAGE_DIR / "weekly" / f"{year}.csv",
@@ -196,21 +189,6 @@ def load_players() -> pd.DataFrame:
     )
     return df.dropna(subset=["gsis_id"]).reset_index(drop=True)
 
-
-def load_depth_charts() -> pd.DataFrame:
-    df = pd.read_csv(
-        STAGE_DIR / f"depth_charts_{DEPTH_CHARTS_YEAR}.csv",
-        usecols=["dt", "team", "player_name", "gsis_id", "pos_abb", "pos_rank"],
-        dtype=str,
-    )
-    df = df.dropna(subset=["gsis_id"]).reset_index(drop=True)
-
-    # Frank Gore Sr. (00-0023500) is incorrectly mapped to Frank Gore Jr. (00-0039471)
-    # in the depth chart source due to name-matching that strips "Jr." suffixes.
-    # Both were RBs on the Bills, making this an undetectable collision in the source data.
-    df["gsis_id"] = df["gsis_id"].replace("00-0023500", "00-0039471")
-
-    return df
 
 
 def load_config() -> dict:
@@ -300,66 +278,43 @@ def load_annual_stats() -> pd.DataFrame:
 # Transforms
 # ---------------------------------------------------------------------------
 
-def build_tier1_rosters(depth_charts: pd.DataFrame) -> pd.DataFrame:
-    """All players currently on a roster at a fantasy position, regardless of depth rank."""
-    latest_dt = depth_charts["dt"].max()
-    dc = depth_charts[
-        (depth_charts["dt"] == latest_dt) & depth_charts["pos_abb"].isin(FANTASY_POSITIONS)
-    ].copy()
-
-    rosters = (
-        dc.groupby("gsis_id")
-        .agg(
-            team=("team", "first"),
-            player_name=("player_name", "first"),
-            pos_abbs=("pos_abb", lambda x: sorted(set(x.dropna()))),
-        )
-        .reset_index()
-    )
-
-    return rosters[
-        rosters["pos_abbs"].apply(lambda p: bool(FANTASY_POSITIONS & set(p)))
-    ].reset_index(drop=True)
-
-
-def load_ranked_ids() -> set | None:
-    """Return set of gsis_ids from rankings.json with half_ppr ranking, or None if unavailable."""
+def load_rankings() -> dict:
+    """Load rankings.json from exports/. Required for roster building."""
     rankings_path = OUTPUT_DIR / "rankings.json"
     if not rankings_path.exists():
-        print("  Warning: rankings.json not found — all skill position FAs will be included")
-        return None
-    data = json.loads(rankings_path.read_text())
-    return {gsis_id for gsis_id, p in data.items() if "half_ppr" in p["rankings"]}
+        raise FileNotFoundError(
+            f"rankings.json not found at {rankings_path} — run fetch_rankings.py first"
+        )
+    return json.loads(rankings_path.read_text())
 
 
-def build_tier2_rosters(
-    tier1_ids: set,
-    players: pd.DataFrame,
-    ranked_ids: set | None = None,
+def build_rosters_from_rankings(
+    rankings: dict,
+    players_df: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Free agents: in FantasyPros half_ppr rankings (or all skill FAs if unavailable) and not on a current roster."""
-    skill_players = players[
-        ~players["gsis_id"].isin(tier1_ids) &
-        players["position_group"].isin(FANTASY_POSITIONS)
-    ].copy()
-
-    if ranked_ids is not None:
-        merged = skill_players[skill_players["gsis_id"].isin(ranked_ids)].copy()
-    else:
-        # Fallback: let all skill position FAs through
-        merged = skill_players.copy()
-
-    merged["pos_abbs"]    = merged["position_group"].apply(lambda p: [p])
-    merged["team"]        = "FA"
-    merged["player_name"] = merged["display_name"]
-
-    return merged[["gsis_id", "team", "player_name", "pos_abbs"]].reset_index(drop=True)
+    """Build roster from FP-ranked players. Team from FP, metadata from NflVerse."""
+    players_index = players_df.set_index("gsis_id")
+    rows = []
+    for gsis_id, r in rankings.items():
+        team = FP_TEAM_MAP.get(r["player_team_id"], r["player_team_id"])
+        # Position from players.csv, fall back to FP position
+        if gsis_id in players_index.index:
+            pos_group = players_index.loc[gsis_id, "position_group"]
+            pos_abbs = [pos_group] if pd.notna(pos_group) and pos_group in FANTASY_POSITIONS else [r["player_position_id"]]
+        else:
+            pos_abbs = [r["player_position_id"]]
+        rows.append({
+            "gsis_id": gsis_id,
+            "team": team,
+            "player_name": r["player_name"],
+            "pos_abbs": pos_abbs,
+        })
+    return pd.DataFrame(rows)
 
 
 def apply_config(
     rosters: pd.DataFrame,
     config: dict,
-    depth_charts: pd.DataFrame,
     players: pd.DataFrame,
 ) -> pd.DataFrame:
     """Remove denied players and add any manually allow-listed players."""
@@ -372,15 +327,6 @@ def apply_config(
     if not to_add:
         return rosters
 
-    # Build a depth-chart index (any depth) for allow-listed players that may be on a team
-    latest_dt = depth_charts["dt"].max()
-    dc = depth_charts[depth_charts["dt"] == latest_dt]
-    dc_index = (
-        dc.groupby("gsis_id")
-        .agg(team=("team", "first"), pos_abbs=("pos_abb", lambda x: sorted(set(x.dropna()))))
-        .to_dict("index")
-    )
-
     rows = []
     for gsis_id in to_add:
         p = players[players["gsis_id"] == gsis_id]
@@ -388,17 +334,12 @@ def apply_config(
             print(f"  Warning: allow-listed {gsis_id} not found in players.csv — skipping")
             continue
         p = p.iloc[0]
-        if gsis_id in dc_index:
-            team     = dc_index[gsis_id]["team"]
-            pos_abbs = [pos for pos in dc_index[gsis_id]["pos_abbs"] if pos in FANTASY_POSITIONS]
-        else:
-            team     = "FA"
-            pos_group = p.get("position_group")
-            pos_abbs  = [pos_group] if pd.notna(pos_group) and pos_group in FANTASY_POSITIONS else []
+        pos_group = p.get("position_group")
+        pos_abbs = [pos_group] if pd.notna(pos_group) and pos_group in FANTASY_POSITIONS else []
         if not pos_abbs:
             print(f"  Warning: allow-listed {gsis_id} has no fantasy positions — skipping")
             continue
-        rows.append({"gsis_id": gsis_id, "team": team, "player_name": p["display_name"], "pos_abbs": pos_abbs})
+        rows.append({"gsis_id": gsis_id, "team": "FA", "player_name": p["display_name"], "pos_abbs": pos_abbs})
 
     if rows:
         rosters = pd.concat([rosters, pd.DataFrame(rows)], ignore_index=True)
@@ -625,9 +566,9 @@ def build_team_history_export(annual_by_team: pd.DataFrame, players: pd.DataFram
 def generate_exports(force_download: bool = False):
     stage_all(force_download)
 
-    config       = load_config()
-    players      = load_players()
-    depth_charts = load_depth_charts()
+    config   = load_config()
+    players  = load_players()
+    rankings = load_rankings()
 
     # Load weekly data once; aggregate two ways
     weekly_df    = _load_weekly_df()
@@ -641,14 +582,9 @@ def generate_exports(force_download: bool = False):
     )
     annual_by_team["season"] = annual_by_team["season"].astype(int)
 
-    ranked_ids = load_ranked_ids()
-    tier1   = build_tier1_rosters(depth_charts)
-    tier2   = build_tier2_rosters(set(tier1["gsis_id"]), players, ranked_ids)
-    rosters = apply_config(
-        pd.concat([tier1, tier2], ignore_index=True),
-        config, depth_charts, players,
-    )
-    print(f"  Player pool: {len(tier1)} rostered + {len(tier2)} free agents = {len(rosters)} total\n")
+    rosters = build_rosters_from_rankings(rankings, players)
+    rosters = apply_config(rosters, config, players)
+    print(f"  Player pool: {len(rosters)} players from FP rankings\n")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
