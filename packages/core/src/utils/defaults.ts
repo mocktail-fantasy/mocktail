@@ -19,21 +19,7 @@ const EMPTY_PROJECTION: PlayerProjection = {
  */
 export function getDefaultProjection(seasons: SeasonStats[], fpProjection?: PlayerProjection, minSeason?: number): PlayerProjection {
   if (fpProjection) return fpProjection;
-  const latest = [...seasons].sort((a, b) => b.season - a.season)[0];
-  if (!latest) return { ...EMPTY_PROJECTION };
-  if (minSeason !== undefined && latest.season < minSeason) return { ...EMPTY_PROJECTION };
-
-  return {
-    passing_yards: latest.passing?.yards ?? 0,
-    passing_tds: latest.passing?.tds ?? 0,
-    interceptions: latest.passing?.interceptions ?? 0,
-    receptions: latest.receiving?.receptions ?? 0,
-    receiving_yards: latest.receiving?.yards ?? 0,
-    receiving_tds: latest.receiving?.tds ?? 0,
-    rushing_yards: latest.rushing?.yards ?? 0,
-    rushing_tds: latest.rushing?.tds ?? 0,
-    fumbles_lost: latest.fumbles_lost,
-  };
+  return { ...EMPTY_PROJECTION };
 }
 
 /**

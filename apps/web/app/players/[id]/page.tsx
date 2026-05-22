@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getPlayer, getPlayerHistory, getPlayerSummaries, getProjections, getRankings, currentNFLSeason } from '@/lib/data';
+import { getPlayer, getPlayerHistory, getPlayerSummaries, getProjections, getRankings, getRankingContext, currentNFLSeason } from '@/lib/data';
 import { getFantasyPositions, getDefaultProjection } from '@mocktail/core';
 import type { Position } from '@mocktail/core';
 import PositionTabs from './_components/PositionTabs';
+import RankingBar from './_components/RankingBar';
 import PlayerAvatar from './_components/PlayerAvatar';
 import LastSeasonPts from './_components/LastSeasonPts';
 import NewsCard from './_components/NewsCard';
@@ -39,11 +40,12 @@ export default async function PlayerPage({
   const player = await getPlayer(id);
   if (!player) notFound();
 
-  const [history, summaries, fpProjections, rankings] = await Promise.all([
+  const [history, summaries, fpProjections, rankings, rankingContext] = await Promise.all([
     getPlayerHistory(id),
     getPlayerSummaries(),
     getProjections(),
     getRankings(),
+    getRankingContext(),
   ]);
   const seasons = history?.seasons ?? [];
   const playerSummary = summaries[player.player_id] ?? null;
@@ -51,15 +53,22 @@ export default async function PlayerPage({
   const primaryPosition = fantasyPositions[0];
   const fpProjection = fpProjections[id] ?? undefined;
   const defaultProj = getDefaultProjection(seasons, fpProjection);
-  const season = currentNFLSeason();
-  const adp = rankings[id]?.adp ?? null;
+  const season = currentNFLSeason() + 1;
+
   const playerRanking = rankings[id];
-  const ecrData = playerRanking?.rankings?.half_ppr ?? null;
+  const playerEcr = playerRanking
+    ? Object.fromEntries(
+        Object.entries(playerRanking.rankings)
+          .filter(([, data]) => data != null)
+          .map(([fmt, data]) => [fmt, { rank: data!.rank_ecr, posRank: data!.pos_rank }])
+      )
+    : undefined;
+  const playerAdp = playerRanking?.adp ?? undefined;
 
   const back =
     sp.from === 'teams'
       ? { href: sp.team ? `/teams?team=${sp.team}` : '/teams', label: 'Back to Teams' }
-      : { href: '/', label: 'Back to Roster' };
+      : { href: '/', label: 'Back to Rankings' };
 
   // Build stats bar cells based on position
   type Cell = { value: string; label: string };
@@ -145,18 +154,6 @@ export default async function PlayerPage({
                 ))}
                 <span style={{ color: 'var(--color-border-medium)' }}>·</span>
                 <span>Age {player.age}</span>
-                {ecrData && (
-                  <>
-                    <span style={{ color: 'var(--color-border-medium)' }}>·</span>
-                    <span>ECR #{ecrData.rank_ecr} ({ecrData.pos_rank})</span>
-                  </>
-                )}
-                {adp != null && (
-                  <>
-                    <span style={{ color: 'var(--color-border-medium)' }}>·</span>
-                    <span>ADP {adp}</span>
-                  </>
-                )}
               </div>
             </div>
             {seasons.length > 0 && (
@@ -166,15 +163,36 @@ export default async function PlayerPage({
             )}
           </div>
 
+          {/* Ranking bar */}
+          <RankingBar
+            playerId={player.player_id}
+            positions={fantasyPositions}
+            rankingContext={rankingContext}
+            playerEcr={playerEcr}
+            playerAdp={playerAdp}
+          />
+
           {/* Stats bar zone */}
           {statCells.length > 0 && (
-            <div style={{ display: 'flex', overflowX: 'auto' }}>
-              {statCells.map((cell, i) => (
-                <div key={cell.label} style={{ display: 'flex', flex: 1 }}>
-                  {i > 0 && <StatCellDivider />}
-                  <StatCell value={cell.value} label={cell.label} />
-                </div>
-              ))}
+            <div>
+              <div style={{
+                padding: '8px 12px 0',
+                fontSize: '10px',
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                color: 'var(--color-text-tertiary)',
+              }}>
+                {season} Projection
+              </div>
+              <div style={{ display: 'flex', overflowX: 'auto' }}>
+                {statCells.map((cell, i) => (
+                  <div key={cell.label} style={{ display: 'flex', flex: 1 }}>
+                    {i > 0 && <StatCellDivider />}
+                    <StatCell value={cell.value} label={cell.label} />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

@@ -75,7 +75,7 @@ export default function PlayerCard({
   return (
     <Link
       href={`/players/${player.player_id}`}
-      className={`grid ${showAdp ? 'grid-cols-[40px_minmax(0,1fr)_88px_56px_56px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_56px_56px_16px]' : 'grid-cols-[40px_minmax(0,1fr)_88px_56px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_56px_16px]'} items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)]`}
+      className={`grid ${showAdp ? 'grid-cols-[40px_minmax(0,1fr)_56px_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_56px_88px_16px]' : 'grid-cols-[40px_minmax(0,1fr)_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_88px_16px]'} items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)]`}
       style={{ textDecoration: 'none' }}
     >
       {/* Rank */}
@@ -127,9 +127,6 @@ export default function PlayerCard({
         {projection && <ProjStats projection={projection} position={primaryPosition} />}
       </span>
 
-      {/* Projected points */}
-      <StatChip value={projectedPoints} unit={pointsUnit} />
-
       {/* ECR */}
       <span style={{
         fontSize: '13px',
@@ -151,6 +148,9 @@ export default function PlayerCard({
           {adp != null ? adp : '—'}
         </span>
       )}
+
+      {/* Projected points */}
+      <StatChip value={projectedPoints} unit={pointsUnit} />
 
       {/* Chevron */}
       <svg className="h-4 w-4" style={{ color: 'var(--color-text-tertiary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

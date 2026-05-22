@@ -4,9 +4,9 @@ import type { ScoringType } from '@mocktail/core';
 import { useScoringType } from './ScoringContext';
 
 const SCORING_OPTIONS: { value: ScoringType; label: string }[] = [
-  { value: 'standard', label: 'STD' },
   { value: 'half_ppr', label: '0.5 PPR' },
   { value: 'ppr', label: 'PPR' },
+  { value: 'standard', label: 'STD' },
 ];
 
 const MODIFIERS = [

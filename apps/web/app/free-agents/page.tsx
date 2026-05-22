@@ -1,39 +1,5 @@
-import { Suspense } from 'react';
-import { getRosters, getAllDefaultPoints, getAllDefaultProjections, getTeamHistory, getTeamsData, getTeamSummaries, currentNFLSeason } from '@/lib/data';
-import NavHeader from '../_components/NavHeader';
-import TeamsView from '../teams/_components/TeamsView';
+import { redirect } from 'next/navigation';
 
-export default async function FreeAgentsPage() {
-  const [players, defaultPoints, defaultProjections, teamHistory, teamsData, teamSummaries] = await Promise.all([
-    getRosters(),
-    getAllDefaultPoints(),
-    getAllDefaultProjections(),
-    getTeamHistory(),
-    getTeamsData(),
-    getTeamSummaries(),
-  ]);
-  const historySeason = currentNFLSeason();
-
-  return (
-    <main className="flex h-screen flex-col" style={{ background: 'var(--color-bg-secondary)' }}>
-      <NavHeader activePage="free-agents" />
-      <div className="flex-1 overflow-y-auto px-4 py-4 sm:overflow-visible sm:min-h-0 sm:flex sm:flex-col sm:px-6">
-        <div className="mx-auto w-full max-w-7xl sm:flex sm:min-h-0 sm:flex-1 sm:flex-col">
-          <Suspense>
-            <TeamsView
-              players={players}
-              defaultPoints={defaultPoints}
-              defaultProjections={defaultProjections}
-              teams={[]}
-              teamHistory={teamHistory}
-              teamsData={teamsData}
-              teamSummaries={teamSummaries}
-              historySeason={historySeason}
-              fixedTeam="FA"
-            />
-          </Suspense>
-        </div>
-      </div>
-    </main>
-  );
+export default function FreeAgentsPage() {
+  redirect('/teams?team=FA');
 }

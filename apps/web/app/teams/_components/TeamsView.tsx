@@ -658,6 +658,14 @@ export default function TeamsView({
                 </div>
               )}
             </div>
+            {/* Free Agents */}
+            {teamsSet.has('FA') && (
+              <div className="border-t border-[var(--color-border-light)] pt-3">
+                <div className="flex flex-wrap gap-0.5">
+                  <TeamButton team="FA" />
+                </div>
+              </div>
+            )}
           </div>
 
         </>

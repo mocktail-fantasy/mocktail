@@ -140,6 +140,12 @@ export interface PlayerRanking {
   adp: number | null;
 }
 
+export interface RankingContextEntry {
+  player_id: string;
+  positions: string[];
+  projection: PlayerProjection;
+}
+
 export type ScoringType = 'standard' | 'half_ppr' | 'ppr';
 
 export interface ScoringSettings {

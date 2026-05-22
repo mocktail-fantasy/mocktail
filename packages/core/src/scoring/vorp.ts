@@ -1,4 +1,9 @@
-import type { Player, Position } from '../types';
+import type { Position } from '../types';
+
+export interface VORPPlayer {
+  player_id: string;
+  positions: string[];
+}
 
 export const REPLACEMENT_RANKS: Record<Position, number> = {
   QB: 12,
@@ -10,7 +15,7 @@ export const REPLACEMENT_RANKS: Record<Position, number> = {
 const POSITIONS: Position[] = ['QB', 'RB', 'WR', 'TE'];
 
 export function calculateVORPBaselines(
-  players: Player[],
+  players: VORPPlayer[],
   projectedPoints: Record<string, number>,
   twoQB = false,
 ): Record<Position, number> {

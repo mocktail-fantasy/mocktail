@@ -149,10 +149,27 @@ export default function RosterGrid({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtered, projectedPoints, vorpScores, adpMap, ecrFormat, effectiveMode]);
 
+  const gridCols = showAdp
+    ? 'grid-cols-[40px_minmax(0,1fr)_56px_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_56px_88px_16px]'
+    : 'grid-cols-[40px_minmax(0,1fr)_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_88px_16px]';
+
+  const headerBtnStyle = (mode: RankingMode): React.CSSProperties => ({
+    ...labelStyle,
+    textAlign: 'right' as const,
+    cursor: 'pointer',
+    color: effectiveMode === mode ? 'var(--color-brand)' : 'var(--color-text-tertiary)',
+    transition: 'color 0.15s',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    margin: 0,
+    fontFamily: 'inherit',
+  });
+
   return (
-    <div className="flex flex-col sm:min-h-0 sm:flex-1">
+    <div className="flex flex-col">
       {/* Filter bar */}
-      <div className="mb-4 shrink-0 flex flex-col gap-3 sm:flex-row sm:items-end sm:flex-wrap">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:flex-wrap">
         {/* Position filter */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <span style={labelStyle}>Filter</span>
@@ -177,40 +194,28 @@ export default function RosterGrid({
           </div>
         </div>
 
-        {/* Ranking mode */}
+        {/* Ranking strategy */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <span style={labelStyle}>Ranking</span>
-          <div style={{
-            display: 'flex',
-            border: '0.5px solid var(--color-border-medium)',
-            borderRadius: '6px',
-            overflow: 'hidden',
-          }}>
-            {(showAdp ? ['vorp', 'points', 'ecr', 'adp'] as RankingMode[] : ['vorp', 'points', 'ecr'] as RankingMode[]).map((mode, i, arr) => {
-              const isActive = rankingMode === mode;
-              const label = mode === 'points' ? 'Pts' : mode === 'vorp' ? 'VORP' : mode === 'ecr' ? 'ECR' : 'ADP';
-              return (
-                <button
-                  key={mode}
-                  onClick={() => setRankingMode(mode)}
-                  style={{
-                    padding: '5px 10px',
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    border: 'none',
-                    borderRight: i < arr.length - 1 ? '0.5px solid var(--color-border-medium)' : 'none',
-                    cursor: 'pointer',
-                    background: isActive ? 'var(--color-text-primary)' : 'transparent',
-                    color: isActive ? 'var(--color-bg-tertiary)' : 'var(--color-text-secondary)',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <select
+            value="vorp"
+            onChange={() => setRankingMode('vorp')}
+            style={{
+              ...chipBase,
+              border: '0.5px solid var(--color-border-medium)',
+              background: 'var(--color-bg-primary)',
+              color: 'var(--color-text-secondary)',
+              outline: 'none',
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              paddingRight: '28px',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239A9992' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 8px center',
+            }}
+          >
+            <option value="vorp">VORP</option>
+          </select>
         </div>
 
         {/* Search */}
@@ -237,60 +242,62 @@ export default function RosterGrid({
         />
       </div>
 
-      {/* Result count */}
-      <p className="mb-3 shrink-0 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
-        {ranked.length} player{ranked.length !== 1 ? 's' : ''}
-      </p>
+      {/* Result count + attribution */}
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+          {ranked.length} player{ranked.length !== 1 ? 's' : ''}
+        </p>
+        <span style={{ fontSize: '10px', color: 'var(--color-text-tertiary)' }}>
+          Rankings data via FantasyPros (fantasypros.com)
+        </span>
+      </div>
 
       {/* Table */}
-      <div className="card sm:flex sm:min-h-0 sm:flex-1 sm:flex-col">
-        <div className="sm:flex-1 sm:overflow-y-auto">
-          {/* Column headers */}
-          <div className={`grid ${showAdp ? 'grid-cols-[40px_minmax(0,1fr)_88px_56px_56px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_56px_56px_16px]' : 'grid-cols-[40px_minmax(0,1fr)_88px_56px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_88px_56px_16px]'} items-center gap-3 sm:gap-4 px-4 py-2 sticky top-0 z-10`}
-            style={{
-              borderBottom: '0.5px solid var(--color-border-light)',
-              background: 'var(--color-bg-secondary)',
-              borderRadius: '10px 10px 0 0',
-            }}
-          >
-            <span style={{ ...labelStyle, textAlign: 'right' }}>#</span>
-            <span style={labelStyle}>Player</span>
-            <span className="hidden sm:block" style={labelStyle}>Projected stats</span>
-            <span style={{ ...labelStyle, textAlign: 'right' }}>Proj pts</span>
-            <span style={{ ...labelStyle, textAlign: 'right' }}>ECR</span>
-            {showAdp && <span style={{ ...labelStyle, textAlign: 'right' }}>ADP</span>}
-            <span />
-          </div>
-
-          {/* Rows */}
-          <div style={{ borderTop: 'none' }}>
-            {ranked.map((player, i) => (
-              <div key={player.player_id} style={{ borderTop: i > 0 ? '0.5px solid var(--color-border-light)' : 'none' }}>
-                <PlayerCard
-                  player={player}
-                  rank={i + 1}
-                  projectedPoints={projectedPoints[player.player_id]}
-                  pointsUnit="pts"
-                  projection={projections[player.player_id] ?? EMPTY_PROJECTION}
-                  hasNews={newsPlayerIds?.has(player.player_id)}
-                  adp={showAdp ? adpMap?.[player.player_id] : undefined}
-                  showAdp={showAdp}
-                  ecr={getEcr(player.player_id)}
-                />
-              </div>
-            ))}
-          </div>
+      <div className="card">
+        {/* Column headers */}
+        <div className={`grid ${gridCols} items-center gap-3 sm:gap-4 px-4 py-2`}
+          style={{
+            borderBottom: '0.5px solid var(--color-border-light)',
+            background: 'var(--color-bg-secondary)',
+            borderRadius: '10px 10px 0 0',
+          }}
+        >
+          <button onClick={() => setRankingMode('vorp')} style={headerBtnStyle('vorp')}>
+              RK {effectiveMode === 'vorp' ? '▼' : ''}
+            </button>
+          <span style={labelStyle}>Player</span>
+          <span className="hidden sm:block" style={labelStyle}>Projected stats</span>
+          <button onClick={() => setRankingMode(effectiveMode === 'ecr' ? 'vorp' : 'ecr')} style={headerBtnStyle('ecr')} title="Expert Consensus Ranking">
+            ECR {effectiveMode === 'ecr' ? '▲' : ''}
+          </button>
+          {showAdp && (
+            <button onClick={() => setRankingMode(effectiveMode === 'adp' ? 'vorp' : 'adp')} style={headerBtnStyle('adp')} title="Average Draft Position">
+              ADP {effectiveMode === 'adp' ? '▲' : ''}
+            </button>
+          )}
+          <button onClick={() => setRankingMode(effectiveMode === 'points' ? 'vorp' : 'points')} style={headerBtnStyle('points')}>
+            PTS {effectiveMode === 'points' ? '▼' : ''}
+          </button>
+          <span />
         </div>
-        {/* Attribution */}
-        <div style={{
-          padding: '8px 16px',
-          borderTop: '0.5px solid var(--color-border-light)',
-          background: 'var(--color-bg-secondary)',
-          borderRadius: '0 0 10px 10px',
-        }}>
-          <span style={{ fontSize: '10px', color: 'var(--color-text-tertiary)' }}>
-            Rankings data via FantasyPros (fantasypros.com)
-          </span>
+
+        {/* Rows */}
+        <div>
+          {ranked.map((player, i) => (
+            <div key={player.player_id} style={{ borderTop: i > 0 ? '0.5px solid var(--color-border-light)' : 'none' }}>
+              <PlayerCard
+                player={player}
+                rank={i + 1}
+                projectedPoints={projectedPoints[player.player_id]}
+                pointsUnit="pts"
+                projection={projections[player.player_id] ?? EMPTY_PROJECTION}
+                hasNews={newsPlayerIds?.has(player.player_id)}
+                adp={showAdp ? adpMap?.[player.player_id] : undefined}
+                showAdp={showAdp}
+                ecr={getEcr(player.player_id)}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

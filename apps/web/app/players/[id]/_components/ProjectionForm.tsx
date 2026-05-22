@@ -158,6 +158,17 @@ export default function ProjectionForm({ playerId, positions, seasons, season, f
     [projection, positions, scoringSettings],
   );
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('projectionchange', { detail: { playerId, points: fantasyPoints } }));
+  }, [playerId, fantasyPoints]);
+
+  const isModified = useMemo(() => Object.keys(defaultStrings).some((k) => values[k] !== defaultStrings[k]), [values, defaultStrings]);
+
+  const handleReset = () => {
+    setValues(defaultStrings);
+    localStorage.removeItem(`projection_${playerId}`);
+  };
+
   const handleSave = async () => {
     localStorage.setItem(`projection_${playerId}`, JSON.stringify(projection));
     if (session?.user) {
@@ -268,6 +279,11 @@ export default function ProjectionForm({ playerId, positions, seasons, season, f
             <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
               Sign in to save across devices
             </span>
+          )}
+          {isModified && (
+            <button className="btn-ghost" onClick={handleReset} style={{ fontSize: '12px' }}>
+              Reset
+            </button>
           )}
           <button className="btn-brand" onClick={handleSave}>
             {saveState === 'saved' ? 'Saved ✓' : 'Save projection'}

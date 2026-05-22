@@ -1,7 +1,8 @@
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 import { FANTASY_POSITIONS, getDefaultFantasyPoints, getDefaultProjection } from '@mocktail/core';
-import type { Player, PlayerHistory, PlayerProjection, PlayerRanking, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position } from '@mocktail/core';
+import type { Player, PlayerHistory, PlayerProjection, PlayerRanking, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position, RankingContextEntry } from '@mocktail/core';
+import { getFantasyPositions } from '@mocktail/core';
 
 async function loadJson<T>(filename: string): Promise<T> {
   const base = process.env.DATA_BASE_URL;
@@ -89,6 +90,15 @@ export async function getPlayerSummaries(): Promise<Record<string, PlayerSummary
 
 export async function getTeamSummaries(): Promise<Record<string, TeamSummary>> {
   return loadJson<Record<string, TeamSummary>>('team_summaries.json').catch(() => ({}));
+}
+
+export async function getRankingContext(): Promise<RankingContextEntry[]> {
+  const [rosters, fpProjections] = await Promise.all([getRosters(), getProjections()]);
+  return rosters.map((p) => ({
+    player_id: p.player_id,
+    positions: getFantasyPositions(p.positions),
+    projection: getDefaultProjection([], fpProjections[p.player_id]),
+  }));
 }
 
 export async function getAllDefaultPoints(): Promise<Record<string, number>> {

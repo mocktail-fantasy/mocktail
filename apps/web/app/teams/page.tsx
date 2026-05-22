@@ -14,9 +14,11 @@ export default async function TeamsPage() {
   ]);
   const historySeason = currentNFLSeason();
 
-  const teams = [...new Set(players.map((p) => p.team))]
+  const allTeamSet = new Set(players.map((p) => p.team));
+  const teams = [...allTeamSet]
     .filter((t) => t !== 'FA')
     .sort((a, b) => a.localeCompare(b));
+  if (allTeamSet.has('FA')) teams.push('FA');
 
   return (
     <main style={{ background: 'var(--color-bg-tertiary)' }}>

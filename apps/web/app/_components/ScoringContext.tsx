@@ -23,7 +23,7 @@ function readBool(key: string): boolean | null {
 }
 
 export function ScoringProvider({ children }: { children: React.ReactNode }) {
-  const [scoringType, setScoringTypeState] = useState<ScoringType>('standard');
+  const [scoringType, setScoringTypeState] = useState<ScoringType>('half_ppr');
   const [tep, setTepState] = useState(false);
   const [twoQB, setTwoQBState] = useState(false);
   const [sixPtPass, setSixPtPassState] = useState(false);

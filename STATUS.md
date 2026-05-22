@@ -80,15 +80,16 @@ Data is served from S3 via CloudFront and refreshed nightly by Lambda.
 ### Lambda ingestion (`infra/lambda/ingest.py`)
 
 Runs nightly at 3am ET. Steps:
-1. Download `players.csv` + `depth_charts_{year}.csv` fresh from NflVerse
+1. Download `players.csv` from NflVerse (player metadata, ESPN ID bridge)
 2. Build FP → gsis_id mapping via ESPN ID bridge (FP players endpoint → espn_id → NflVerse gsis_id)
 3. Fetch FantasyPros data via official API (`x-api-key` header):
    - ECR rankings (6 formats: std, half_ppr, ppr, sf_std, sf_half_ppr, sf_ppr)
    - ADP (half PPR only)
    - Stat projections (QB/RB/WR/TE, season-long)
-4. Build `active_rosters.json`:
-   - **Tier 1** — players on current depth charts with fantasy positions (QB/RB/WR/TE)
-   - **Tier 2** — free agents: skill position players absent from depth charts but present in `half_ppr` rankings (superflex formats excluded to avoid noise from marginal players like fullbacks)
+4. Build `active_rosters.json` (~364 players):
+   - Roster = all FP-ranked players that map to a gsis_id
+   - Team from FP `player_team_id` (normalized JAC→JAX, LAR→LA)
+   - Age, headshot, positions from NflVerse `players.csv`
    - Apply allow/deny config from `s3://mocktail-data-prod/config/config.json`
 5. Upload `active_rosters.json` + `rankings.json` + `projections.json` to S3
 6. Invalidate CloudFront (`/*`)
@@ -99,7 +100,7 @@ Updated locally via `scripts/generate_data.py`, uploaded via `scripts/upload_dat
 
 | File | Source | Update frequency |
 |---|---|---|
-| `active_rosters.json` | NflVerse depth charts + FantasyPros rankings | **Nightly (Lambda)** |
+| `active_rosters.json` | FP-ranked players + NflVerse metadata | **Nightly (Lambda)** |
 | `rankings.json` | FantasyPros ECR (6 formats) + ADP, keyed by gsis_id | **Nightly (Lambda)** |
 | `projections.json` | FantasyPros stat projections (QB/RB/WR/TE), keyed by gsis_id | **Nightly (Lambda)** |
 | `historical_data.json` | nflverse-data season stats | Once per offseason |
