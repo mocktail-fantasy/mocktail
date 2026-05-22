@@ -75,7 +75,7 @@ export default function PlayerCard({
   return (
     <Link
       href={`/players/${player.player_id}`}
-      className={`grid ${showAdp ? 'grid-cols-[40px_minmax(0,1fr)_56px_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_56px_88px_16px]' : 'grid-cols-[40px_minmax(0,1fr)_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_88px_16px]'} items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)]`}
+      className={`grid ${showAdp ? 'grid-cols-[40px_minmax(0,1fr)_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_56px_88px_16px]' : 'grid-cols-[40px_minmax(0,1fr)_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_88px_16px]'} items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)]`}
       style={{ textDecoration: 'none' }}
     >
       {/* Rank */}
@@ -128,7 +128,7 @@ export default function PlayerCard({
       </span>
 
       {/* ECR */}
-      <span style={{
+      <span className="hidden sm:block" style={{
         fontSize: '13px',
         fontVariantNumeric: 'tabular-nums',
         textAlign: 'right',

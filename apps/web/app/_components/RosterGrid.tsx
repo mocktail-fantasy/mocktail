@@ -150,8 +150,8 @@ export default function RosterGrid({
   }, [filtered, projectedPoints, vorpScores, adpMap, ecrFormat, effectiveMode]);
 
   const gridCols = showAdp
-    ? 'grid-cols-[40px_minmax(0,1fr)_56px_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_56px_88px_16px]'
-    : 'grid-cols-[40px_minmax(0,1fr)_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_88px_16px]';
+    ? 'grid-cols-[40px_minmax(0,1fr)_56px_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_56px_88px_16px]'
+    : 'grid-cols-[40px_minmax(0,1fr)_88px_16px] sm:grid-cols-[40px_minmax(0,1fr)_minmax(0,2fr)_56px_88px_16px]';
 
   const headerBtnStyle = (mode: RankingMode): React.CSSProperties => ({
     ...labelStyle,
@@ -267,7 +267,7 @@ export default function RosterGrid({
             </button>
           <span style={labelStyle}>Player</span>
           <span className="hidden sm:block" style={labelStyle}>Projected stats</span>
-          <button onClick={() => setRankingMode(effectiveMode === 'ecr' ? 'vorp' : 'ecr')} style={headerBtnStyle('ecr')} title="Expert Consensus Ranking">
+          <button className="hidden sm:block" onClick={() => setRankingMode(effectiveMode === 'ecr' ? 'vorp' : 'ecr')} style={headerBtnStyle('ecr')} title="Expert Consensus Ranking">
             ECR {effectiveMode === 'ecr' ? '▲' : ''}
           </button>
           {showAdp && (

@@ -6,8 +6,8 @@ import UserMenu from './UserMenu';
 
 export default function NavHeader({ activePage }: { activePage: 'rankings' | 'teams' }) {
   const navItems: { href: string; label: string; shortLabel: string; key: 'rankings' | 'teams' }[] = [
-    { href: '/', label: 'Rankings', shortLabel: 'Rnk', key: 'rankings' },
-    { href: '/teams', label: 'Teams', shortLabel: 'Tm', key: 'teams' },
+    { href: '/', label: 'Rankings', shortLabel: 'Rank', key: 'rankings' },
+    { href: '/teams', label: 'Teams', shortLabel: 'Team', key: 'teams' },
   ];
 
   return (

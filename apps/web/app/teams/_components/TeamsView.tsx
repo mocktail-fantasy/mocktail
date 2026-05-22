@@ -435,14 +435,6 @@ function ProjectionPlayerRow({ player, projection, projectedPoints, rank, positi
         const histPts = calcHistPts(stats, position, scoringSettings);
         return (
           <div key={season}>
-            {/* Mobile history row */}
-            <div className="flex items-center justify-between bg-[var(--color-bg-primary)] px-4 py-1 sm:hidden">
-              <div className="flex items-center gap-2">
-                <span className="w-5 shrink-0" />
-                <span className="text-[11px] tabular-nums text-[var(--color-text-tertiary)]">{season}</span>
-              </div>
-              <span className="text-[11px] tabular-nums text-[var(--color-text-tertiary)]">{histPts.toFixed(1)} pts</span>
-            </div>
             {/* Desktop history row */}
             <div className="hidden items-center gap-3 bg-[var(--color-bg-primary)] px-4 py-1 sm:flex">
               <div className={`grid ${config.gridCols} flex-1 items-center gap-2`}>
@@ -605,7 +597,7 @@ export default function TeamsView({
       <button
         onClick={() => selectTeam(team)}
         style={isActive && colors ? { backgroundColor: colors.primary, color: colors.onPrimary ?? '#ffffff' } : undefined}
-        className={`rounded border px-2 py-0.5 text-[11px] font-bold tracking-wider transition-colors ${
+        className={`rounded border px-1.5 py-0.5 text-[11px] font-bold tracking-wider transition-colors ${
           isActive
             ? !colors ? 'border-transparent bg-[var(--color-text-secondary)] text-[var(--color-bg-tertiary)]' : 'border-transparent'
             : 'border-[var(--color-border-medium)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]'
