@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
-import { FANTASY_POSITIONS, getDefaultFantasyPoints, getDefaultProjection } from '@mocktail/core';
-import type { Player, PlayerHistory, PlayerProjection, PlayerRanking, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position, RankingContextEntry } from '@mocktail/core';
+import { FANTASY_POSITIONS, getDefaultProjection, calculateFantasyPoints } from '@mocktail/core';
+import type { Player, PlayerHistory, PlayerProjection, PlayerRanking, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position, RankingContextEntry, ScoringSettings } from '@mocktail/core';
 import { getFantasyPositions } from '@mocktail/core';
 
 async function loadJson<T>(filename: string): Promise<T> {
@@ -46,14 +46,10 @@ export async function getRankings(): Promise<Record<string, PlayerRanking>> {
 }
 
 export async function getAllDefaultProjections(): Promise<Record<string, PlayerProjection>> {
-  const [data, fpProjections] = await Promise.all([
-    loadJson<Record<string, PlayerHistory>>('historical_data.json'),
-    getProjections(),
-  ]);
-  const minSeason = currentNFLSeason();
+  const [rosters, fpProjections] = await Promise.all([getRosters(), getProjections()]);
   const result: Record<string, PlayerProjection> = {};
-  for (const [playerId, history] of Object.entries(data)) {
-    result[playerId] = getDefaultProjection(history.seasons, fpProjections[playerId], minSeason);
+  for (const player of rosters) {
+    result[player.player_id] = getDefaultProjection([], fpProjections[player.player_id]);
   }
   return result;
 }
@@ -101,12 +97,15 @@ export async function getRankingContext(): Promise<RankingContextEntry[]> {
   }));
 }
 
+const DEFAULT_SSR_SCORING: ScoringSettings = { scoringType: 'half_ppr', tep: false, sixPointPassTDs: false };
+
 export async function getAllDefaultPoints(): Promise<Record<string, number>> {
-  const data = await loadJson<Record<string, PlayerHistory>>('historical_data.json');
-  const minSeason = currentNFLSeason();
+  const [rosters, fpProjections] = await Promise.all([getRosters(), getProjections()]);
   const result: Record<string, number> = {};
-  for (const [playerId, history] of Object.entries(data)) {
-    result[playerId] = getDefaultFantasyPoints(history.seasons, minSeason);
+  for (const player of rosters) {
+    const projection = getDefaultProjection([], fpProjections[player.player_id]);
+    const positions = getFantasyPositions(player.positions);
+    result[player.player_id] = calculateFantasyPoints(projection, positions, DEFAULT_SSR_SCORING);
   }
   return result;
 }

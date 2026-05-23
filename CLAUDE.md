@@ -123,7 +123,25 @@ TEP: `positions.includes('TE') && settings.tep` adds +0.5/reception on top of th
 - `REPLACEMENT_RANKS`: QB=12, RB=40, WR=50, TE=12
 - `calculateVORPBaselines(players, projectedPoints, twoQB?)` — for each position, sorts players by projected points and takes the score at the replacement index as baseline
 - `calculateVORP(playerPoints, position, baselines)` — player score minus position baseline
-- `twoQB`: when true, QB replacement index becomes 32 (two QBs per team × 16 teams); affects only VORP baselines, not point totals
+- `twoQB`: when true, QB replacement index becomes 31 — manually tuned each season to sit at the QB starter/backup cliff (where deep backups like Tua go undrafted); affects only VORP baselines, not point totals
+
+### Known VORP Limitations & Seasonal Re-tuning
+
+**The 2QB index needs manual re-tuning every season.** The QB pool has a hard starter/backup cliff (~30 viable starters, then a steep drop), and the correct replacement index sits just above the last QB likely to be drafted as a Superflex bench QB. Workflow to re-tune:
+
+1. Compute half_ppr projected points for all QBs and sort descending
+2. Walk the list looking for the cliff — where points drop sharply between adjacent QBs (e.g. 2026: Watson 169 → Tua 144 is a ~25-pt cliff)
+3. Set the index to the rank of the last "draftable" QB above the cliff
+4. Sanity-check: top 20 overall VORP should have ~5 elite QBs interspersed with elite RBs/WRs, not 10+ QBs dominating
+
+**Why VORP is fundamentally weak for 2QB.** VORP collapses to a pure points ranking when position baselines are similar — `(pts − k)` preserves order when `k` is the same across positions. The 2QB QB pool only has ~30 startable players (vs 100+ RBs/WRs), so the index needed to differentiate elite QBs lands right at the cliff and is extremely sensitive (index 30 vs 31 vs 32 swings VORP by 25-50 pts for every QB). A linear single-baseline model can't capture "top 10 QBs are scarce and elite, QB13-24 are commodity starters."
+
+**Future overhaul candidates** (not in any active phase):
+- **Tiered VORP** — separate baseline for elite vs commodity QBs
+- **VBD (Value-Based Drafting)** — compare to "next best available given roster composition"
+- **Market-based auction values** — sidestep the math entirely
+
+Until then, treat 2QB rankings as directional and re-tune the index each preseason.
 
 ## Global Scoring State (`apps/web/app/_components/ScoringContext.tsx`)
 

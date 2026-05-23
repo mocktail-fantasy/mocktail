@@ -122,6 +122,15 @@ export default function RosterGrid({
     return scores;
   }, [players, projectedPoints, vorpBaselines]);
 
+  const vorpRankMap = useMemo(() => {
+    const sorted = [...players].sort(
+      (a, b) => (vorpScores[b.player_id] ?? -999) - (vorpScores[a.player_id] ?? -999),
+    );
+    const map: Record<string, number> = {};
+    sorted.forEach((p, i) => { map[p.player_id] = i + 1; });
+    return map;
+  }, [players, vorpScores]);
+
   // Fall back from ADP if hidden, from VORP if position-filtered
   const effectiveMode: RankingMode =
     rankingMode === 'adp' && !showAdp ? 'vorp'
@@ -287,7 +296,7 @@ export default function RosterGrid({
             <div key={player.player_id} style={{ borderTop: i > 0 ? '0.5px solid var(--color-border-light)' : 'none' }}>
               <PlayerCard
                 player={player}
-                rank={i + 1}
+                rank={vorpRankMap[player.player_id] ?? i + 1}
                 projectedPoints={projectedPoints[player.player_id]}
                 pointsUnit="pts"
                 projection={projections[player.player_id] ?? EMPTY_PROJECTION}

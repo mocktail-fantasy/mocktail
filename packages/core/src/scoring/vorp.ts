@@ -24,7 +24,7 @@ export function calculateVORPBaselines(
     const posPlayers = players
       .filter((p) => p.positions.includes(pos))
       .sort((a, b) => (projectedPoints[b.player_id] ?? 0) - (projectedPoints[a.player_id] ?? 0));
-    const replacementIndex = pos === 'QB' && twoQB ? 32 : REPLACEMENT_RANKS[pos];
+    const replacementIndex = pos === 'QB' && twoQB ? 31 : REPLACEMENT_RANKS[pos];
     baselines[pos] = posPlayers[replacementIndex] != null
       ? (projectedPoints[posPlayers[replacementIndex].player_id] ?? 0)
       : 0;
