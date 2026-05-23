@@ -68,6 +68,8 @@ export default async function PlayerPage({
   const back =
     sp.from === 'teams'
       ? { href: sp.team ? `/teams?team=${sp.team}` : '/teams', label: 'Back to Teams' }
+      : sp.from === 'news'
+      ? { href: '/news', label: 'Back to News' }
       : { href: '/', label: 'Back to Rankings' };
 
   // Build stats bar cells based on position

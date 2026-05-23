@@ -64,50 +64,101 @@ function CategoryChip({ category }: { category: PromotedCategory }) {
 const FP_TEAM_DISPLAY: Record<string, string> = { LAR: 'LA', JAC: 'JAX' };
 
 function NewsItemRow({ item, playerEntry }: { item: NewsItem; playerEntry?: { name: string; id: string } }) {
+  const [showImpact, setShowImpact] = useState(false);
+  const [hoverHeader, setHoverHeader] = useState(false);
   const chips = promotedCategories(item);
+  const hasImpact = Boolean(item.impact);
   return (
-    <li style={{ padding: '12px 0', borderTop: '0.5px solid var(--color-border-light)' }}>
+    <li style={{ padding: '14px 0', borderTop: '0.5px solid var(--color-border-light)' }}>
       {playerEntry && (
-        <div style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Link
-            href={`/players/${playerEntry.id}`}
-            style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-text-primary)', textDecoration: 'none' }}
-          >
+        <Link
+          href={`/players/${playerEntry.id}?from=news`}
+          onMouseEnter={() => setHoverHeader(true)}
+          onMouseLeave={() => setHoverHeader(false)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            marginBottom: '6px',
+            marginLeft: '-6px',
+            padding: '3px 6px',
+            borderRadius: '4px',
+            background: hoverHeader ? 'rgba(255,255,255,0.04)' : 'transparent',
+            textDecoration: 'none',
+            transition: 'background 0.1s',
+          }}
+        >
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)', letterSpacing: '-0.005em' }}>
             {playerEntry.name}
-          </Link>
-          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          </span>
+          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-tertiary)' }}>
             {FP_TEAM_DISPLAY[item.team_id] ?? item.team_id}
           </span>
-        </div>
+          <span style={{ fontSize: '14px', lineHeight: 1, color: 'var(--color-text-tertiary)', marginLeft: '-1px' }}>›</span>
+        </Link>
       )}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
         {chips.map((c) => <CategoryChip key={c} category={c} />)}
-        <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
-          {relativeTime(item.created)}
-        </span>
+        <a
+          href={item.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: '13px',
+            fontWeight: 400,
+            color: 'var(--color-text-primary)',
+            lineHeight: 1.4,
+            textDecoration: 'none',
+            flex: '1 1 200px',
+          }}
+        >
+          {item.desc || item.title}
+          <span style={{ marginLeft: '4px', color: 'var(--color-text-tertiary)', fontSize: '11px' }}>↗</span>
+        </a>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--color-text-tertiary)', flexWrap: 'wrap' }}>
+        <span>{relativeTime(item.created)}</span>
         {item.author && (
           <>
-            <span style={{ color: 'var(--color-border-medium)', fontSize: '11px' }}>·</span>
-            <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>{item.author}</span>
+            <span style={{ color: 'var(--color-border-medium)' }}>·</span>
+            <span>{item.author}</span>
+          </>
+        )}
+        {hasImpact && (
+          <>
+            <span style={{ color: 'var(--color-border-medium)' }}>·</span>
+            <button
+              onClick={() => setShowImpact((v) => !v)}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                fontSize: '11px',
+                color: 'var(--color-text-secondary)',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                textDecoration: 'underline',
+              }}
+            >
+              {showImpact ? 'Hide' : 'Why it matters'}
+            </button>
           </>
         )}
       </div>
-      <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-text-primary)', lineHeight: 1.4, marginBottom: '4px' }}>
-        {item.desc || item.title}
-      </div>
-      {item.impact && (
-        <div style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', lineHeight: 1.55, marginBottom: '6px' }}>
+      {hasImpact && showImpact && (
+        <div
+          style={{
+            fontSize: '12.5px',
+            color: 'var(--color-text-secondary)',
+            lineHeight: 1.55,
+            marginTop: '8px',
+            paddingLeft: '10px',
+            borderLeft: '2px solid var(--color-brand-border)',
+          }}
+        >
           {item.impact}
         </div>
       )}
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textDecoration: 'underline' }}
-      >
-        Read at FantasyPros ↗
-      </a>
     </li>
   );
 }
@@ -146,15 +197,19 @@ export default function NewsFeed({
   }, [items]);
 
   const filtered = useMemo(() => {
-    if (activeFilter === 'All') return items;
-    return items.filter((i) => promotedCategories(i).includes(activeFilter));
-  }, [items, activeFilter]);
-
-  if (items.length === 0) return null;
+    // When playerMap is provided, drop items whose player_id has no entry —
+    // those are non-fantasy players (DTs, LBs, etc.) and would render as an
+    // orphan row visually attached to the prior item's player header.
+    const inScope = playerMap ? items.filter((i) => playerMap[i.player_id]) : items;
+    if (activeFilter === 'All') return inScope;
+    return inScope.filter((i) => promotedCategories(i).includes(activeFilter));
+  }, [items, activeFilter, playerMap]);
 
   const limit = expanded ? expandedCount : initialCount;
   const visible = filtered.slice(0, limit);
   const hiddenCount = Math.min(filtered.length, expandedCount) - visible.length;
+
+  if (filtered.length === 0 && activeFilter === 'All') return null;
 
   const headerRow = (
     <div
@@ -175,7 +230,7 @@ export default function NewsFeed({
       </span>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
         <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
-          {items.length} item{items.length === 1 ? '' : 's'}
+          {filtered.length} item{filtered.length === 1 ? '' : 's'}
         </span>
         {collapsible && (
           <svg
