@@ -9,8 +9,7 @@ FILES=(
   historical_data.json
   teams.json
   team_history.json
-  player_summaries.json
-  team_summaries.json
+  news.json
 )
 
 for file in "${FILES[@]}"; do

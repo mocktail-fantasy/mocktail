@@ -1,8 +1,14 @@
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 import { FANTASY_POSITIONS, getDefaultProjection, calculateFantasyPoints } from '@mocktail/core';
-import type { Player, PlayerHistory, PlayerProjection, PlayerRanking, PlayerSummary, TeamSummary, TeamHistoryPlayer, Position, RankingContextEntry, ScoringSettings } from '@mocktail/core';
+import type { Player, PlayerHistory, PlayerProjection, PlayerRanking, NewsItem, NewsFile, TeamHistoryPlayer, Position, RankingContextEntry, ScoringSettings } from '@mocktail/core';
 import { getFantasyPositions } from '@mocktail/core';
+
+// FP uses LAR/JAC; the app uses LA/JAX. Normalize when filtering news by team.
+const FP_TEAM_MAP: Record<string, string> = { LAR: 'LA', JAC: 'JAX' };
+function normalizeTeam(t: string): string {
+  return FP_TEAM_MAP[t] ?? t;
+}
 
 async function loadJson<T>(filename: string): Promise<T> {
   const base = process.env.DATA_BASE_URL;
@@ -80,12 +86,58 @@ export async function getTeamHistory(): Promise<Record<string, TeamHistoryPlayer
   return loadJson<Record<string, TeamHistoryPlayer[]>>('team_history.json').catch(() => ({}));
 }
 
-export async function getPlayerSummaries(): Promise<Record<string, PlayerSummary>> {
-  return loadJson<Record<string, PlayerSummary>>('player_summaries.json').catch(() => ({}));
+/**
+ * Returns all news items from news.json, sorted by `created` desc.
+ * Empty array if the file is missing (graceful — staging/local envs may not have it yet).
+ */
+export async function getNews(): Promise<NewsItem[]> {
+  const file = await loadJson<NewsFile>('news.json').catch(() => ({ generated_at: '', items: [] }));
+  return [...file.items].sort((a, b) => b.created.localeCompare(a.created));
 }
 
-export async function getTeamSummaries(): Promise<Record<string, TeamSummary>> {
-  return loadJson<Record<string, TeamSummary>>('team_summaries.json').catch(() => ({}));
+/**
+ * Returns news items grouped by gsis player_id (the app's canonical id).
+ * FP items reference players by FP integer id; we use rankings.json to reverse-map fp_id→gsis_id.
+ * Items per player are sorted by `created` desc.
+ */
+export async function getNewsByPlayer(): Promise<Record<string, NewsItem[]>> {
+  const [news, rankings] = await Promise.all([getNews(), getRankings()]);
+  const fpToGsis = new Map<number, string>();
+  for (const [gsisId, r] of Object.entries(rankings)) {
+    fpToGsis.set(r.fp_id, gsisId);
+  }
+  const grouped: Record<string, NewsItem[]> = {};
+  for (const item of news) {
+    const gsisId = fpToGsis.get(item.player_id);
+    if (!gsisId) continue;
+    (grouped[gsisId] ??= []).push(item);
+  }
+  return grouped;
+}
+
+/**
+ * Returns news items grouped by app team abbr. FP team_ids are normalized (LAR→LA, JAC→JAX).
+ * Items per team are sorted by `created` desc.
+ */
+export async function getNewsByTeam(): Promise<Record<string, NewsItem[]>> {
+  const news = await getNews();
+  const grouped: Record<string, NewsItem[]> = {};
+  for (const item of news) {
+    const team = normalizeTeam(item.team_id);
+    (grouped[team] ??= []).push(item);
+  }
+  return grouped;
+}
+
+export async function getNewsPlayerMap(): Promise<Record<number, { name: string; id: string }>> {
+  const [rosters, rankings] = await Promise.all([getRosters(), getRankings()]);
+  const nameById: Record<string, string> = {};
+  for (const p of rosters) nameById[p.player_id] = p.player_name;
+  const map: Record<number, { name: string; id: string }> = {};
+  for (const [gsisId, r] of Object.entries(rankings)) {
+    if (r.fp_id && nameById[gsisId]) map[r.fp_id] = { name: nameById[gsisId], id: gsisId };
+  }
+  return map;
 }
 
 export async function getRankingContext(): Promise<RankingContextEntry[]> {

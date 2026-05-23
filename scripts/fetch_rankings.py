@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Fetch consensus ECR rankings from FantasyPros API.
-Outputs exports/rankings.json keyed by gsis_id.
+Fetch consensus ECR rankings, projections, and news from FantasyPros API.
+Outputs exports/{rankings,projections,news}.json.
 
-Attribution: Rankings data via FantasyPros (fantasypros.com)
+Attribution: FantasyPros (fantasypros.com)
 
 Usage:
     uv run fetch_rankings.py
 """
+import datetime
 import http.client
 import json
 import os
@@ -147,6 +148,57 @@ def build_rankings(fp_to_gsis: dict[int, str]) -> dict:
     return merged
 
 
+# News: rolling 30-day window. See plan "Freshness & cutoff policy".
+NEWS_WINDOW_DAYS = 30
+NEWS_FETCH_LIMIT = 100
+
+
+def fetch_news() -> list[dict]:
+    """Fetch up to NEWS_FETCH_LIMIT most recent news items from FP /news."""
+    print(f"  Fetching news (limit={NEWS_FETCH_LIMIT}) ...")
+    data = _get("/NFL/news", {"limit": NEWS_FETCH_LIMIT, "order_by": "created"})
+    items = data.get("items", [])
+    print(f"    {len(items)} items")
+    return items
+
+
+def _parse_created(s: str) -> datetime.datetime | None:
+    """Parse FP's 'YYYY-MM-DD HH:MM:SS' UTC timestamps."""
+    try:
+        return datetime.datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
+    except (ValueError, TypeError):
+        return None
+
+
+def merge_news(existing: list[dict], fresh: list[dict]) -> list[dict]:
+    """
+    Merge fresh items into existing, dedup by id, evict items older than
+    NEWS_WINDOW_DAYS, and sort newest-first.
+    """
+    cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=NEWS_WINDOW_DAYS)
+    by_id: dict[int, dict] = {}
+    for item in list(existing) + list(fresh):
+        # Fresh wins on collision (later in iteration order) — picks up edits/corrections.
+        item_id = item.get("id")
+        if item_id is None:
+            continue
+        created = _parse_created(item.get("created", ""))
+        if created is None or created < cutoff:
+            continue
+        by_id[item_id] = item
+    return sorted(by_id.values(), key=lambda i: i.get("created", ""), reverse=True)
+
+
+def load_existing_news(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    try:
+        data = json.loads(path.read_text())
+        return data.get("items", [])
+    except (json.JSONDecodeError, KeyError):
+        return []
+
+
 def fetch_projections(fp_to_gsis: dict[int, str]) -> dict:
     """Fetch QB/RB/WR/TE projections, map to gsis_id."""
     result = {}
@@ -193,3 +245,15 @@ if __name__ == "__main__":
     out = OUTPUT_DIR / "projections.json"
     out.write_text(json.dumps(projections, indent=2))
     print(f"\n  {len(projections)} players → {out}")
+
+    print("\n=== Fetching FantasyPros news ===")
+    news_path = OUTPUT_DIR / "news.json"
+    existing = load_existing_news(news_path)
+    fresh = fetch_news()
+    merged = merge_news(existing, fresh)
+    news_file = {
+        "generated_at": datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "items": merged,
+    }
+    news_path.write_text(json.dumps(news_file, indent=2))
+    print(f"\n  {len(merged)} items in 30-day window ({len(fresh)} fetched, {len(existing)} prior) → {news_path}")

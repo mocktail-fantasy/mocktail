@@ -8,7 +8,7 @@
     "type-check": "turbo type-check",
     "data:generate": "cd scripts && uv run generate_data.py",
     "data:generate:fresh": "cd scripts && uv run generate_data.py --download",
-    "data:sync": "cp scripts/exports/active_rosters.json apps/web/public/active_rosters.json && cp scripts/exports/historical_data.json apps/web/public/historical_data.json && cp scripts/exports/team_history.json apps/web/public/team_history.json && cp scripts/exports/teams.json apps/web/public/teams.json"
+    "data:sync": "cp scripts/exports/active_rosters.json apps/web/public/active_rosters.json && cp scripts/exports/historical_data.json apps/web/public/historical_data.json && cp scripts/exports/team_history.json apps/web/public/team_history.json && cp scripts/exports/teams.json apps/web/public/teams.json && cp scripts/exports/news.json apps/web/public/news.json"
   },
   "devDependencies": {
     "turbo": "latest",

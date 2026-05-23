@@ -106,19 +106,27 @@ export interface TeamHistoryPlayer {
   fumbles_lost: number;
 }
 
-export interface PlayerSummary {
-  player_name: string;
-  team: string;
-  summary: string;
-  sources: string[];
-  article_count: number;
-  generated_at: string;
+/**
+ * A single news item from the FantasyPros /news endpoint.
+ * `player_id` is the FP integer id; map via rankings.json to get gsis_id.
+ * `team_id` is FP's team abbr — may need normalization (LAR→LA, JAC→JAX).
+ */
+export interface NewsItem {
+  id: number;
+  created: string;        // "YYYY-MM-DD HH:MM:SS" UTC
+  author: string;
+  player_id: number;      // FP player id
+  team_id: string;        // FP team abbr
+  title: string;
+  categories: string[];   // e.g. ["Commentary", "News", "Injury", "Breaking"]
+  link: string;
+  desc: string;           // what happened
+  impact: string;         // fantasy implication
 }
 
-export interface TeamSummary {
-  summary: string;
-  last_updated: string;
-  sources: string[];
+export interface NewsFile {
+  generated_at: string;
+  items: NewsItem[];
 }
 
 export interface RankingFormat {

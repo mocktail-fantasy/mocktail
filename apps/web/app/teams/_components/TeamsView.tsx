@@ -3,11 +3,12 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Player, PlayerProjection, TeamHistoryPlayer, TeamSummary } from '@mocktail/core';
+import type { Player, PlayerProjection, TeamHistoryPlayer, NewsItem } from '@mocktail/core';
 import type { TeamInfo } from '@/lib/data';
 import type { ScoringSettings } from '@mocktail/core';
 import { getFantasyPositions, calculateFantasyPoints } from '@mocktail/core';
 import { useScoringType } from '@/app/_components/ScoringContext';
+import NewsFeed from '@/app/_components/NewsFeed';
 
 const TEAM_COLORS: Record<string, { primary: string; onPrimary?: string }> = {
   ARI: { primary: '#97233F' },
@@ -100,24 +101,6 @@ const EMPTY_PROJ: PlayerProjection = {
   rushing_yards: 0, rushing_tds: 0, fumbles_lost: 0,
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function relativeTime(isoString: string): string {
-  const diffMs = Date.now() - new Date(isoString).getTime();
-  const hours = Math.floor(diffMs / (1000 * 60 * 60));
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
-
-function sourceLabel(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return url;
-  }
-}
-
 // ── TeamSummaryCard ───────────────────────────────────────────────────────────
 
 function StatGroup({ label, stats, valueColor = 'var(--color-text-primary)' }: {
@@ -141,17 +124,17 @@ function StatGroup({ label, stats, valueColor = 'var(--color-text-primary)' }: {
   );
 }
 
-function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, projections, teamInfo, teamSummary }: {
+function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, projections, teamInfo, teamNews }: {
   players: TeamHistoryPlayer[];
   historySeason: number;
   activeTeam: string;
   teamPlayers: Player[];
   projections: Record<string, PlayerProjection>;
   teamInfo?: TeamInfo;
-  teamSummary?: TeamSummary;
+  teamNews: NewsItem[];
 }) {
   const [newsOpen, setNewsOpen] = useState(false);
-  const [showSources, setShowSources] = useState(false);
+  const hasNews = teamNews.length > 0;
   const teamColor = teamInfo?.team_color ?? TEAM_COLORS[activeTeam]?.primary;
 
   function sumHist(fn: (p: TeamHistoryPlayer) => number) {
@@ -206,62 +189,26 @@ function TeamSummaryCard({ players, historySeason, activeTeam, teamPlayers, proj
           {teamInfo?.team_name ?? (activeTeam === 'FA' ? 'Free Agents' : activeTeam)}
         </span>
         <button
-          onClick={() => teamSummary && setNewsOpen((v) => !v)}
-          disabled={!teamSummary}
-          className={`ml-auto rounded p-1 transition-colors ${
-            teamSummary
+          onClick={() => hasNews && setNewsOpen((v) => !v)}
+          disabled={!hasNews}
+          className={`ml-auto flex items-center gap-1.5 rounded p-1 transition-colors ${
+            hasNews
               ? 'cursor-pointer text-[var(--color-brand)] hover:opacity-80'
               : 'cursor-default text-[var(--color-border-medium)]'
           }`}
-          aria-label="Team news"
+          aria-label={hasNews ? `Team news (${teamNews.length})` : 'No recent team news'}
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1M19 20a2 2 0 002-2V9a2 2 0 00-2-2h-1M8 10h6M8 14h4" />
           </svg>
+          {hasNews && (
+            <span className="text-[11px] font-semibold tabular-nums">{teamNews.length}</span>
+          )}
         </button>
       </div>
-      {newsOpen && teamSummary && (
+      {newsOpen && hasNews && (
         <div className="border-t border-[var(--color-border-light)] px-4 py-3">
-          <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-tertiary)]">Team News</span>
-            <span className="text-xs text-[var(--color-text-tertiary)]">{relativeTime(teamSummary.last_updated)}</span>
-          </div>
-          <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">{teamSummary.summary}</p>
-          {teamSummary.sources.length > 0 && (
-            <div className="mt-2">
-              <button
-                onClick={() => setShowSources((v) => !v)}
-                className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-secondary)]"
-              >
-                <svg
-                  className={`h-3 w-3 transition-transform ${showSources ? 'rotate-90' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-                {showSources ? 'Hide sources' : `Show sources (${teamSummary.sources.length})`}
-              </button>
-              {showSources && (
-                <ul className="mt-2 space-y-1">
-                  {teamSummary.sources.map((url, i) => (
-                    <li key={i}>
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-[var(--color-text-tertiary)] underline transition-colors hover:text-[var(--color-text-secondary)]"
-                      >
-                        {sourceLabel(url)}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+          <NewsFeed items={teamNews} title="Team news" showCategoryFilter bare />
         </div>
       )}
       {/* 2026 projection row */}
@@ -482,7 +429,7 @@ export default function TeamsView({
   teams,
   teamHistory,
   teamsData,
-  teamSummaries,
+  teamNews,
   historySeason,
   fixedTeam,
 }: {
@@ -492,7 +439,7 @@ export default function TeamsView({
   teams: string[];
   teamHistory: Record<string, TeamHistoryPlayer[]>;
   teamsData: Record<string, TeamInfo>;
-  teamSummaries: Record<string, TeamSummary>;
+  teamNews: Record<string, NewsItem[]>;
   historySeason: number;
   fixedTeam?: string;
 }) {
@@ -672,7 +619,7 @@ export default function TeamsView({
           teamPlayers={players.filter((p) => p.team === activeTeam)}
           projections={projections}
           teamInfo={teamsData[activeTeam]}
-          teamSummary={teamSummaries[activeTeam]}
+          teamNews={teamNews[activeTeam] ?? []}
         />
 
         <div>

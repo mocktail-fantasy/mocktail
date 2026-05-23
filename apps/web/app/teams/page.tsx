@@ -1,16 +1,16 @@
 import { Suspense } from 'react';
-import { getRosters, getAllDefaultPoints, getAllDefaultProjections, getTeamHistory, getTeamsData, getTeamSummaries, currentNFLSeason } from '@/lib/data';
+import { getRosters, getAllDefaultPoints, getAllDefaultProjections, getTeamHistory, getTeamsData, getNewsByTeam, currentNFLSeason } from '@/lib/data';
 import NavHeader from '../_components/NavHeader';
 import TeamsView from './_components/TeamsView';
 
 export default async function TeamsPage() {
-  const [players, defaultPoints, defaultProjections, teamHistory, teamsData, teamSummaries] = await Promise.all([
+  const [players, defaultPoints, defaultProjections, teamHistory, teamsData, teamNews] = await Promise.all([
     getRosters(),
     getAllDefaultPoints(),
     getAllDefaultProjections(),
     getTeamHistory(),
     getTeamsData(),
-    getTeamSummaries(),
+    getNewsByTeam(),
   ]);
   const historySeason = currentNFLSeason();
 
@@ -26,7 +26,7 @@ export default async function TeamsPage() {
       <div className="px-4 py-4 sm:px-6">
         <div className="mx-auto w-full max-w-7xl">
           <Suspense>
-            <TeamsView players={players} defaultPoints={defaultPoints} defaultProjections={defaultProjections} teams={teams} teamHistory={teamHistory} teamsData={teamsData} teamSummaries={teamSummaries} historySeason={historySeason} />
+            <TeamsView players={players} defaultPoints={defaultPoints} defaultProjections={defaultProjections} teams={teams} teamHistory={teamHistory} teamsData={teamsData} teamNews={teamNews} historySeason={historySeason} />
           </Suspense>
         </div>
       </div>

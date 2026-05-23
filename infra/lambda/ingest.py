@@ -47,6 +47,11 @@ RANKING_FORMATS = [
     ("sf_ppr",      "OP",  "PPR"),
 ]
 
+# News: rolling 30-day window. See plan "Freshness & cutoff policy".
+NEWS_WINDOW_DAYS = 30
+NEWS_FETCH_LIMIT = 100
+NEWS_S3_KEY = "news.json"
+
 STAGE_DIR = Path("/tmp/stage")
 OUTPUT_DIR = Path("/tmp/exports")
 
@@ -213,6 +218,63 @@ def fetch_projections(fp_to_gsis: dict[int, str]) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# FantasyPros news
+# ---------------------------------------------------------------------------
+
+def _parse_news_created(s: str) -> datetime.datetime | None:
+    """FP news timestamps are 'YYYY-MM-DD HH:MM:SS' UTC."""
+    try:
+        return datetime.datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
+    except (ValueError, TypeError):
+        return None
+
+
+def load_existing_news_from_s3() -> list[dict]:
+    """Load the prior news.json from S3. Returns [] on first run / missing object."""
+    try:
+        obj = s3.get_object(Bucket=BUCKET, Key=NEWS_S3_KEY)
+        data = json.loads(obj["Body"].read())
+        return data.get("items", [])
+    except s3.exceptions.NoSuchKey:
+        return []
+    except Exception as e:
+        print(f"  Warning: could not load existing news.json from S3: {e}")
+        return []
+
+
+def build_news() -> dict:
+    """
+    Fetch fresh news from FP, merge with existing S3 file, evict items
+    older than NEWS_WINDOW_DAYS, sort newest-first.
+    """
+    print("  Fetching news from FP")
+    data = _fp_get("/NFL/news", {"limit": NEWS_FETCH_LIMIT, "order_by": "created"})
+    fresh = data.get("items", [])
+    print(f"    {len(fresh)} items fetched")
+
+    existing = load_existing_news_from_s3()
+    print(f"    {len(existing)} items in prior file")
+
+    cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=NEWS_WINDOW_DAYS)
+    by_id: dict[int, dict] = {}
+    for item in list(existing) + list(fresh):  # fresh wins on collision
+        item_id = item.get("id")
+        if item_id is None:
+            continue
+        created = _parse_news_created(item.get("created", ""))
+        if created is None or created < cutoff:
+            continue
+        by_id[item_id] = item
+
+    items = sorted(by_id.values(), key=lambda i: i.get("created", ""), reverse=True)
+    print(f"    {len(items)} items in 30-day window")
+    return {
+        "generated_at": datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "items": items,
+    }
+
+
+# ---------------------------------------------------------------------------
 # NflVerse loaders
 # ---------------------------------------------------------------------------
 
@@ -350,6 +412,10 @@ def lambda_handler(event, context):
     projections = fetch_projections(fp_to_gsis)
     print(f"  {len(projections)} players with projections")
 
+    # 3c. Fetch + merge FantasyPros news (rolling 30-day window)
+    print("=== Fetching FantasyPros news ===")
+    news = build_news()
+
     # 4. Build active_rosters.json (from FP-ranked players)
     print("=== Building active_rosters.json ===")
     config = load_config()
@@ -362,10 +428,11 @@ def lambda_handler(event, context):
     (OUTPUT_DIR / "active_rosters.json").write_text(json.dumps(rosters_out))
     (OUTPUT_DIR / "rankings.json").write_text(json.dumps(rankings))
     (OUTPUT_DIR / "projections.json").write_text(json.dumps(projections))
+    (OUTPUT_DIR / "news.json").write_text(json.dumps(news))
 
     # 6. Upload to S3
     print("=== Uploading to S3 ===")
-    for filename in ["active_rosters.json", "rankings.json", "projections.json"]:
+    for filename in ["active_rosters.json", "rankings.json", "projections.json", "news.json"]:
         s3.upload_file(
             str(OUTPUT_DIR / filename),
             BUCKET,

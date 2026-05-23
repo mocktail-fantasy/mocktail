@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getPlayer, getPlayerHistory, getPlayerSummaries, getProjections, getRankings, getRankingContext, currentNFLSeason } from '@/lib/data';
+import { getPlayer, getPlayerHistory, getNewsByPlayer, getProjections, getRankings, getRankingContext, currentNFLSeason } from '@/lib/data';
 import { getFantasyPositions, getDefaultProjection } from '@mocktail/core';
 import type { Position } from '@mocktail/core';
 import PositionTabs from './_components/PositionTabs';
 import RankingBar from './_components/RankingBar';
 import PlayerAvatar from './_components/PlayerAvatar';
 import LastSeasonPts from './_components/LastSeasonPts';
-import NewsCard from './_components/NewsCard';
+import NewsFeed from '@/app/_components/NewsFeed';
 import LogoBlock from '@/app/_components/LogoBlock';
 import PositionBadge from '@/app/_components/PositionBadge';
 
@@ -40,15 +40,15 @@ export default async function PlayerPage({
   const player = await getPlayer(id);
   if (!player) notFound();
 
-  const [history, summaries, fpProjections, rankings, rankingContext] = await Promise.all([
+  const [history, newsByPlayer, fpProjections, rankings, rankingContext] = await Promise.all([
     getPlayerHistory(id),
-    getPlayerSummaries(),
+    getNewsByPlayer(),
     getProjections(),
     getRankings(),
     getRankingContext(),
   ]);
   const seasons = history?.seasons ?? [];
-  const playerSummary = summaries[player.player_id] ?? null;
+  const playerNews = newsByPlayer[player.player_id] ?? [];
   const fantasyPositions = getFantasyPositions(player.positions);
   const primaryPosition = fantasyPositions[0];
   const fpProjection = fpProjections[id] ?? undefined;
@@ -197,8 +197,9 @@ export default async function PlayerPage({
           )}
         </div>
 
-        {/* News card */}
-        {playerSummary && <NewsCard summary={playerSummary} />}
+        {/* News feed */}
+        <NewsFeed items={playerNews} collapsible />
+
 
         {/* Projection form + historical stats */}
         <PositionTabs

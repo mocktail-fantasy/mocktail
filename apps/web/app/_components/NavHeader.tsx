@@ -4,10 +4,11 @@ import Link from 'next/link';
 import LogoBlock from './LogoBlock';
 import UserMenu from './UserMenu';
 
-export default function NavHeader({ activePage }: { activePage: 'rankings' | 'teams' }) {
-  const navItems: { href: string; label: string; shortLabel: string; key: 'rankings' | 'teams' }[] = [
+export default function NavHeader({ activePage }: { activePage: 'rankings' | 'teams' | 'news' }) {
+  const navItems: { href: string; label: string; shortLabel: string; key: 'rankings' | 'teams' | 'news' }[] = [
     { href: '/', label: 'Rankings', shortLabel: 'Rank', key: 'rankings' },
     { href: '/teams', label: 'Teams', shortLabel: 'Team', key: 'teams' },
+    { href: '/news', label: 'News', shortLabel: 'News', key: 'news' },
   ];
 
   return (
