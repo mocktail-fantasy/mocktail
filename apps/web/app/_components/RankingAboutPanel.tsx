@@ -3,8 +3,7 @@
 import type { PositionBaselines, RankingConfig } from '@mocktail/core';
 
 const MODE_RATIONALE: Record<PositionBaselines['mode'], string> = {
-  VOLS: 'Shallow bench (≤5) uses VOLS — baseline is the last weekly starter at each position.',
-  BEER: 'Medium-to-deep bench uses BEER — baseline is a man-games depth accounting for bench utilization.',
+  VOLS: 'Managed leagues use VOLS — baseline is the last weekly starter at each position.',
   VORP_DEEP: 'Best Ball uses a VORP-style deep baseline because bench points actually score.',
 };
 

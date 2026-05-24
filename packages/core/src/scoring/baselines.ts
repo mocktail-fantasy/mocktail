@@ -37,13 +37,15 @@ const SKILL_BEHAVIOR_OFFSETS: Record<SkillBehavior, Partial<Record<Position, num
   zero_rb:  { RB: -4, WR: +3 },
 };
 
-// bench ≤ 5 → VOLS, else BEER. v1 starting value; tune empirically with usage data.
-const SHALLOW_BENCH_THRESHOLD = 5;
-
+// Managed leagues use VOLS (Value Over Last Starter); Best Ball uses VORP_DEEP.
+// Real BEER (Frank DuPont's man-games walk) requires per-player projected
+// games-played data we don't have today. Without that data BEER reduces to
+// VOLS-with-a-constant, so keeping a separate mode would be cosmetic. See the
+// Next Steps section of the Notion spec for the expected-games-played feature
+// that would unlock real BEER.
 export function selectBaselineMode(config: RankingConfig): BaselineMode {
   if (config.format === 'best_ball') return 'VORP_DEEP';
-  if (config.roster.benchSize <= SHALLOW_BENCH_THRESHOLD) return 'VOLS';
-  return 'BEER';
+  return 'VOLS';
 }
 
 export function computeBaselineDepths(
@@ -69,16 +71,12 @@ export function computeBaselineDepths(
     starters[pos] += sfDemand * SUPERFLEX_SPLIT[pos];
   }
 
-  const totalStarters = starters.QB + starters.RB + starters.WR + starters.TE;
-
   const depths: Record<Position, number> = { QB: 0, RB: 0, WR: 0, TE: 0 };
   for (const pos of POSITIONS) {
     if (mode === 'VOLS') {
       depths[pos] = starters[pos];
-    } else if (mode === 'BEER') {
-      const benchDemand = roster.benchSize * teams;
-      depths[pos] = starters[pos] + benchDemand * (starters[pos] / totalStarters);
     } else {
+      // VORP_DEEP: add one extra round per team for bench cushion.
       depths[pos] = starters[pos] + teams;
     }
   }

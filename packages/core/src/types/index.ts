@@ -165,7 +165,7 @@ export interface ScoringSettings {
 export type QBBehavior = 'normal' | 'early' | 'heavy' | 'early_and_heavy';
 export type SkillBehavior = 'normal' | 'rb_heavy' | 'zero_rb';
 export type RankingFormatType = 'redraft_managed' | 'best_ball';
-export type BaselineMode = 'VOLS' | 'BEER' | 'VORP_DEEP';
+export type BaselineMode = 'VOLS' | 'VORP_DEEP';
 
 export interface RankingRoster {
   qbStarters: number;
