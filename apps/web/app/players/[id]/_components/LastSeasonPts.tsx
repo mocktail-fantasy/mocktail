@@ -1,24 +1,20 @@
 'use client';
 
-import type { SeasonStats, ScoringType } from '@mocktail/core';
+import type { PlayerProjection, Position } from '@mocktail/core';
+import { calculateFantasyPoints } from '@mocktail/core';
 import { useScoringType } from '@/app/_components/ScoringContext';
 
-function getLastSeason(seasons: SeasonStats[]): SeasonStats | null {
-  return [...seasons].sort((a, b) => b.season - a.season)[0] ?? null;
-}
-
-function getPts(s: SeasonStats, scoringType: ScoringType): number {
-  if (scoringType === 'ppr') return s.fantasy_points_ppr;
-  if (scoringType === 'half_ppr') return (s.fantasy_points + s.fantasy_points_ppr) / 2;
-  return s.fantasy_points;
-}
-
-export default function LastSeasonPts({ seasons }: { seasons: SeasonStats[] }) {
-  const { scoringType } = useScoringType();
-  const latest = getLastSeason(seasons);
-  if (!latest) return null;
-
-  const pts = getPts(latest, scoringType);
+export default function LastSeasonPts({
+  projection,
+  positions,
+  season,
+}: {
+  projection: PlayerProjection;
+  positions: Position[];
+  season: number;
+}) {
+  const { scoringSettings } = useScoringType();
+  const pts = calculateFantasyPoints(projection, positions, scoringSettings);
 
   return (
     <div style={{ textAlign: 'right' }}>
@@ -32,7 +28,7 @@ export default function LastSeasonPts({ seasons }: { seasons: SeasonStats[] }) {
         {pts.toFixed(1)}
       </div>
       <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: '3px' }}>
-        {latest.season} pts
+        {season} projection
       </div>
     </div>
   );

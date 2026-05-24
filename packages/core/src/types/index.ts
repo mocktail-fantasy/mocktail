@@ -161,3 +161,37 @@ export interface ScoringSettings {
   tep: boolean;
   sixPointPassTDs: boolean;
 }
+
+export type QBBehavior = 'normal' | 'early' | 'heavy' | 'early_and_heavy';
+export type SkillBehavior = 'normal' | 'rb_heavy' | 'zero_rb';
+export type RankingFormatType = 'redraft_managed' | 'best_ball';
+export type BaselineMode = 'VOLS' | 'BEER' | 'VORP_DEEP';
+
+export interface RankingRoster {
+  qbStarters: number;
+  rbStarters: number;
+  wrStarters: number;
+  teStarters: number;
+  flexSlots: number;
+  superflexSlots: number;
+  benchSize: number;
+}
+
+export interface RankingConfig {
+  id: string;
+  name: string;
+  format: RankingFormatType;
+  scoring: ScoringSettings;
+  roster: RankingRoster;
+  teams: number;
+  qbBehavior: QBBehavior;
+  skillBehavior: SkillBehavior;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PositionBaselines {
+  mode: BaselineMode;
+  depths: Record<Position, number>;
+  values: Record<Position, number>;
+}

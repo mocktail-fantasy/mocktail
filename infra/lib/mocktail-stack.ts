@@ -18,6 +18,7 @@ import { Construct } from 'constructs';
  */
 export class MocktailStack extends cdk.Stack {
   public readonly projectionsTable: dynamodb.TableV2;
+  public readonly rankingsTable: dynamodb.TableV2;
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -29,6 +30,15 @@ export class MocktailStack extends cdk.Stack {
       tableName: 'mocktail-projections',
       partitionKey: { name: 'user_id', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'player_id', type: dynamodb.AttributeType.STRING },
+      billing: dynamodb.Billing.onDemand(),
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // Custom League Rankings: one row per user-defined ranking config.
+    this.rankingsTable = new dynamodb.TableV2(this, 'RankingsTable', {
+      tableName: 'mocktail-rankings',
+      partitionKey: { name: 'user_id', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'ranking_id', type: dynamodb.AttributeType.STRING },
       billing: dynamodb.Billing.onDemand(),
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
@@ -112,6 +122,15 @@ export class MocktailStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'ProjectionsTableArn', {
       value: this.projectionsTable.tableArn,
+    });
+
+    new cdk.CfnOutput(this, 'RankingsTableName', {
+      value: this.rankingsTable.tableName,
+      description: 'Set as RANKINGS_TABLE_NAME in Vercel environment variables',
+    });
+
+    new cdk.CfnOutput(this, 'RankingsTableArn', {
+      value: this.rankingsTable.tableArn,
     });
   }
 }

@@ -158,11 +158,9 @@ export default async function PlayerPage({
                 <span>Age {player.age}</span>
               </div>
             </div>
-            {seasons.length > 0 && (
-              <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
-                <LastSeasonPts seasons={seasons} />
-              </div>
-            )}
+            <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
+              <LastSeasonPts projection={defaultProj} positions={fantasyPositions} season={season} />
+            </div>
           </div>
 
           {/* Ranking bar */}

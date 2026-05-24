@@ -1,10 +1,13 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Player, PlayerProjection, Position } from '@mocktail/core';
-import { getFantasyPositions, calculateFantasyPoints, calculateVORPBaselines, calculateVORP } from '@mocktail/core';
+import { getFantasyPositions, calculateFantasyPoints, calculateVORPBaselines, calculateVORP, calculateBaselines, calculateValueOverBaseline } from '@mocktail/core';
 import PlayerCard from './PlayerCard';
 import { useScoringType } from './ScoringContext';
+import { useRanking } from './RankingContext';
+import RankingAboutPanel from './RankingAboutPanel';
 
 type FilterPosition = Position | 'ALL';
 type RankingMode = 'points' | 'vorp' | 'adp' | 'ecr';
@@ -52,19 +55,30 @@ export default function RosterGrid({
   adpMap?: Record<string, number>;
   ecrMap?: Record<string, Record<string, EcrEntry>>;
 }) {
-  const { scoringType, scoringSettings, twoQB, tep } = useScoringType();
-  const showAdp = !twoQB && !tep;
+  const router = useRouter();
+  const { scoringSettings, twoQB, tep } = useScoringType();
+  const { activeId, setActiveId, rankings: customRankings, activeConfig } = useRanking();
+
+  // When a custom ranking is active, scoring + SF derive from its config, not
+  // the ScoringContext (which is hidden in that mode).
+  const effectiveScoring = activeConfig?.scoring ?? scoringSettings;
+  const effectiveSuperflex = activeConfig
+    ? activeConfig.roster.superflexSlots > 0 || activeConfig.roster.qbStarters > 1
+    : twoQB;
+  const effectiveTep = activeConfig?.scoring.tep ?? tep;
+  const showAdp = !effectiveSuperflex && !effectiveTep;
 
   // Map scoring context to the correct ECR format key
   const ecrFormat = useMemo(() => {
-    const base = scoringType === 'half_ppr' ? 'half_ppr' : scoringType === 'ppr' ? 'ppr' : 'std';
-    return twoQB ? `sf_${base}` : base;
-  }, [scoringType, twoQB]);
+    const base = effectiveScoring.scoringType === 'half_ppr' ? 'half_ppr' : effectiveScoring.scoringType === 'ppr' ? 'ppr' : 'std';
+    return effectiveSuperflex ? `sf_${base}` : base;
+  }, [effectiveScoring.scoringType, effectiveSuperflex]);
 
   const getEcr = (playerId: string): EcrEntry | undefined => ecrMap?.[playerId]?.[ecrFormat];
   const [activePosition, setActivePosition] = useState<FilterPosition>('ALL');
   const [rankingMode, setRankingMode] = useState<RankingMode>('vorp');
   const [search, setSearch] = useState('');
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [projectedPoints, setProjectedPoints] = useState<Record<string, number>>(defaultPoints);
   const [projections, setProjections] = useState<Record<string, PlayerProjection>>(defaultProjections);
 
@@ -85,12 +99,12 @@ export default function RosterGrid({
       const projection = mergedProjections[player.player_id];
       if (projection) {
         const positions = getFantasyPositions(player.positions);
-        mergedPoints[player.player_id] = calculateFantasyPoints(projection, positions, scoringSettings);
+        mergedPoints[player.player_id] = calculateFantasyPoints(projection, positions, effectiveScoring);
       }
     }
     setProjectedPoints(mergedPoints);
     setProjections(mergedProjections);
-  }, [players, defaultProjections, scoringSettings]);
+  }, [players, defaultProjections, effectiveScoring]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -102,6 +116,11 @@ export default function RosterGrid({
     });
   }, [players, activePosition, search]);
 
+  const customBaselines = useMemo(
+    () => (activeConfig ? calculateBaselines(players, projectedPoints, activeConfig) : null),
+    [activeConfig, players, projectedPoints],
+  );
+
   const vorpBaselines = useMemo(
     () => calculateVORPBaselines(players, projectedPoints, twoQB),
     [players, projectedPoints, twoQB],
@@ -111,16 +130,14 @@ export default function RosterGrid({
     const scores: Record<string, number> = {};
     for (const player of players) {
       const pos = getFantasyPositions(player.positions)[0];
-      if (pos) {
-        scores[player.player_id] = calculateVORP(
-          projectedPoints[player.player_id] ?? 0,
-          pos,
-          vorpBaselines,
-        );
-      }
+      if (!pos) continue;
+      const points = projectedPoints[player.player_id] ?? 0;
+      scores[player.player_id] = customBaselines
+        ? calculateValueOverBaseline(points, pos, customBaselines)
+        : calculateVORP(points, pos, vorpBaselines);
     }
     return scores;
-  }, [players, projectedPoints, vorpBaselines]);
+  }, [players, projectedPoints, vorpBaselines, customBaselines]);
 
   const vorpRankMap = useMemo(() => {
     const sorted = [...players].sort(
@@ -203,12 +220,19 @@ export default function RosterGrid({
           </div>
         </div>
 
-        {/* Ranking strategy */}
+        {/* Ranking profile selector */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <span style={labelStyle}>Ranking</span>
+          <span style={labelStyle}>Ranking Profile</span>
           <select
-            value="vorp"
-            onChange={() => setRankingMode('vorp')}
+            value={activeId ?? '__default__'}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === '__new__') {
+                router.push('/rankings/new');
+                return;
+              }
+              setActiveId(v === '__default__' ? null : v);
+            }}
             style={{
               ...chipBase,
               border: '0.5px solid var(--color-border-medium)',
@@ -223,9 +247,34 @@ export default function RosterGrid({
               backgroundPosition: 'right 8px center',
             }}
           >
-            <option value="vorp">VORP</option>
+            <option value="__default__">Default (VORP)</option>
+            {customRankings.map((r) => (
+              <option key={r.id} value={r.id}>{r.name}</option>
+            ))}
+            <option value="__new__">+ New profile…</option>
           </select>
         </div>
+
+        {activeConfig && (
+          <button
+            type="button"
+            onClick={() => setAboutOpen((v) => !v)}
+            style={{
+              alignSelf: 'flex-end',
+              background: 'none',
+              border: 'none',
+              padding: '5px 0',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: '11px',
+              color: 'var(--color-text-secondary)',
+              textDecoration: 'underline',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {aboutOpen ? 'Hide' : 'About this profile'}
+          </button>
+        )}
 
         {/* Search */}
         <input
@@ -250,6 +299,12 @@ export default function RosterGrid({
           }}
         />
       </div>
+
+      {activeConfig && aboutOpen && customBaselines && (
+        <div className="mb-3">
+          <RankingAboutPanel config={activeConfig} baselines={customBaselines} />
+        </div>
+      )}
 
       {/* Result count + attribution */}
       <div className="mb-3 flex items-center justify-between">

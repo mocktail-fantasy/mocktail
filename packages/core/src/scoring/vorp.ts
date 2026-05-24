@@ -1,10 +1,11 @@
 import type { Position } from '../types';
+import { calculateBaselines, type BaselinePlayer } from './baselines';
 
-export interface VORPPlayer {
-  player_id: string;
-  positions: string[];
-}
+export type VORPPlayer = BaselinePlayer;
 
+// Legacy hardcoded baselines preserved for the "Default" ranking on the rankings
+// page (the no-survey, no-signup experience). Custom rankings go through
+// `calculateBaselines` with a full RankingConfig instead.
 export const REPLACEMENT_RANKS: Record<Position, number> = {
   QB: 12,
   RB: 40,
@@ -12,15 +13,14 @@ export const REPLACEMENT_RANKS: Record<Position, number> = {
   TE: 12,
 };
 
-const POSITIONS: Position[] = ['QB', 'RB', 'WR', 'TE'];
-
 export function calculateVORPBaselines(
   players: VORPPlayer[],
   projectedPoints: Record<string, number>,
   twoQB = false,
 ): Record<Position, number> {
+  const positions: Position[] = ['QB', 'RB', 'WR', 'TE'];
   const baselines = {} as Record<Position, number>;
-  for (const pos of POSITIONS) {
+  for (const pos of positions) {
     const posPlayers = players
       .filter((p) => p.positions.includes(pos))
       .sort((a, b) => (projectedPoints[b.player_id] ?? 0) - (projectedPoints[a.player_id] ?? 0));
@@ -39,3 +39,6 @@ export function calculateVORP(
 ): number {
   return playerPoints - baselines[position];
 }
+
+export { calculateBaselines, calculateValueOverBaseline, selectBaselineMode, computeBaselineDepths } from './baselines';
+export type { BaselinePlayer } from './baselines';

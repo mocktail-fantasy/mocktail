@@ -1,16 +1,25 @@
 import { getRosters, getAllDefaultPoints, getAllDefaultProjections, getNewsByPlayer, getRankings } from '@/lib/data';
+import { listRankings } from '@/lib/rankings-actions';
 import NavHeader from './_components/NavHeader';
 import RosterGrid from './_components/RosterGrid';
 import ScoringPanel from './_components/ScoringPanel';
+import { RankingProvider } from './_components/RankingContext';
 
-export default async function HomePage() {
-  const [players, defaultPoints, defaultProjections, newsByPlayer, rankings] = await Promise.all([
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ranking?: string }>;
+}) {
+  const sp = await searchParams;
+  const [players, defaultPoints, defaultProjections, newsByPlayer, rankings, userRankings] = await Promise.all([
     getRosters(),
     getAllDefaultPoints(),
     getAllDefaultProjections(),
     getNewsByPlayer(),
     getRankings(),
+    listRankings(),
   ]);
+  const initialActiveId = sp.ranking && userRankings.some((r) => r.id === sp.ranking) ? sp.ranking : null;
   // Player has news if any items are within the 30-day window.
   const newsPlayerIds = new Set(
     Object.entries(newsByPlayer).filter(([, items]) => items.length > 0).map(([id]) => id)
@@ -32,8 +41,10 @@ export default async function HomePage() {
       <NavHeader activePage="rankings" />
       <div className="px-4 py-4 sm:px-6">
         <div className="mx-auto w-full max-w-7xl flex flex-col gap-4">
-          <ScoringPanel />
-          <RosterGrid players={players} defaultPoints={defaultPoints} defaultProjections={defaultProjections} newsPlayerIds={newsPlayerIds} adpMap={adpMap} ecrMap={ecrMap} />
+          <RankingProvider rankings={userRankings} initialActiveId={initialActiveId}>
+            <ScoringPanel />
+            <RosterGrid players={players} defaultPoints={defaultPoints} defaultProjections={defaultProjections} newsPlayerIds={newsPlayerIds} adpMap={adpMap} ecrMap={ecrMap} />
+          </RankingProvider>
         </div>
       </div>
     </main>

@@ -2,6 +2,7 @@
 
 import type { ScoringType } from '@mocktail/core';
 import { useScoringType } from './ScoringContext';
+import { useRanking } from './RankingContext';
 
 const SCORING_OPTIONS: { value: ScoringType; label: string }[] = [
   { value: 'half_ppr', label: '0.5 PPR' },
@@ -16,7 +17,12 @@ const MODIFIERS = [
 ];
 
 export default function ScoringPanel() {
+  const { activeConfig } = useRanking();
   const { scoringType, setScoringType, tep, setTep, twoQB, setTwoQB, sixPtPass, setSixPtPass } = useScoringType();
+
+  // Custom rankings bake the scoring config into the ranking itself — surfacing
+  // these modifiers alongside would create a conflict-resolution problem.
+  if (activeConfig) return null;
 
   const modifierValues = { tep, twoQB, sixPtPass };
   const modifierSetters = {
